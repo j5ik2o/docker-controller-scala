@@ -69,7 +69,7 @@ lazy val baseSettings = Seq(
   scalafmtOnCompile in ThisBuild := true
 )
 
-val `testcontainers-for-scala-core` = (project in file("docker-controller-scala-core"))
+val `docker-controller-scala-core` = (project in file("docker-controller-scala-core"))
   .settings(baseSettings, deploySettings)
   .settings(
     name := "testcontainers-for-scala-core",
@@ -82,7 +82,7 @@ val `testcontainers-for-scala-core` = (project in file("docker-controller-scala-
       )
   )
 
-val `testcontainers-for-scala-root` = (project in file("."))
+val `docker-controller-scala-root` = (project in file("."))
   .settings(baseSettings, deploySettings)
   .settings(name := "docker-controller-scala-root")
-  .aggregate(`testcontainers-for-scala-core`)
+  .aggregate(`docker-controller-scala-core`)

@@ -19,24 +19,25 @@ class DockerControllerSpec extends AnyFreeSpec with BeforeAndAfter {
   val dockerHost: String = dockerClientConfig.getDockerHost.getHost
   val hostPort: Int      = RandomPortUtil.temporaryServerPort()
 
-  val dockerController: DockerController = new DockerController(dockerClient)(
-    imageName = "nginx",
-    tag = Some("latest")
-  ) {
-
-    override protected def newCreateContainerCmd(): CreateContainerCmd = {
-      val http        = ExposedPort.tcp(80)
-      val portBinding = new Ports()
-      portBinding.bind(http, Ports.Binding.bindPort(hostPort))
-
-      super
-        .newCreateContainerCmd()
-        .withExposedPorts(http)
-        .withHostConfig(newHostConfig().withPortBindings(portBinding))
-    }
-  }
+  var dockerController: DockerController = _
 
   before {
+    dockerController = new DockerController(dockerClient)(
+      imageName = "nginx",
+      tag = Some("latest")
+    ) {
+
+      override protected def newCreateContainerCmd(): CreateContainerCmd = {
+        val http        = ExposedPort.tcp(80)
+        val portBinding = new Ports()
+        portBinding.bind(http, Ports.Binding.bindPort(hostPort))
+
+        super
+          .newCreateContainerCmd()
+          .withExposedPorts(http)
+          .withHostConfig(newHostConfig().withPortBindings(portBinding))
+      }
+    }
     dockerController
       .pullImageIfNotExists()
       .createContainer()
@@ -49,7 +50,11 @@ class DockerControllerSpec extends AnyFreeSpec with BeforeAndAfter {
   }
 
   "DockerController" - {
-    "test" in {
+    "test-1" in {
+      val response = Http(s"http://$dockerHost:$hostPort").asString
+      println(s"response = $response")
+    }
+    "test-2" in {
       val response = Http(s"http://$dockerHost:$hostPort").asString
       println(s"response = $response")
     }
