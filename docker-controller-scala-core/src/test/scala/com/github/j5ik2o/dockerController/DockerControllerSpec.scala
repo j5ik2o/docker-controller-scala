@@ -4,24 +4,44 @@ import com.github.dockerjava.api.DockerClient
 import com.github.dockerjava.api.command.CreateContainerCmd
 import com.github.dockerjava.api.model.HostConfig.newHostConfig
 import com.github.dockerjava.api.model.{ ExposedPort, Ports }
-import com.github.dockerjava.core.{ DefaultDockerClientConfig, DockerClientBuilder }
-import org.scalatest.BeforeAndAfter
+import com.github.dockerjava.core.{ DockerClientConfig, DockerClientImpl }
+import com.github.dockerjava.httpclient5.ApacheDockerHttpClient
+import org.apache.commons.io.IOUtils
 import org.scalatest.freespec.AnyFreeSpec
-import scalaj.http.Http
+import org.scalatest.{ BeforeAndAfter, BeforeAndAfterAll }
+import org.slf4j.{ Logger, LoggerFactory }
 
+import java.io.InputStream
+import java.net.{ HttpURLConnection, URL }
 import scala.concurrent.duration.Duration
+import scala.jdk.CollectionConverters._
 
-class DockerControllerSpec extends AnyFreeSpec with BeforeAndAfter {
+class DockerControllerSpec extends AnyFreeSpec with BeforeAndAfter with BeforeAndAfterAll {
 
-  val dockerClientConfig: DefaultDockerClientConfig = DockerClientConfigBuilder.loadDockerClientConfig()
-  val dockerClient: DockerClient                    = DockerClientBuilder.getInstance(dockerClientConfig).build()
+  val logger: Logger = LoggerFactory.getLogger(getClass)
 
-  val dockerHost: String = dockerClientConfig.getDockerHost.getHost
-  val hostPort: Int      = RandomPortUtil.temporaryServerPort()
+  val dockerClientConfig: DockerClientConfig = DockerClientConfigUtil.buildConfigAwareOfDockerMachine()
+
+  val dockerClient: DockerClient = {
+    val httpClient: ApacheDockerHttpClient = new ApacheDockerHttpClient.Builder()
+      .dockerHost(dockerClientConfig.getDockerHost).sslConfig(dockerClientConfig.getSSLConfig).build()
+    DockerClientImpl.getInstance(dockerClientConfig, httpClient)
+  }
+
+  val host: String =
+    if (dockerClientConfig.getDockerHost.getHost == null)
+      "127.0.0.1"
+    else
+      dockerClientConfig.getDockerHost.getHost
+
+  val hostPort: Int = RandomPortUtil.temporaryServerPort()
+
+  logger.debug(s"host = $host")
+  logger.debug(s"hostPort = $hostPort")
 
   var dockerController: DockerController = _
 
-  before {
+  override protected def beforeAll(): Unit = {
     dockerController = new DockerController(dockerClient)(
       imageName = "nginx",
       tag = Some("latest")
@@ -41,6 +61,15 @@ class DockerControllerSpec extends AnyFreeSpec with BeforeAndAfter {
     dockerController
       .pullImageIfNotExists()
       .createContainer()
+  }
+
+  override protected def afterAll(): Unit = {
+    dockerController.removeContainer()
+    dockerClient.close()
+  }
+
+  before {
+    dockerController
       .startContainer()
       .awaitCondition(Duration.Inf)(_.toString.contains("Configuration complete; ready for start up"))
   }
@@ -49,14 +78,38 @@ class DockerControllerSpec extends AnyFreeSpec with BeforeAndAfter {
     dockerController.stopContainer()
   }
 
-  "DockerController" - {
-    "test-1" in {
-      val response = Http(s"http://$dockerHost:$hostPort").asString
-      println(s"response = $response")
-    }
-    "test-2" in {
-      val response = Http(s"http://$dockerHost:$hostPort").asString
-      println(s"response = $response")
+  val url = new URL(s"http://$host:$hostPort")
+
+  def wget = {
+    var connection: HttpURLConnection = null
+    var in: InputStream               = null
+    try {
+      connection = url.openConnection().asInstanceOf[HttpURLConnection]
+      connection.setRequestMethod("GET")
+      connection.connect()
+      val responseCode = connection.getResponseCode
+      assert(responseCode == HttpURLConnection.HTTP_OK)
+      in = connection.getInputStream
+      val lines = IOUtils.readLines(in, "UTF-8").asScala.mkString("\n")
+      println(lines)
+    } catch {
+      case ex: Throwable =>
+        ex.printStackTrace()
+    } finally {
+      if (in != null)
+        in.close()
+      if (connection != null)
+        connection.disconnect()
     }
   }
+
+  "DockerController" - {
+    "test-1" in {
+      wget
+    }
+    "test-2" in {
+      wget
+    }
+  }
+
 }

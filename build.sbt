@@ -13,14 +13,14 @@ def crossScalacOptions(scalaVersion: String): Seq[String] = CrossVersion.partial
 lazy val deploySettings = Seq(
   sonatypeProfileName := "com.github.j5ik2o",
   publishMavenStyle := true,
-  publishArtifact in Test := false,
+  Test / publishArtifact := false,
   pomIncludeRepository := { _ => false },
   pomExtra := {
     <url>https://github.com/j5ik2o/docker-controller-scala</url>
       <licenses>
         <license>
-          <name>Apache 2</name>
-          <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+          <name>The MIT License</name>
+          <url>http://opensource.org/licenses/MIT</url>
         </license>
       </licenses>
       <scm>
@@ -37,8 +37,8 @@ lazy val deploySettings = Seq(
   },
   publishTo := sonatypePublishToBundle.value,
   credentials := {
-    val ivyCredentials = (baseDirectory in LocalRootProject).value / ".credentials"
-    val gpgCredentials = (baseDirectory in LocalRootProject).value / ".gpgCredentials"
+    val ivyCredentials = (LocalRootProject / baseDirectory).value / ".credentials"
+    val gpgCredentials = (LocalRootProject / baseDirectory).value / ".gpgCredentials"
     Credentials(ivyCredentials) :: Credentials(gpgCredentials) :: Nil
   }
 )
@@ -65,24 +65,41 @@ lazy val baseSettings = Seq(
       "org.scalatest" %% "scalatest" % scalaTestVersion % Test
     ),
   Test / fork := true,
-  parallelExecution in Test := false,
-  scalafmtOnCompile in ThisBuild := true
+  Test / parallelExecution := false,
+  ThisBuild / scalafmtOnCompile := true
 )
 
 val `docker-controller-scala-core` = (project in file("docker-controller-scala-core"))
   .settings(baseSettings, deploySettings)
   .settings(
-    name := "testcontainers-for-scala-core",
+    name := "docker-controller-scala-core",
     libraryDependencies ++= Seq(
         "com.github.docker-java" % "docker-java"                       % "3.2.7",
-        "com.github.docker-java" % "docker-java-transport-httpclient5" % "3.2.7" % Provided,
         "org.slf4j"              % "slf4j-api"                         % "1.7.30",
         "ch.qos.logback"         % "logback-classic"                   % logbackVersion % Test,
-        "org.scalaj"             %% "scalaj-http"                      % "2.4.2" % Test
+        "com.github.docker-java" % "docker-java-transport-jersey"      % "3.2.7" % Test,
+        "com.github.docker-java" % "docker-java-transport-httpclient5" % "3.2.7" % Test,
+        "com.github.docker-java" % "docker-java-transport-okhttp"      % "3.2.7" % Test,
+        "commons-io"             % "commons-io"                        % "2.8.0" % Test,
+        "org.scalatest"          %% "scalatest"                        % scalaTestVersion % Test
       )
   )
+
+val `docker-controller-scala-scalatest` = (project in file("docker-controller-scala-scalatest"))
+  .settings(baseSettings, deploySettings)
+  .settings(
+    name := "docker-controller-scala-scalatest",
+    libraryDependencies ++= Seq(
+        "org.scalatest"          %% "scalatest"                        % scalaTestVersion,
+        "com.github.docker-java" % "docker-java-transport-jersey"      % "3.2.7" % Provided,
+        "com.github.docker-java" % "docker-java-transport-httpclient5" % "3.2.7" % Provided,
+        "com.github.docker-java" % "docker-java-transport-okhttp"      % "3.2.7" % Provided,
+        "commons-io"             % "commons-io"                        % "2.8.0" % Provided,
+        "ch.qos.logback"         % "logback-classic"                   % logbackVersion % Test
+      )
+  ).dependsOn(`docker-controller-scala-core`)
 
 val `docker-controller-scala-root` = (project in file("."))
   .settings(baseSettings, deploySettings)
   .settings(name := "docker-controller-scala-root")
-  .aggregate(`docker-controller-scala-core`)
+  .aggregate(`docker-controller-scala-core`, `docker-controller-scala-scalatest`)

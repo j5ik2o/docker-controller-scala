@@ -3,7 +3,7 @@ package com.github.j5ik2o.dockerController
 import com.github.dockerjava.api.DockerClient
 import com.github.dockerjava.api.async.ResultCallback
 import com.github.dockerjava.api.command._
-import com.github.dockerjava.api.model.{ Frame, Image, PullResponseItem }
+import com.github.dockerjava.api.model.{ ExposedPort, Frame, Image, NetworkSettings, Ports, PullResponseItem }
 import org.slf4j.{ Logger, LoggerFactory }
 
 import java.util.concurrent.{ LinkedBlockingQueue, TimeUnit }
@@ -12,20 +12,32 @@ import scala.annotation.tailrec
 import scala.concurrent.duration.{ Duration, DurationInt, FiniteDuration }
 import scala.jdk.CollectionConverters._
 
-class DockerController(dockerClient: DockerClient, outputFrameInterval: FiniteDuration = 500.millis)(
-    imageName: String,
-    tag: Option[String] = None
+class DockerController(val dockerClient: DockerClient, outputFrameInterval: FiniteDuration = 500.millis)(
+    val imageName: String,
+    val tag: Option[String] = None
 ) {
 
   private val logger: Logger = LoggerFactory.getLogger(getClass)
 
-  private var containerId: String = _
+  private var _containerId: String = _
 
   private def repoTag: String = tag.fold(imageName)(t => s"$imageName:$t")
+
+  def containerId: String = _containerId
 
   protected def newCreateContainerCmd(): CreateContainerCmd = {
     dockerClient
       .createContainerCmd(repoTag)
+  }
+
+  protected def newRemoveContainerCmd(): RemoveContainerCmd = {
+    require(containerId != null)
+    dockerClient.removeContainerCmd(containerId)
+  }
+
+  protected def newInspectContainerCmd(): InspectContainerCmd = {
+    require(containerId != null)
+    dockerClient.inspectContainerCmd(containerId)
   }
 
   protected def newListImagesCmd(): ListImagesCmd = {
@@ -33,11 +45,13 @@ class DockerController(dockerClient: DockerClient, outputFrameInterval: FiniteDu
   }
 
   protected def newPullImageCmd(): PullImageCmd = {
+    require(imageName != null)
     val cmd = dockerClient.pullImageCmd(imageName)
     tag.fold(cmd)(t => cmd.withTag(t))
   }
 
   protected def newLogContainerCmd(): LogContainerCmd = {
+    require(containerId != null)
     dockerClient
       .logContainerCmd(containerId)
       .withStdOut(true)
@@ -58,9 +72,60 @@ class DockerController(dockerClient: DockerClient, outputFrameInterval: FiniteDu
 
   def createContainer(): DockerController = {
     logger.debug("createContainer --- start")
-    containerId = newCreateContainerCmd().exec().getId
+    _containerId = newCreateContainerCmd().exec().getId
     logger.debug("createContainer --- finish")
     this
+  }
+
+  def removeContainer(): DockerController = {
+    logger.debug("removeContainer --- start")
+    newRemoveContainerCmd().exec()
+    logger.debug("removeContainer --- finish")
+    this
+  }
+
+  def inspectContainer(): InspectContainerResponse = {
+    newInspectContainerCmd().exec()
+  }
+
+  def networkSettings(): NetworkSettings = {
+    inspectContainer().getNetworkSettings
+  }
+
+  def ports: Ports = {
+    networkSettings().getPorts
+  }
+
+  def portBindings: Map[ExposedPort, Array[Ports.Binding]] = {
+    ports.getBindings.asScala.toMap
+  }
+
+  def portBinding(exposedPort: ExposedPort): Option[Array[Ports.Binding]] = {
+    portBindings.get(exposedPort)
+  }
+
+  def bindingHostPorts(exposedPort: ExposedPort): Option[Array[Int]] = {
+    portBinding(exposedPort).map(_.map(_.getHostPortSpec.toInt))
+  }
+
+  def bindingHostTcpPorts(exposedPort: Int): Option[Array[Int]] = {
+    bindingHostPorts(ExposedPort.tcp(exposedPort))
+  }
+
+  def bindingHostUdpPorts(exposedPort: Int): Option[Array[Int]] = {
+    bindingHostPorts(ExposedPort.udp(exposedPort))
+  }
+
+  def bindingHostPort(exposedPort: ExposedPort): Option[Int] = {
+    portBinding(exposedPort).flatMap(_.headOption.map(_.getHostPortSpec.toInt))
+  }
+
+  def bindingHostTcpPort(exposedPort: Int): Option[Int] = {
+    bindingHostPort(ExposedPort.tcp(exposedPort))
+  }
+
+  def bindingHostUdpPort(exposedPort: Int): Option[Int] = {
+    bindingHostPort(ExposedPort.udp(exposedPort))
   }
 
   def listImages(): Vector[Image] = {
@@ -70,7 +135,7 @@ class DockerController(dockerClient: DockerClient, outputFrameInterval: FiniteDu
     result
   }
 
-  def exists(p: Image => Boolean): Boolean = {
+  def existsImage(p: Image => Boolean): Boolean = {
     logger.debug("exists --- start")
     val result = listImages().exists(p)
     logger.debug("exists --- finish")
@@ -79,7 +144,7 @@ class DockerController(dockerClient: DockerClient, outputFrameInterval: FiniteDu
 
   def pullImageIfNotExists(): DockerController = {
     logger.debug("pullImageIfNotExists --- start")
-    if (!exists(p => p.getRepoTags.contains(repoTag))) {
+    if (!existsImage(p => p.getRepoTags.contains(repoTag))) {
       pullImage()
     }
     logger.debug("pullImageIfNotExists --- finish")
