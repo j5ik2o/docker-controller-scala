@@ -3,7 +3,15 @@ package com.github.j5ik2o.dockerController
 import com.github.dockerjava.api.DockerClient
 import com.github.dockerjava.api.async.ResultCallback
 import com.github.dockerjava.api.command._
-import com.github.dockerjava.api.model.{ ExposedPort, Frame, Image, NetworkSettings, Ports, PullResponseItem }
+import com.github.dockerjava.api.model.{
+  ExposedPort,
+  Frame,
+  HostConfig,
+  Image,
+  NetworkSettings,
+  Ports,
+  PullResponseItem
+}
 import org.slf4j.{ Logger, LoggerFactory }
 
 import java.util.concurrent.{ LinkedBlockingQueue, TimeUnit }
@@ -85,47 +93,10 @@ class DockerController(val dockerClient: DockerClient, outputFrameInterval: Fini
   }
 
   def inspectContainer(): InspectContainerResponse = {
-    newInspectContainerCmd().exec()
-  }
-
-  def networkSettings(): NetworkSettings = {
-    inspectContainer().getNetworkSettings
-  }
-
-  def ports: Ports = {
-    networkSettings().getPorts
-  }
-
-  def portBindings: Map[ExposedPort, Array[Ports.Binding]] = {
-    ports.getBindings.asScala.toMap
-  }
-
-  def portBinding(exposedPort: ExposedPort): Option[Array[Ports.Binding]] = {
-    portBindings.get(exposedPort)
-  }
-
-  def bindingHostPorts(exposedPort: ExposedPort): Option[Array[Int]] = {
-    portBinding(exposedPort).map(_.map(_.getHostPortSpec.toInt))
-  }
-
-  def bindingHostTcpPorts(exposedPort: Int): Option[Array[Int]] = {
-    bindingHostPorts(ExposedPort.tcp(exposedPort))
-  }
-
-  def bindingHostUdpPorts(exposedPort: Int): Option[Array[Int]] = {
-    bindingHostPorts(ExposedPort.udp(exposedPort))
-  }
-
-  def bindingHostPort(exposedPort: ExposedPort): Option[Int] = {
-    portBinding(exposedPort).flatMap(_.headOption.map(_.getHostPortSpec.toInt))
-  }
-
-  def bindingHostTcpPort(exposedPort: Int): Option[Int] = {
-    bindingHostPort(ExposedPort.tcp(exposedPort))
-  }
-
-  def bindingHostUdpPort(exposedPort: Int): Option[Int] = {
-    bindingHostPort(ExposedPort.udp(exposedPort))
+    logger.debug("inspectContainer --- start")
+    val result = newInspectContainerCmd().exec()
+    logger.debug("inspectContainer --- finish")
+    result
   }
 
   def listImages(): Vector[Image] = {
