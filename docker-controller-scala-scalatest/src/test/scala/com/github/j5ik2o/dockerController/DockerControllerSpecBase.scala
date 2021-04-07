@@ -11,7 +11,7 @@ import scala.concurrent.duration.Duration
 
 abstract class DockerControllerSpecBase extends AnyFreeSpec with DockerControllerSpecSupport {
 
-  val nginx: DockerController = new DockerController(dockerClient)(
+  val nginx: DockerController = new DockerControllerImpl(dockerClient)(
     imageName = "nginx",
     tag = Some("latest")
   ) {

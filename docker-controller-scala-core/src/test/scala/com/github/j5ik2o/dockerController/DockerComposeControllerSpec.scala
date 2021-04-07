@@ -1,14 +1,14 @@
 package com.github.j5ik2o.dockerController
 
 import com.github.dockerjava.api.DockerClient
-import com.github.dockerjava.api.command.CreateContainerCmd
+import com.github.dockerjava.api.command.{ CreateContainerCmd, StartContainerCmd }
 import com.github.dockerjava.api.model.HostConfig.newHostConfig
-import com.github.dockerjava.api.model.{ ExposedPort, Ports }
+import com.github.dockerjava.api.model.{ AccessMode, Bind, Binds, ExposedPort, Ports, SELContext, Volume }
 import com.github.dockerjava.core.{ DockerClientConfig, DockerClientImpl }
 import com.github.dockerjava.httpclient5.ApacheDockerHttpClient
 import org.apache.commons.io.IOUtils
-import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.{ BeforeAndAfter, BeforeAndAfterAll }
+import org.scalatest.freespec.AnyFreeSpec
 import org.slf4j.{ Logger, LoggerFactory }
 
 import java.io.InputStream
@@ -16,8 +16,7 @@ import java.net.{ HttpURLConnection, URL }
 import scala.concurrent.duration.Duration
 import scala.jdk.CollectionConverters._
 
-class DockerControllerSpec extends AnyFreeSpec with BeforeAndAfter with BeforeAndAfterAll {
-
+class DockerComposeControllerSpec extends AnyFreeSpec with BeforeAndAfter with BeforeAndAfterAll {
   val logger: Logger = LoggerFactory.getLogger(getClass)
 
   val dockerClientConfig: DockerClientConfig = DockerClientConfigUtil.buildConfigAwareOfDockerMachine()
@@ -36,49 +35,7 @@ class DockerControllerSpec extends AnyFreeSpec with BeforeAndAfter with BeforeAn
 
   val hostPort: Int = RandomPortUtil.temporaryServerPort()
 
-  logger.debug(s"host = $host")
-  logger.debug(s"hostPort = $hostPort")
-
-  var dockerController: DockerController = _
-
-  override protected def beforeAll(): Unit = {
-    dockerController = new DockerControllerImpl(dockerClient)(
-      imageName = "nginx",
-      tag = Some("latest")
-    ) {
-
-      override protected def newCreateContainerCmd(): CreateContainerCmd = {
-        val http        = ExposedPort.tcp(80)
-        val portBinding = new Ports()
-        portBinding.bind(http, Ports.Binding.bindPort(hostPort))
-
-        super
-          .newCreateContainerCmd()
-          .withExposedPorts(http)
-          .withHostConfig(newHostConfig().withPortBindings(portBinding))
-      }
-    }
-    dockerController
-      .pullImageIfNotExists()
-      .createContainer()
-  }
-
-  override protected def afterAll(): Unit = {
-    dockerController.removeContainer()
-    dockerClient.close()
-  }
-
-  before {
-    dockerController
-      .startContainer()
-      .awaitCondition(Duration.Inf)(_.toString.contains("Configuration complete; ready for start up"))
-  }
-
-  after {
-    dockerController.stopContainer()
-  }
-
-  val url = new URL(s"http://$host:$hostPort")
+  val url = new URL(s"http://$host:8080")
 
   def wget = {
     var connection: HttpURLConnection = null
@@ -103,13 +60,20 @@ class DockerControllerSpec extends AnyFreeSpec with BeforeAndAfter with BeforeAn
     }
   }
 
-  "DockerController" - {
-    "test-1" in {
-      wget
-    }
-    "test-2" in {
-      wget
-    }
-  }
+  val controller: DockerComposeController = new DockerComposeController(dockerClient)("docker-compose-1.yml")
 
+  "DockerComposeController" - {
+    "run" in {
+      controller.pullImageIfNotExists()
+      controller.createContainer()
+      controller
+        .startContainer().awaitCondition(Duration.Inf)(
+          _.toString.contains("Configuration complete; ready for start up")
+        )
+      wget
+      controller.stopContainer()
+      controller.removeContainer()
+    }
+
+  }
 }

@@ -20,12 +20,25 @@ import scala.annotation.tailrec
 import scala.concurrent.duration.{ Duration, DurationInt, FiniteDuration }
 import scala.jdk.CollectionConverters._
 
-class DockerController(val dockerClient: DockerClient, outputFrameInterval: FiniteDuration = 500.millis)(
+trait DockerController {
+  def createContainer(): DockerController
+  def removeContainer(): DockerController
+  def startContainer(): DockerController
+  def stopContainer(): DockerController
+  def inspectContainer(): InspectContainerResponse
+  def listImages(): Vector[Image]
+  def existsImage(p: Image => Boolean): Boolean
+  def pullImageIfNotExists(): DockerController
+  def pullImage(): DockerController
+  def awaitCondition(duration: Duration)(predicate: Frame => Boolean): DockerController
+}
+
+class DockerControllerImpl(val dockerClient: DockerClient, outputFrameInterval: FiniteDuration = 500.millis)(
     val imageName: String,
     val tag: Option[String] = None
-) {
+) extends DockerController {
 
-  private val logger: Logger = LoggerFactory.getLogger(getClass)
+  protected val logger: Logger = LoggerFactory.getLogger(getClass)
 
   private var _containerId: String = _
 
