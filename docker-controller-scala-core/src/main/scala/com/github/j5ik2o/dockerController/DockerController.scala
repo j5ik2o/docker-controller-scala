@@ -20,18 +20,32 @@ import scala.annotation.tailrec
 import scala.concurrent.duration.{ Duration, DurationInt, FiniteDuration }
 import scala.jdk.CollectionConverters._
 
-class DockerController(val dockerClient: DockerClient, outputFrameInterval: FiniteDuration = 500.millis)(
+trait DockerController {
+  def containerId: String
+  def createContainer(f: CreateContainerCmd => CreateContainerCmd = identity): DockerController
+  def removeContainer(f: RemoveContainerCmd => RemoveContainerCmd = identity): DockerController
+  def startContainer(f: StartContainerCmd => StartContainerCmd = identity): DockerController
+  def stopContainer(f: StopContainerCmd => StopContainerCmd = identity): DockerController
+  def inspectContainer(f: InspectContainerCmd => InspectContainerCmd = identity): InspectContainerResponse
+  def listImages(f: ListImagesCmd => ListImagesCmd = identity): Vector[Image]
+  def existsImage(p: Image => Boolean): Boolean
+  def pullImageIfNotExists(f: PullImageCmd => PullImageCmd = identity): DockerController
+  def pullImage(f: PullImageCmd => PullImageCmd = identity): DockerController
+  def awaitCondition(duration: Duration)(predicate: Frame => Boolean): DockerController
+}
+
+class DockerControllerImpl(val dockerClient: DockerClient, outputFrameInterval: FiniteDuration = 500.millis)(
     val imageName: String,
     val tag: Option[String] = None
-) {
+) extends DockerController {
 
-  private val logger: Logger = LoggerFactory.getLogger(getClass)
+  protected val logger: Logger = LoggerFactory.getLogger(getClass)
 
   private var _containerId: String = _
 
   private def repoTag: String = tag.fold(imageName)(t => s"$imageName:$t")
 
-  def containerId: String = _containerId
+  override def containerId: String = _containerId
 
   protected def newCreateContainerCmd(): CreateContainerCmd = {
     dockerClient
@@ -78,53 +92,53 @@ class DockerController(val dockerClient: DockerClient, outputFrameInterval: Fini
     dockerClient.stopContainerCmd(containerId)
   }
 
-  def createContainer(): DockerController = {
+  override def createContainer(f: CreateContainerCmd => CreateContainerCmd): DockerController = {
     logger.debug("createContainer --- start")
-    _containerId = newCreateContainerCmd().exec().getId
+    _containerId = f(newCreateContainerCmd()).exec().getId
     logger.debug("createContainer --- finish")
     this
   }
 
-  def removeContainer(): DockerController = {
+  override def removeContainer(f: RemoveContainerCmd => RemoveContainerCmd): DockerController = {
     logger.debug("removeContainer --- start")
-    newRemoveContainerCmd().exec()
+    f(newRemoveContainerCmd()).exec()
     logger.debug("removeContainer --- finish")
     this
   }
 
-  def inspectContainer(): InspectContainerResponse = {
+  override def inspectContainer(f: InspectContainerCmd => InspectContainerCmd): InspectContainerResponse = {
     logger.debug("inspectContainer --- start")
-    val result = newInspectContainerCmd().exec()
+    val result = f(newInspectContainerCmd()).exec()
     logger.debug("inspectContainer --- finish")
     result
   }
 
-  def listImages(): Vector[Image] = {
+  override def listImages(f: ListImagesCmd => ListImagesCmd): Vector[Image] = {
     logger.debug("listImages --- start")
-    val result = newListImagesCmd().exec().asScala.toVector
+    val result = f(newListImagesCmd()).exec().asScala.toVector
     logger.debug("listImages --- finish")
     result
   }
 
-  def existsImage(p: Image => Boolean): Boolean = {
+  override def existsImage(p: Image => Boolean): Boolean = {
     logger.debug("exists --- start")
     val result = listImages().exists(p)
     logger.debug("exists --- finish")
     result
   }
 
-  def pullImageIfNotExists(): DockerController = {
+  override def pullImageIfNotExists(f: PullImageCmd => PullImageCmd): DockerController = {
     logger.debug("pullImageIfNotExists --- start")
     if (!existsImage(p => p.getRepoTags.contains(repoTag))) {
-      pullImage()
+      pullImage(f)
     }
     logger.debug("pullImageIfNotExists --- finish")
     this
   }
 
-  def pullImage(): DockerController = {
+  override def pullImage(f: PullImageCmd => PullImageCmd): DockerController = {
     logger.debug("pullContainer --- start")
-    newPullImageCmd()
+    f(newPullImageCmd())
       .exec(new ResultCallback.Adapter[PullResponseItem] {
         override def onNext(frame: PullResponseItem): Unit = {
           logger.debug(frame.toString)
@@ -135,21 +149,21 @@ class DockerController(val dockerClient: DockerClient, outputFrameInterval: Fini
     this
   }
 
-  def startContainer(): DockerController = {
+  override def startContainer(f: StartContainerCmd => StartContainerCmd): DockerController = {
     logger.debug("startContainer --- start")
-    newStartContainerCmd().exec()
+    f(newStartContainerCmd()).exec()
     logger.debug("startContainer --- finish")
     this
   }
 
-  def stopContainer(): DockerController = {
+  override def stopContainer(f: StopContainerCmd => StopContainerCmd): DockerController = {
     logger.debug("stopContainer --- start")
-    newStopContainerCmd().exec()
+    f(newStopContainerCmd()).exec()
     logger.debug("stopContainer --- finish")
     this
   }
 
-  def awaitCondition(duration: Duration)(predicate: Frame => Boolean): DockerController = {
+  override def awaitCondition(duration: Duration)(predicate: Frame => Boolean): DockerController = {
     logger.debug("awaitCompletion --- start")
     val frameQueue: LinkedBlockingQueue[Frame] = new LinkedBlockingQueue[Frame]()
 

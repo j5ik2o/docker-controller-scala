@@ -59,7 +59,8 @@ lazy val baseSettings = Seq(
     ) ++ crossScalacOptions(scalaVersion.value)),
   resolvers ++= Seq(
       Resolver.sonatypeRepo("snapshots"),
-      Resolver.sonatypeRepo("releases")
+      Resolver.sonatypeRepo("releases"),
+      "Seasar Repository" at "https://maven.seasar.org/maven2/"
     ),
   libraryDependencies ++= Seq(
       "org.scalatest" %% "scalatest" % scalaTestVersion % Test
@@ -76,6 +77,8 @@ val `docker-controller-scala-core` = (project in file("docker-controller-scala-c
     libraryDependencies ++= Seq(
         "com.github.docker-java" % "docker-java"                       % "3.2.7",
         "org.slf4j"              % "slf4j-api"                         % "1.7.30",
+        "org.seasar.util"        % "s2util"                            % "0.0.1",
+        "org.freemarker"         % "freemarker"                        % "2.3.31",
         "ch.qos.logback"         % "logback-classic"                   % logbackVersion % Test,
         "com.github.docker-java" % "docker-java-transport-jersey"      % "3.2.7" % Test,
         "com.github.docker-java" % "docker-java-transport-httpclient5" % "3.2.7" % Test,
