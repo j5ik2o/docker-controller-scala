@@ -70,6 +70,7 @@ class DockerComposeControllerSpec extends AnyFreeSpec with BeforeAndAfter with B
         .startContainer().awaitCondition(Duration.Inf)(
           _.toString.contains("Configuration complete; ready for start up")
         )
+      Thread.sleep(1000)
       wget
       controller.stopContainer()
       controller.removeContainer()

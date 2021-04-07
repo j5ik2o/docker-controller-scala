@@ -72,6 +72,7 @@ class DockerControllerSpec extends AnyFreeSpec with BeforeAndAfter with BeforeAn
     dockerController
       .startContainer()
       .awaitCondition(Duration.Inf)(_.toString.contains("Configuration complete; ready for start up"))
+    Thread.sleep(1000)
   }
 
   after {
