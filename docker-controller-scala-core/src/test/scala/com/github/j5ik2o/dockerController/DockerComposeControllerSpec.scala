@@ -1,20 +1,16 @@
 package com.github.j5ik2o.dockerController
 
 import com.github.dockerjava.api.DockerClient
-import com.github.dockerjava.api.command.{ CreateContainerCmd, StartContainerCmd }
-import com.github.dockerjava.api.model.HostConfig.newHostConfig
-import com.github.dockerjava.api.model.{ AccessMode, Bind, Binds, ExposedPort, Ports, SELContext, Volume }
 import com.github.dockerjava.core.{ DockerClientConfig, DockerClientImpl }
 import com.github.dockerjava.httpclient5.ApacheDockerHttpClient
 import org.apache.commons.io.IOUtils
-import org.scalatest.{ BeforeAndAfter, BeforeAndAfterAll }
 import org.scalatest.freespec.AnyFreeSpec
-import org.seasar.util.io.{ FileUtil, ResourceUtil }
+import org.scalatest.{ BeforeAndAfter, BeforeAndAfterAll }
+import org.seasar.util.io.ResourceUtil
 import org.slf4j.{ Logger, LoggerFactory }
 
 import java.io.{ File, InputStream }
 import java.net.{ HttpURLConnection, URL }
-import java.nio.file.{ Files, Path, Paths }
 import scala.concurrent.duration.Duration
 import scala.jdk.CollectionConverters._
 
@@ -61,28 +57,45 @@ class DockerComposeControllerSpec extends AnyFreeSpec with BeforeAndAfter with B
         connection.disconnect()
     }
   }
-  val buildDir: File                = ResourceUtil.getBuildDir(getClass)
-  val dockerComposeWorkingDir: File = new File(buildDir, "docker-compose")
 
-  val controller: DockerComposeController =
-    new DockerComposeController(dockerClient)(
+  var dockerController: DockerComposeController = _
+
+  override protected def beforeAll(): Unit = {
+    val buildDir: File                = ResourceUtil.getBuildDir(getClass)
+    val dockerComposeWorkingDir: File = new File(buildDir, "docker-compose")
+    dockerController = new DockerComposeController(dockerClient)(
       dockerComposeWorkingDir,
       "docker-compose-2.yml.ftl",
       Map("nginxHostPort" -> hostPort.toString)
     )
+    dockerController
+      .pullImageIfNotExists()
+      .createContainer()
+  }
+
+  override protected def afterAll(): Unit = {
+    dockerController.removeContainer()
+    dockerClient.close()
+  }
+
+  before {
+    dockerController
+      .startContainer().awaitCondition(Duration.Inf)(
+        _.toString.contains("Configuration complete; ready for start up")
+      )
+    Thread.sleep(1000)
+  }
+
+  after {
+    dockerController.stopContainer()
+  }
 
   "DockerComposeController" - {
-    "run" in {
-      controller.pullImageIfNotExists()
-      controller.createContainer()
-      controller
-        .startContainer().awaitCondition(Duration.Inf)(
-          _.toString.contains("Configuration complete; ready for start up")
-        )
-      Thread.sleep(1000)
+    "run-1" in {
       wget
-      controller.stopContainer()
-      controller.removeContainer()
+    }
+    "run-2" in {
+      wget
     }
 
   }
