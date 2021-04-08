@@ -26,7 +26,7 @@ libraryDependencies += Seq(
 To launch a Docker container for testing
 
 ```scala
-// In ScalaTest, please mix in the DockerControllerSpecSupport.
+// In ScalaTest, please mix-in the DockerControllerSpecSupport.
 class NginxSpec extends AnyFreeSpec with DockerControllerSpecSupport {
   
   // choose whether to create and destroy containers per test class (ForAllTest) or per test (ForEachTest).
