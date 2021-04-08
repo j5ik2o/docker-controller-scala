@@ -38,6 +38,8 @@ class NginxSpec extends AnyFreeSpec with DockerControllerSpecSupport {
     tag = Some("latest")
   ) {
 
+    // if customize the container generation, please do the following.
+    // In this example, a random host port is specified.
     override protected def newCreateContainerCmd(): CreateContainerCmd = {
       val hostPort: Int              = RandomPortUtil.temporaryServerPort()
       val containerPort: ExposedPort = ExposedPort.tcp(80)
