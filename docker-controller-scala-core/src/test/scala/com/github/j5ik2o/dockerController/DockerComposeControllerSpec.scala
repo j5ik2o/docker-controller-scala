@@ -58,12 +58,12 @@ class DockerComposeControllerSpec extends AnyFreeSpec with BeforeAndAfter with B
     }
   }
 
-  var dockerController: DockerComposeController = _
+  var dockerController: DockerController = _
 
   override protected def beforeAll(): Unit = {
     val buildDir: File                = ResourceUtil.getBuildDir(getClass)
     val dockerComposeWorkingDir: File = new File(buildDir, "docker-compose")
-    dockerController = new DockerComposeController(dockerClient)(
+    dockerController = DockerComposeController(dockerClient)(
       dockerComposeWorkingDir,
       "docker-compose-2.yml.ftl",
       Map("nginxHostPort" -> hostPort.toString)

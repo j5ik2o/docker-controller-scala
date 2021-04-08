@@ -99,6 +99,17 @@ val `docker-controller-scala-core` = (project in file("docker-controller-scala-c
     }
   )
 
+val `docker-controller-scala-dynamodb-local` = (project in file("docker-controller-scala-dynamodb-local"))
+  .settings(baseSettings, deploySettings)
+  .settings(
+    name := "docker-controller-scala-dynamodb-local",
+    libraryDependencies ++= Seq(
+        "ch.qos.logback"         % "logback-classic"                   % logbackVersion   % Test,
+        "com.github.docker-java" % "docker-java-transport-httpclient5" % "3.2.7"          % Test,
+        "org.scalatest"          %% "scalatest"                        % scalaTestVersion % Test
+      )
+  ).dependsOn(`docker-controller-scala-core`)
+
 val `docker-controller-scala-scalatest` = (project in file("docker-controller-scala-scalatest"))
   .settings(baseSettings, deploySettings)
   .settings(
@@ -110,17 +121,7 @@ val `docker-controller-scala-scalatest` = (project in file("docker-controller-sc
         "com.github.docker-java" % "docker-java-transport-okhttp"      % "3.2.7" % Provided,
         "commons-io"             % "commons-io"                        % "2.8.0" % Provided,
         "ch.qos.logback"         % "logback-classic"                   % logbackVersion % Test
-      ),
-    libraryDependencies ++= {
-      CrossVersion.partialVersion(scalaVersion.value) match {
-        case Some((2L, scalaMajor)) if scalaMajor == 13 =>
-          Seq.empty
-        case Some((2L, scalaMajor)) if scalaMajor == 12 =>
-          Seq(
-            "org.scala-lang.modules" %% "scala-collection-compat" % scalaCollectionCompatVersion
-          )
-      }
-    }
+      )
   ).dependsOn(`docker-controller-scala-core`)
 
 val `docker-controller-scala-root` = (project in file("."))

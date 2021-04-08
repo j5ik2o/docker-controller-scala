@@ -10,7 +10,20 @@ import java.io.File
 import java.nio.file.Files
 import scala.concurrent.duration.{ DurationInt, FiniteDuration }
 
-class DockerComposeController(dockerClient: DockerClient, outputFrameInterval: FiniteDuration = 500.millis)(
+object DockerComposeController {
+
+  def apply(dockerClient: DockerClient, outputFrameInterval: FiniteDuration = 500.millis)(
+      dockerComposeWorkingDir: File,
+      ymlResourceName: String,
+      context: Map[String, AnyRef]
+  ): DockerController =
+    new DockerComposeController(dockerClient, outputFrameInterval)(dockerComposeWorkingDir, ymlResourceName, context)
+}
+
+private[dockerController] class DockerComposeController(
+    dockerClient: DockerClient,
+    outputFrameInterval: FiniteDuration = 500.millis
+)(
     val dockerComposeWorkingDir: File,
     val ymlResourceName: String,
     val context: Map[String, AnyRef]
