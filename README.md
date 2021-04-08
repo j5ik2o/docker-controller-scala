@@ -89,3 +89,35 @@ class NginxSpec extends AnyFreeSpec with DockerControllerSpecSupport {
   }
 }
 ```
+
+If use Docker Compose
+
+- Place the `docker-compose.yml.ftl` in `src/test/resources`. `docker-compose.yml.ftl` can be renamed to anything you want.
+
+```yaml
+version: '3'
+services:
+  nginx:
+    image: nginx
+    ports:
+      - ${nginxHostPort}:80
+```
+
+Use `DockerComposeController`, which is a subtype of `DockerController`. Other than this, it is the same as the test method above.
+
+```scala
+
+  val buildDir: File                = ResourceUtil.getBuildDir(getClass)
+  val dockerComposeWorkingDir: File = new File(buildDir, "docker-compose")
+  val dockerController = new DockerComposeController(dockerClient)(
+    dockerComposeWorkingDir,
+    "docker-compose.yml.ftl",
+    Map("nginxHostPort" -> hostPort.toString)
+  )
+
+  override val dockerControllers: Vector[DockerController] = {
+    Vector(dockerController)
+  }
+
+      
+```
