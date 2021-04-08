@@ -92,7 +92,8 @@ class NginxSpec extends AnyFreeSpec with DockerControllerSpecSupport {
 
 If use Docker Compose
 
-- Place the `docker-compose.yml.ftl` in `src/test/resources`. `docker-compose.yml.ftl` can be renamed to anything you want.
+- Place the `docker-compose.yml.ftl`(ftl is Freemarker template) in `src/test/resources`. `docker-compose.yml.ftl` can be renamed to anything you want.
+- The variables in the ftl can be freely determined.
 
 ```yaml
 version: '3'
@@ -103,7 +104,8 @@ services:
       - ${nginxHostPort}:80
 ```
 
-Use `DockerComposeController`, which is a subtype of `DockerController`. Other than this, it is the same as the test method above.
+- Use `DockerComposeController`, which is a subtype of `DockerController`. Other than this, it is the same as the test method above.
+- Pass the context containing the values of the variables to be used in the FTL to the constructor of `DockerComposeController`.
 
 ```scala
 class NginxSpec extends AnyFreeSpec with DockerControllerSpecSupport {
