@@ -22,11 +22,14 @@ libraryDependencies += Seq(
 ## Usage
 
 ```scala
+// In ScalaTest, please mix in the DockerControllerSpecSupport.
 class NginxSpec extends AnyFreeSpec with DockerControllerSpecSupport {
   
+  // choose whether to create and destroy containers per test class (ForAllTest) or per test (ForEachTest).
   override def createRemoveLifecycle: DockerContainerCreateRemoveLifecycle.Value =
     DockerContainerCreateRemoveLifecycle.ForEachTest
 
+  // choose whether to start and stop containers per test class (ForAllTest) or per test (ForEachTest).
   override def startStopLifecycle: DockerContainerStartStopLifecycle.Value =
     DockerContainerStartStopLifecycle.ForEachTest
     
@@ -48,10 +51,12 @@ class NginxSpec extends AnyFreeSpec with DockerControllerSpecSupport {
     }
   }
 
+  // Specify the DockerControllers to be launched.
   override val dockerControllers: Vector[DockerController] = {
     Vector(nginx)
   }
 
+　// if customize the container startup, please do the following.
   override protected def startDockerContainer(
       dockerController: DockerController,
       testName: Option[String]
