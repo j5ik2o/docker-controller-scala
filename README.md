@@ -37,24 +37,20 @@ class NginxSpec extends AnyFreeSpec with DockerControllerSpecSupport {
   override def startStopLifecycle: DockerContainerStartStopLifecycle.Value =
     DockerContainerStartStopLifecycle.ForEachTest
     
-  val nginx: DockerController = new DockerControllerImpl(dockerClient)(
+  val nginx: DockerController = DockerController(dockerClient)(
     imageName = "nginx",
     tag = Some("latest")
-  ) {
-
+  ).configureCreateContainerCmd { cmd =>
     // if customize the container generation, please do the following.
     // In this example, a random host port is specified.
-    override protected def newCreateContainerCmd(): CreateContainerCmd = {
-      val hostPort: Int              = RandomPortUtil.temporaryServerPort()
-      val containerPort: ExposedPort = ExposedPort.tcp(80)
-      val portBinding: Ports         = new Ports()
-      portBinding.bind(containerPort, Ports.Binding.bindPort(hostPort))
-      logger.debug(s"hostPort = $hostPort, containerPort = $containerPort")
-      super
-        .newCreateContainerCmd()
-        .withExposedPorts(containerPort)
-        .withHostConfig(newHostConfig().withPortBindings(portBinding))
-    }
+    val hostPort: Int              = RandomPortUtil.temporaryServerPort()
+    val containerPort: ExposedPort = ExposedPort.tcp(80)
+    val portBinding: Ports         = new Ports()
+    portBinding.bind(containerPort, Ports.Binding.bindPort(hostPort))
+    logger.debug(s"hostPort = $hostPort, containerPort = $containerPort")
+    cmd
+      .withExposedPorts(containerPort)
+      .withHostConfig(newHostConfig().withPortBindings(portBinding))
   }
 
   // Specify DockerControllers to be launched.
@@ -112,7 +108,7 @@ class NginxSpec extends AnyFreeSpec with DockerControllerSpecSupport {
 // ...
   val buildDir: File                = ResourceUtil.getBuildDir(getClass)
   val dockerComposeWorkingDir: File = new File(buildDir, "docker-compose")
-  val dockerController = new DockerComposeController(dockerClient)(
+  val dockerController = DockerComposeController(dockerClient)(
     dockerComposeWorkingDir,
     "docker-compose.yml.ftl",
     Map("nginxHostPort" -> hostPort.toString)

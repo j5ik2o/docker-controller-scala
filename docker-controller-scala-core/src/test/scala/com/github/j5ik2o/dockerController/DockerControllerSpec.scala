@@ -42,21 +42,16 @@ class DockerControllerSpec extends AnyFreeSpec with BeforeAndAfter with BeforeAn
   var dockerController: DockerController = _
 
   override protected def beforeAll(): Unit = {
-    dockerController = new DockerControllerImpl(dockerClient)(
+    dockerController = DockerController(dockerClient)(
       imageName = "nginx",
       tag = Some("latest")
-    ) {
-
-      override protected def newCreateContainerCmd(): CreateContainerCmd = {
-        val http        = ExposedPort.tcp(80)
-        val portBinding = new Ports()
-        portBinding.bind(http, Ports.Binding.bindPort(hostPort))
-
-        super
-          .newCreateContainerCmd()
-          .withExposedPorts(http)
-          .withHostConfig(newHostConfig().withPortBindings(portBinding))
-      }
+    ).configureCreateContainerCmd { cmd =>
+      val http        = ExposedPort.tcp(80)
+      val portBinding = new Ports()
+      portBinding.bind(http, Ports.Binding.bindPort(hostPort))
+      cmd
+        .withExposedPorts(http)
+        .withHostConfig(newHostConfig().withPortBindings(portBinding))
     }
     dockerController
       .pullImageIfNotExists()
