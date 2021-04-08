@@ -5,7 +5,7 @@ import org.seasar.util.io.ResourceUtil
 
 import java.io.{ File, FileWriter }
 import java.util.Locale
-import scala.jdk.CollectionConverters.MapHasAsJava
+import scala.jdk.CollectionConverters._
 
 object DockerComposeYmlGen {
 

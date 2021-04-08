@@ -1,7 +1,8 @@
-val scala212Version  = "2.12.13"
-val scala213Version  = "2.13.5"
-val scalaTestVersion = "3.2.6"
-val logbackVersion   = "1.2.3"
+val scala212Version              = "2.12.13"
+val scala213Version              = "2.13.5"
+val scalaTestVersion             = "3.2.6"
+val logbackVersion               = "1.2.3"
+val scalaCollectionCompatVersion = "2.4.3"
 
 def crossScalacOptions(scalaVersion: String): Seq[String] = CrossVersion.partialVersion(scalaVersion) match {
   case Some((2L, scalaMajor)) if scalaMajor >= 12 =>
@@ -45,7 +46,7 @@ lazy val deploySettings = Seq(
 
 lazy val baseSettings = Seq(
   organization := "com.github.j5ik2o",
-  scalaVersion := scala213Version,
+  scalaVersion := scala212Version,
   crossScalaVersions := Seq(scala212Version, scala213Version),
   scalacOptions ++= (Seq(
       "-feature",
@@ -85,7 +86,17 @@ val `docker-controller-scala-core` = (project in file("docker-controller-scala-c
         "com.github.docker-java" % "docker-java-transport-okhttp"      % "3.2.7" % Test,
         "commons-io"             % "commons-io"                        % "2.8.0" % Test,
         "org.scalatest"          %% "scalatest"                        % scalaTestVersion % Test
-      )
+      ),
+    libraryDependencies ++= {
+      CrossVersion.partialVersion(scalaVersion.value) match {
+        case Some((2L, scalaMajor)) if scalaMajor == 13 =>
+          Seq.empty
+        case Some((2L, scalaMajor)) if scalaMajor == 12 =>
+          Seq(
+            "org.scala-lang.modules" %% "scala-collection-compat" % scalaCollectionCompatVersion
+          )
+      }
+    }
   )
 
 val `docker-controller-scala-scalatest` = (project in file("docker-controller-scala-scalatest"))
@@ -99,7 +110,17 @@ val `docker-controller-scala-scalatest` = (project in file("docker-controller-sc
         "com.github.docker-java" % "docker-java-transport-okhttp"      % "3.2.7" % Provided,
         "commons-io"             % "commons-io"                        % "2.8.0" % Provided,
         "ch.qos.logback"         % "logback-classic"                   % logbackVersion % Test
-      )
+      ),
+    libraryDependencies ++= {
+      CrossVersion.partialVersion(scalaVersion.value) match {
+        case Some((2L, scalaMajor)) if scalaMajor == 13 =>
+          Seq.empty
+        case Some((2L, scalaMajor)) if scalaMajor == 12 =>
+          Seq(
+            "org.scala-lang.modules" %% "scala-collection-compat" % scalaCollectionCompatVersion
+          )
+      }
+    }
   ).dependsOn(`docker-controller-scala-core`)
 
 val `docker-controller-scala-root` = (project in file("."))
