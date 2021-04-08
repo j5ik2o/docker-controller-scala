@@ -106,7 +106,8 @@ services:
 Use `DockerComposeController`, which is a subtype of `DockerController`. Other than this, it is the same as the test method above.
 
 ```scala
-
+class NginxSpec extends AnyFreeSpec with DockerControllerSpecSupport {
+// ...
   val buildDir: File                = ResourceUtil.getBuildDir(getClass)
   val dockerComposeWorkingDir: File = new File(buildDir, "docker-compose")
   val dockerController = new DockerComposeController(dockerClient)(
@@ -118,6 +119,6 @@ Use `DockerComposeController`, which is a subtype of `DockerController`. Other t
   override val dockerControllers: Vector[DockerController] = {
     Vector(dockerController)
   }
-
-      
+// ...
+}     
 ```
