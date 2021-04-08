@@ -23,6 +23,8 @@ libraryDependencies += Seq(
 
 ## Usage
 
+To launch a Docker container for testing
+
 ```scala
 // In ScalaTest, please mix in the DockerControllerSpecSupport.
 class NginxSpec extends AnyFreeSpec with DockerControllerSpecSupport {
