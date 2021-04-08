@@ -9,10 +9,12 @@ import com.github.dockerjava.httpclient5.ApacheDockerHttpClient
 import org.apache.commons.io.IOUtils
 import org.scalatest.{ BeforeAndAfter, BeforeAndAfterAll }
 import org.scalatest.freespec.AnyFreeSpec
+import org.seasar.util.io.{ FileUtil, ResourceUtil }
 import org.slf4j.{ Logger, LoggerFactory }
 
-import java.io.InputStream
+import java.io.{ File, InputStream }
 import java.net.{ HttpURLConnection, URL }
+import java.nio.file.{ Files, Path, Paths }
 import scala.concurrent.duration.Duration
 import scala.jdk.CollectionConverters._
 
@@ -35,7 +37,7 @@ class DockerComposeControllerSpec extends AnyFreeSpec with BeforeAndAfter with B
 
   val hostPort: Int = RandomPortUtil.temporaryServerPort()
 
-  val url = new URL(s"http://$host:8080")
+  val url = new URL(s"http://$host:$hostPort")
 
   def wget = {
     var connection: HttpURLConnection = null
@@ -59,8 +61,15 @@ class DockerComposeControllerSpec extends AnyFreeSpec with BeforeAndAfter with B
         connection.disconnect()
     }
   }
+  val buildDir: File                = ResourceUtil.getBuildDir(getClass)
+  val dockerComposeWorkingDir: File = new File(buildDir, "docker-compose")
 
-  val controller: DockerComposeController = new DockerComposeController(dockerClient)("docker-compose-1.yml")
+  val controller: DockerComposeController =
+    new DockerComposeController(dockerClient)(
+      dockerComposeWorkingDir,
+      "docker-compose-2.yml.ftl",
+      Map("nginxHostPort" -> hostPort.toString)
+    )
 
   "DockerComposeController" - {
     "run" in {
