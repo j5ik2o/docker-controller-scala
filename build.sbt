@@ -3,6 +3,7 @@ val scala213Version              = "2.13.5"
 val scalaTestVersion             = "3.2.6"
 val logbackVersion               = "1.2.3"
 val scalaCollectionCompatVersion = "2.4.3"
+val dockerJavaVersion            = "3.2.7"
 
 def crossScalacOptions(scalaVersion: String): Seq[String] = CrossVersion.partialVersion(scalaVersion) match {
   case Some((2L, scalaMajor)) if scalaMajor >= 12 =>
@@ -76,13 +77,13 @@ val `docker-controller-scala-core` = (project in file("docker-controller-scala-c
   .settings(
     name := "docker-controller-scala-core",
     libraryDependencies ++= Seq(
-        "com.github.docker-java" % "docker-java"                       % "3.2.7",
         "org.slf4j"              % "slf4j-api"                         % "1.7.30",
+        "com.github.docker-java" % "docker-java"                       % dockerJavaVersion,
+        "com.github.docker-java" % "docker-java-transport-jersey"      % dockerJavaVersion,
+        "com.github.docker-java" % "docker-java-transport-httpclient5" % dockerJavaVersion,
+        "com.github.docker-java" % "docker-java-transport-okhttp"      % dockerJavaVersion,
         "org.seasar.util"        % "s2util"                            % "0.0.1",
         "org.freemarker"         % "freemarker"                        % "2.3.31",
-        "com.github.docker-java" % "docker-java-transport-jersey"      % "3.2.7",
-        "com.github.docker-java" % "docker-java-transport-httpclient5" % "3.2.7",
-        "com.github.docker-java" % "docker-java-transport-okhttp"      % "3.2.7",
         "ch.qos.logback"         % "logback-classic"                   % logbackVersion % Test,
         "commons-io"             % "commons-io"                        % "2.8.0" % Test,
         "org.scalatest"          %% "scalatest"                        % scalaTestVersion % Test
@@ -104,9 +105,8 @@ val `docker-controller-scala-dynamodb-local` = (project in file("docker-controll
   .settings(
     name := "docker-controller-scala-dynamodb-local",
     libraryDependencies ++= Seq(
-        "ch.qos.logback"         % "logback-classic"                   % logbackVersion   % Test,
-        "com.github.docker-java" % "docker-java-transport-httpclient5" % "3.2.7"          % Test,
-        "org.scalatest"          %% "scalatest"                        % scalaTestVersion % Test
+        "org.scalatest"  %% "scalatest"      % scalaTestVersion % Test,
+        "ch.qos.logback" % "logback-classic" % logbackVersion   % Test
       )
   ).dependsOn(`docker-controller-scala-core`)
 
