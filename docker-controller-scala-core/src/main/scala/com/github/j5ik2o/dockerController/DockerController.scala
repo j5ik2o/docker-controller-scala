@@ -20,8 +20,34 @@ import scala.annotation.tailrec
 import scala.concurrent.duration.{ Duration, DurationInt, FiniteDuration }
 import scala.jdk.CollectionConverters._
 
+case class CmdConfigures(
+    createContainerCmdConfigure: CreateContainerCmd => CreateContainerCmd = identity,
+    removeContainerCmdConfigure: RemoveContainerCmd => RemoveContainerCmd = identity,
+    startContainerCmdConfigure: StartContainerCmd => StartContainerCmd = identity,
+    stopContainerCmdConfigure: StopContainerCmd => StopContainerCmd = identity,
+    inspectContainerCmdConfigure: InspectContainerCmd => InspectContainerCmd = identity,
+    listImageCmdConfigure: ListImagesCmd => ListImagesCmd = identity,
+    pullImageCmdConfigure: PullImageCmd => PullImageCmd = identity
+)
+
 trait DockerController {
   def containerId: String
+  def dockerClient: DockerClient
+  def imageName: String
+  def tag: Option[String]
+  def cmdConfigures: Option[CmdConfigures]
+  def configureCmds(cmdConfigures: CmdConfigures): DockerController
+
+  def configureCreateContainerCmd(f: CreateContainerCmd => CreateContainerCmd = identity): DockerController = {
+    val newCmdConfigures = cmdConfigures match {
+      case Some(cc) =>
+        cc.copy(createContainerCmdConfigure = f)
+      case None =>
+        CmdConfigures(createContainerCmdConfigure = f)
+    }
+    configureCmds(newCmdConfigures)
+  }
+
   def createContainer(f: CreateContainerCmd => CreateContainerCmd = identity): DockerController
   def removeContainer(f: RemoveContainerCmd => RemoveContainerCmd = identity): DockerController
   def startContainer(f: StartContainerCmd => StartContainerCmd = identity): DockerController
@@ -34,7 +60,18 @@ trait DockerController {
   def awaitCondition(duration: Duration)(predicate: Frame => Boolean): DockerController
 }
 
-class DockerControllerImpl(val dockerClient: DockerClient, outputFrameInterval: FiniteDuration = 500.millis)(
+object DockerController {
+
+  def apply(dockerClient: DockerClient, outputFrameInterval: FiniteDuration = 500.millis)(
+      imageName: String,
+      tag: Option[String] = None
+  ): DockerController = new DockerControllerImpl(dockerClient, outputFrameInterval)(imageName, tag)
+}
+
+private[dockerController] class DockerControllerImpl(
+    val dockerClient: DockerClient,
+    outputFrameInterval: FiniteDuration = 500.millis
+)(
     val imageName: String,
     val tag: Option[String] = None
 ) extends DockerController {
@@ -46,6 +83,15 @@ class DockerControllerImpl(val dockerClient: DockerClient, outputFrameInterval: 
   private def repoTag: String = tag.fold(imageName)(t => s"$imageName:$t")
 
   override def containerId: String = _containerId
+
+  private var _cmdConfigures: Option[CmdConfigures] = None
+
+  override def cmdConfigures: Option[CmdConfigures] = _cmdConfigures
+
+  override def configureCmds(cmdConfigures: CmdConfigures): DockerController = {
+    this._cmdConfigures = Some(cmdConfigures)
+    this
+  }
 
   protected def newCreateContainerCmd(): CreateContainerCmd = {
     dockerClient
@@ -94,28 +140,36 @@ class DockerControllerImpl(val dockerClient: DockerClient, outputFrameInterval: 
 
   override def createContainer(f: CreateContainerCmd => CreateContainerCmd): DockerController = {
     logger.debug("createContainer --- start")
-    _containerId = f(newCreateContainerCmd()).exec().getId
+    val configureFunction: CreateContainerCmd => CreateContainerCmd =
+      cmdConfigures.map(_.createContainerCmdConfigure).getOrElse(identity)
+    _containerId = f(configureFunction(newCreateContainerCmd())).exec().getId
     logger.debug("createContainer --- finish")
     this
   }
 
   override def removeContainer(f: RemoveContainerCmd => RemoveContainerCmd): DockerController = {
     logger.debug("removeContainer --- start")
-    f(newRemoveContainerCmd()).exec()
+    val configureFunction: RemoveContainerCmd => RemoveContainerCmd =
+      cmdConfigures.map(_.removeContainerCmdConfigure).getOrElse(identity)
+    f(configureFunction(newRemoveContainerCmd())).exec()
     logger.debug("removeContainer --- finish")
     this
   }
 
   override def inspectContainer(f: InspectContainerCmd => InspectContainerCmd): InspectContainerResponse = {
     logger.debug("inspectContainer --- start")
-    val result = f(newInspectContainerCmd()).exec()
+    val configureFunction: InspectContainerCmd => InspectContainerCmd =
+      cmdConfigures.map(_.inspectContainerCmdConfigure).getOrElse(identity)
+    val result = f(configureFunction(newInspectContainerCmd())).exec()
     logger.debug("inspectContainer --- finish")
     result
   }
 
   override def listImages(f: ListImagesCmd => ListImagesCmd): Vector[Image] = {
     logger.debug("listImages --- start")
-    val result = f(newListImagesCmd()).exec().asScala.toVector
+    val configureFunction: ListImagesCmd => ListImagesCmd =
+      cmdConfigures.map(_.listImageCmdConfigure).getOrElse(identity)
+    val result = f(configureFunction(newListImagesCmd())).exec().asScala.toVector
     logger.debug("listImages --- finish")
     result
   }
@@ -151,14 +205,18 @@ class DockerControllerImpl(val dockerClient: DockerClient, outputFrameInterval: 
 
   override def startContainer(f: StartContainerCmd => StartContainerCmd): DockerController = {
     logger.debug("startContainer --- start")
-    f(newStartContainerCmd()).exec()
+    val configureFunction: StartContainerCmd => StartContainerCmd =
+      cmdConfigures.map(_.startContainerCmdConfigure).getOrElse(identity)
+    f(configureFunction(newStartContainerCmd())).exec()
     logger.debug("startContainer --- finish")
     this
   }
 
   override def stopContainer(f: StopContainerCmd => StopContainerCmd): DockerController = {
     logger.debug("stopContainer --- start")
-    f(newStopContainerCmd()).exec()
+    val configureFunction: StopContainerCmd => StopContainerCmd =
+      cmdConfigures.map(_.stopContainerCmdConfigure).getOrElse(identity)
+    f(configureFunction(newStopContainerCmd())).exec()
     logger.debug("stopContainer --- finish")
     this
   }
