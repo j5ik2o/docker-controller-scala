@@ -4,7 +4,7 @@
 
 # 1.0.1 (2021-04-09)
 
-* remove Main objectt
+* remove Main object
 
 # 1.0.2 (2021-04-09)
 
