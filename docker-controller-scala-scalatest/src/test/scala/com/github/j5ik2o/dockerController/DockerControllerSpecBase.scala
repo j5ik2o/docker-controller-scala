@@ -1,6 +1,5 @@
 package com.github.j5ik2o.dockerController
 
-import com.github.dockerjava.api.command.CreateContainerCmd
 import com.github.dockerjava.api.model.HostConfig.newHostConfig
 import com.github.dockerjava.api.model.{ ExposedPort, Ports }
 import com.github.j5ik2o.dockerController.NetworkSettingsImplicits._
@@ -11,22 +10,18 @@ import scala.concurrent.duration.Duration
 
 abstract class DockerControllerSpecBase extends AnyFreeSpec with DockerControllerSpecSupport {
 
-  val nginx: DockerController = new DockerControllerImpl(dockerClient)(
+  val nginx: DockerController = DockerController(dockerClient)(
     imageName = "nginx",
     tag = Some("latest")
-  ) {
-
-    override protected def newCreateContainerCmd(): CreateContainerCmd = {
-      val hostPort: Int              = RandomPortUtil.temporaryServerPort()
-      val containerPort: ExposedPort = ExposedPort.tcp(80)
-      val portBinding: Ports         = new Ports()
-      portBinding.bind(containerPort, Ports.Binding.bindPort(hostPort))
-      logger.debug(s"hostPort = $hostPort, containerPort = $containerPort")
-      super
-        .newCreateContainerCmd()
-        .withExposedPorts(containerPort)
-        .withHostConfig(newHostConfig().withPortBindings(portBinding))
-    }
+  ).configureCreateContainerCmd { cmd =>
+    val hostPort: Int              = RandomPortUtil.temporaryServerPort()
+    val containerPort: ExposedPort = ExposedPort.tcp(80)
+    val portBinding: Ports         = new Ports()
+    portBinding.bind(containerPort, Ports.Binding.bindPort(hostPort))
+    logger.debug(s"hostPort = $hostPort, containerPort = $containerPort")
+    cmd
+      .withExposedPorts(containerPort)
+      .withHostConfig(newHostConfig().withPortBindings(portBinding))
   }
 
   override val dockerControllers: Vector[DockerController] = {

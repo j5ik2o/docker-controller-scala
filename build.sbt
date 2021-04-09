@@ -100,16 +100,6 @@ val `docker-controller-scala-core` = (project in file("docker-controller-scala-c
     }
   )
 
-val `docker-controller-scala-dynamodb-local` = (project in file("docker-controller-scala-dynamodb-local"))
-  .settings(baseSettings, deploySettings)
-  .settings(
-    name := "docker-controller-scala-dynamodb-local",
-    libraryDependencies ++= Seq(
-        "org.scalatest"  %% "scalatest"      % scalaTestVersion % Test,
-        "ch.qos.logback" % "logback-classic" % logbackVersion   % Test
-      )
-  ).dependsOn(`docker-controller-scala-core`)
-
 val `docker-controller-scala-scalatest` = (project in file("docker-controller-scala-scalatest"))
   .settings(baseSettings, deploySettings)
   .settings(
@@ -119,6 +109,17 @@ val `docker-controller-scala-scalatest` = (project in file("docker-controller-sc
         "ch.qos.logback" % "logback-classic" % logbackVersion % Test
       )
   ).dependsOn(`docker-controller-scala-core`)
+
+val `docker-controller-scala-dynamodb-local` = (project in file("docker-controller-scala-dynamodb-local"))
+  .settings(baseSettings, deploySettings)
+  .settings(
+    name := "docker-controller-scala-dynamodb-local",
+    libraryDependencies ++= Seq(
+        "org.scalatest"  %% "scalatest"            % scalaTestVersion % Test,
+        "ch.qos.logback" % "logback-classic"       % logbackVersion   % Test,
+        "com.amazonaws"  % "aws-java-sdk-dynamodb" % "1.11.994"       % Test
+      )
+  ).dependsOn(`docker-controller-scala-core`, `docker-controller-scala-scalatest` % Test)
 
 val `docker-controller-scala-root` = (project in file("."))
   .settings(baseSettings, deploySettings)
