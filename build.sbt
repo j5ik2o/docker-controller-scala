@@ -80,11 +80,11 @@ val `docker-controller-scala-core` = (project in file("docker-controller-scala-c
         "org.slf4j"              % "slf4j-api"                         % "1.7.30",
         "org.seasar.util"        % "s2util"                            % "0.0.1",
         "org.freemarker"         % "freemarker"                        % "2.3.31",
+        "com.github.docker-java" % "docker-java-transport-jersey"      % "3.2.7",
+        "com.github.docker-java" % "docker-java-transport-httpclient5" % "3.2.7",
+        "com.github.docker-java" % "docker-java-transport-okhttp"      % "3.2.7",
         "ch.qos.logback"         % "logback-classic"                   % logbackVersion % Test,
-        "com.github.docker-java" % "docker-java-transport-jersey"      % "3.2.7" % Provided,
-        "com.github.docker-java" % "docker-java-transport-httpclient5" % "3.2.7" % Provided,
-        "com.github.docker-java" % "docker-java-transport-okhttp"      % "3.2.7" % Provided,
-        "commons-io"             % "commons-io"                        % "2.8.0" % Provided,
+        "commons-io"             % "commons-io"                        % "2.8.0" % Test,
         "org.scalatest"          %% "scalatest"                        % scalaTestVersion % Test
       ),
     libraryDependencies ++= {
@@ -115,8 +115,8 @@ val `docker-controller-scala-scalatest` = (project in file("docker-controller-sc
   .settings(
     name := "docker-controller-scala-scalatest",
     libraryDependencies ++= Seq(
-        "org.scalatest"          %% "scalatest"                        % scalaTestVersion,
-        "ch.qos.logback"         % "logback-classic"                   % logbackVersion % Test
+        "org.scalatest"  %% "scalatest"      % scalaTestVersion,
+        "ch.qos.logback" % "logback-classic" % logbackVersion % Test
       )
   ).dependsOn(`docker-controller-scala-core`)
 
