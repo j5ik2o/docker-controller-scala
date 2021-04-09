@@ -1,0 +1,19 @@
+{
+  "name": "docker-controller-scala",
+  "version": "1.0.2",
+  "description": "[![CircleCI](https://circleci.com/gh/j5ik2o/docker-controller-scala/tree/main.svg?style=shield)](https://circleci.com/gh/j5ik2o/docker-controller-scala/tree/main) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.j5ik2o/docker-controller-scala-core_2.13/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.j5ik2o/docker-controller-scala-core_2.13) [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/j5ik2o/docker-controller-scala.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/j5ik2o/docker-controller-scala/issues"
+  },
+  "homepage": "https://github.com/j5ik2o/docker-controller-scala#readme"
+}
