@@ -20,9 +20,19 @@ object DockerMachineEnv {
 
   private val certPathRegex: Regex = """export DOCKER_CERT_PATH="(.*)"""".r
 
-  private def getDockerMachineEnv(name: String): Try[Vector[String]] = Try {
-    val dockerMachineCmd = Seq("which", "docker-machine").!!.stripSuffix("\n")
-    Seq(dockerMachineCmd, "env", name).!!.split("\n").toVector
+  private def getDockerMachineCmd = Try {
+    Seq("which", "docker-machine").!!.stripSuffix("\n")
+  }
+
+  def isSupportDockerMachine: Boolean = getDockerMachineCmd.isSuccess
+
+  private def getDockerMachineEnv(name: String): Try[Vector[String]] = {
+    for {
+      cmd <- getDockerMachineCmd
+      result <- Try {
+        Seq(cmd, "env", name).!!.split("\n").toVector
+      }
+    } yield result
   }
 
   private def getDockerTlsVerify(env: Vector[String]): Boolean = {

@@ -12,17 +12,24 @@ object DockerClientConfigUtil {
       configBuilder: DefaultDockerClientConfig.Builder = DefaultDockerClientConfig.createDefaultConfigBuilder,
       profileName: String = "default"
   ): DockerClientConfig = {
-    DockerMachineEnv
-      .load(profileName) match {
-      case Success(env) =>
-        logger.debug(s"env = $env")
-        configBuilder
-          .withDockerTlsVerify(env.tlsVerify)
-          .withDockerHost(env.dockerHost)
-          .withDockerCertPath(env.dockerCertPath)
-          .build
-      case Failure(ex) =>
-        configBuilder.build()
-    }
+    if (DockerMachineEnv.isSupportDockerMachine) {
+      DockerMachineEnv
+        .load(profileName) match {
+        case Success(env) =>
+          logger.debug(s"env = $env")
+          configBuilder
+            .withDockerTlsVerify(env.tlsVerify)
+            .withDockerHost(env.dockerHost)
+            .withDockerCertPath(env.dockerCertPath)
+            .build
+        case Failure(ex) =>
+          logger.warn(
+            s"Failed to load `docker-machine env $profileName`, so it was fallback to the default configuration.",
+            ex
+          )
+          configBuilder.build()
+      }
+    } else
+      configBuilder.build()
   }
 }
