@@ -3,20 +3,15 @@ package com.github.j5ik2o.dockerController
 import com.github.dockerjava.api.DockerClient
 import com.github.dockerjava.api.async.ResultCallback
 import com.github.dockerjava.api.command._
-import com.github.dockerjava.api.model.{
-  ExposedPort,
-  Frame,
-  HostConfig,
-  Image,
-  NetworkSettings,
-  Ports,
-  PullResponseItem
-}
+import com.github.dockerjava.api.model.{ Frame, Image, PullResponseItem }
+import me.tongfei.progressbar.{ DelegatingProgressBarConsumer, ProgressBar, ProgressBarBuilder, ProgressBarStyle }
 import org.slf4j.{ Logger, LoggerFactory }
 
+import java.lang
 import java.util.concurrent.{ LinkedBlockingQueue, TimeUnit }
 import java.util.{ Timer, TimerTask }
 import scala.annotation.tailrec
+import scala.collection.mutable
 import scala.concurrent.duration.{ Duration, DurationInt, FiniteDuration }
 import scala.jdk.CollectionConverters._
 
@@ -85,6 +80,11 @@ private[dockerController] class DockerControllerImpl(
   override def containerId: String = _containerId
 
   private var _cmdConfigures: Option[CmdConfigures] = None
+
+  private final val MaxProgressBarLength = 120
+
+  private val progressBarConsumer =
+    new DelegatingProgressBarConsumer({ text => logger.info(text) }, MaxProgressBarLength)
 
   override def cmdConfigures: Option[CmdConfigures] = _cmdConfigures
 
@@ -192,15 +192,38 @@ private[dockerController] class DockerControllerImpl(
 
   override def pullImage(f: PullImageCmd => PullImageCmd): DockerController = {
     logger.debug("pullContainer --- start")
+    val progressBarMap = mutable.Map.empty[String, ProgressBar]
     f(newPullImageCmd())
       .exec(new ResultCallback.Adapter[PullResponseItem] {
         override def onNext(frame: PullResponseItem): Unit = {
-          logger.debug(frame.toString)
+          if (frame.getProgressDetail != null) {
+            val max     = frame.getProgressDetail.getTotal
+            val current = frame.getProgressDetail.getCurrent
+            val progressBar: ProgressBar = progressBarMap.getOrElseUpdate(
+              frame.getId,
+              newProgressBar(frame, max)
+            )
+            progressBar.maxHint(max).stepTo(current)
+          }
         }
       })
       .awaitCompletion()
+
+    progressBarMap.foreach {
+      case (_, progressBar: ProgressBar) =>
+        progressBar.close()
+    }
     logger.debug("pullContainer --- finish")
     this
+  }
+
+  private def newProgressBar(frame: PullResponseItem, max: lang.Long) = {
+    new ProgressBarBuilder()
+      .setTaskName(s"pull image: ${frame.getStatus}, ${frame.getId}")
+      .setStyle(ProgressBarStyle.ASCII)
+      .setConsumer(progressBarConsumer)
+      .setInitialMax(max)
+      .build()
   }
 
   override def startContainer(f: StartContainerCmd => StartContainerCmd): DockerController = {
@@ -253,6 +276,9 @@ private[dockerController] class DockerControllerImpl(
         } catch {
           case _: InterruptedException =>
             logger.debug("interrupted")
+          case ex: Throwable =>
+            logger.debug("occurred error", ex)
+            throw ex
         }
       }
     }

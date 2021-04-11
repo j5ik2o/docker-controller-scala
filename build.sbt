@@ -82,6 +82,7 @@ val `docker-controller-scala-core` = (project in file("docker-controller-scala-c
         "com.github.docker-java" % "docker-java-transport-jersey"      % dockerJavaVersion,
         "com.github.docker-java" % "docker-java-transport-httpclient5" % dockerJavaVersion,
         "com.github.docker-java" % "docker-java-transport-okhttp"      % dockerJavaVersion,
+        "me.tongfei"             % "progressbar"                       % "0.9.1",
         "org.seasar.util"        % "s2util"                            % "0.0.1",
         "org.freemarker"         % "freemarker"                        % "2.3.31",
         "ch.qos.logback"         % "logback-classic"                   % logbackVersion % Test,
