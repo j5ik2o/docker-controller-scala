@@ -35,7 +35,7 @@ abstract class DockerControllerSpecBase extends AnyFreeSpec with DockerControlle
     require(dockerController == nginx)
     val result = super
       .startDockerContainer(dockerController, testName)
-      .awaitCondition(Duration.Inf)(_.toString.contains("Configuration complete; ready for start up"))
+      .awaitCondition(Duration.Inf)(WaitPredicates.forLogMessageContained("Configuration complete; ready for start up"))
     Thread.sleep(1000)
     result
   }
