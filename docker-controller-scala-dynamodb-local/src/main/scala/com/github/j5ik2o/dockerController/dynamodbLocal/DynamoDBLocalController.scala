@@ -12,19 +12,15 @@ import scala.concurrent.duration.{ DurationInt, FiniteDuration }
 import scala.util.matching.Regex
 
 object DynamoDBLocalController {
-  final val ImageName: String         = "amazon/dynamodb-local"
-  final val Tag: Option[String]       = Some("1.13.2")
-  final val DefaultContainerPort: Int = 8000
-  private final val Regex: Regex      = s"""Port.*$DefaultContainerPort.*""".r
-
-  def waitForLogMessageByRegex(awaitDuration: FiniteDuration = 500.milliseconds): WaitPredicate =
-    WaitPredicates.forLogMessageByRegex(Regex).andThen { s => Thread.sleep(awaitDuration.toMillis); s }
-
+  final val ImageName: String           = "amazon/dynamodb-local"
+  final val ImageTag: Option[String]    = Some("1.13.2")
+  final val DefaultContainerPort: Int   = 8000
+  final val RegexOfWaitPredicate: Regex = s"""Port.*$DefaultContainerPort.*""".r
 }
 
 class DynamoDBLocalController(dockerClient: DockerClient, outputFrameInterval: FiniteDuration = 500.millis)(
     hostPort: Int
-) extends DockerControllerImpl(dockerClient, outputFrameInterval)(ImageName, Tag) {
+) extends DockerControllerImpl(dockerClient, outputFrameInterval)(ImageName, ImageTag) {
 
   override protected def newCreateContainerCmd(): CreateContainerCmd = {
     val containerPort = ExposedPort.tcp(DefaultContainerPort)
