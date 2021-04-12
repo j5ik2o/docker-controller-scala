@@ -26,7 +26,7 @@ case class CmdConfigures(
 )
 
 trait DockerController {
-  def containerId: String
+  def containerId: Option[String]
   def dockerClient: DockerClient
   def imageName: String
   def tag: Option[String]
@@ -73,11 +73,11 @@ private[dockerController] class DockerControllerImpl(
 
   protected val logger: Logger = LoggerFactory.getLogger(getClass)
 
-  private var _containerId: String = _
+  private var _containerId: Option[String] = _
 
   private def repoTag: String = tag.fold(imageName)(t => s"$imageName:$t")
 
-  override def containerId: String = _containerId
+  override def containerId: Option[String] = _containerId
 
   private var _cmdConfigures: Option[CmdConfigures] = None
 
@@ -99,13 +99,13 @@ private[dockerController] class DockerControllerImpl(
   }
 
   protected def newRemoveContainerCmd(): RemoveContainerCmd = {
-    require(containerId != null)
-    dockerClient.removeContainerCmd(containerId)
+    require(containerId.isDefined)
+    dockerClient.removeContainerCmd(containerId.get)
   }
 
   protected def newInspectContainerCmd(): InspectContainerCmd = {
-    require(containerId != null)
-    dockerClient.inspectContainerCmd(containerId)
+    require(containerId.isDefined)
+    dockerClient.inspectContainerCmd(containerId.get)
   }
 
   protected def newListImagesCmd(): ListImagesCmd = {
@@ -119,9 +119,9 @@ private[dockerController] class DockerControllerImpl(
   }
 
   protected def newLogContainerCmd(): LogContainerCmd = {
-    require(containerId != null)
+    require(containerId.isDefined)
     dockerClient
-      .logContainerCmd(containerId)
+      .logContainerCmd(containerId.get)
       .withStdOut(true)
       .withStdErr(true)
       .withFollowStream(true)
@@ -129,20 +129,20 @@ private[dockerController] class DockerControllerImpl(
   }
 
   protected def newStartContainerCmd(): StartContainerCmd = {
-    require(containerId != null)
-    dockerClient.startContainerCmd(containerId)
+    require(containerId.isDefined)
+    dockerClient.startContainerCmd(containerId.get)
   }
 
   protected def newStopContainerCmd(): StopContainerCmd = {
-    require(containerId != null)
-    dockerClient.stopContainerCmd(containerId)
+    require(containerId.isDefined)
+    dockerClient.stopContainerCmd(containerId.get)
   }
 
   override def createContainer(f: CreateContainerCmd => CreateContainerCmd): DockerController = {
     logger.debug("createContainer --- start")
     val configureFunction: CreateContainerCmd => CreateContainerCmd =
       cmdConfigures.map(_.createContainerCmdConfigure).getOrElse(identity)
-    _containerId = f(configureFunction(newCreateContainerCmd())).exec().getId
+    _containerId = Some(f(configureFunction(newCreateContainerCmd())).exec().getId)
     logger.debug("createContainer --- finish")
     this
   }
