@@ -4,10 +4,15 @@ import com.github.dockerjava.api.DockerClient
 import com.github.dockerjava.core.{ DockerClientConfig, DockerClientImpl }
 import com.github.dockerjava.httpclient5.ApacheDockerHttpClient
 import com.github.dockerjava.transport.DockerHttpClient
+import com.github.j5ik2o.dockerController.WaitPredicates.WaitPredicate
 import org.scalatest.{ Suite, SuiteMixin }
 import org.slf4j.{ Logger, LoggerFactory }
 
+import scala.concurrent.duration.Duration
+
 trait DockerControllerSuiteBase extends SuiteMixin { this: Suite =>
+
+  case class WaitPredicateSetting(awaitDuration: Duration, waitPredicate: WaitPredicate)
 
   protected val logger: Logger = LoggerFactory.getLogger(getClass)
 
@@ -24,6 +29,8 @@ trait DockerControllerSuiteBase extends SuiteMixin { this: Suite =>
 
   protected val dockerControllers: Vector[DockerController]
 
+  protected val waitPredicatesSettings: Map[DockerController, WaitPredicateSetting]
+
   protected def createDockerContainer(
       dockerController: DockerController,
       testName: Option[String]
@@ -36,7 +43,10 @@ trait DockerControllerSuiteBase extends SuiteMixin { this: Suite =>
 
   protected def startDockerContainer(dockerController: DockerController, testName: Option[String]): DockerController = {
     logger.debug(s"startDockerContainer --- $testName")
-    val result = dockerController.startContainer()
+    val waitPredicate = waitPredicatesSettings(dockerController)
+    val result = dockerController
+      .startContainer()
+      .awaitCondition(waitPredicate.awaitDuration)(waitPredicate.waitPredicate)
     afterDocketContainerStarted(dockerController, testName)
     result
   }

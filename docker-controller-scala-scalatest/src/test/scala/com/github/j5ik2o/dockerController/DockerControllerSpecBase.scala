@@ -28,17 +28,13 @@ abstract class DockerControllerSpecBase extends AnyFreeSpec with DockerControlle
     Vector(nginx)
   }
 
-  override protected def startDockerContainer(
-      dockerController: DockerController,
-      testName: Option[String]
-  ): DockerController = {
-    require(dockerController == nginx)
-    val result = super
-      .startDockerContainer(dockerController, testName)
-      .awaitCondition(Duration.Inf)(WaitPredicates.forLogMessageContained("Configuration complete; ready for start up"))
-    Thread.sleep(1000)
-    result
-  }
+  override protected val waitPredicatesSettings: Map[DockerController, WaitPredicateSetting] =
+    Map(
+      nginx -> WaitPredicateSetting(
+        Duration.Inf,
+        WaitPredicates.forLogMessageContained("Configuration complete; ready for start up")
+      )
+    )
 
   getClass.getSimpleName.stripPrefix("DockerController_").stripSuffix("_Spec") - {
     "run-1" in {

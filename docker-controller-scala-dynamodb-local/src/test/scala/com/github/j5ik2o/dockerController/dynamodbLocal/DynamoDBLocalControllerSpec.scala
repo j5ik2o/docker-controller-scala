@@ -23,10 +23,14 @@ class DynamoDBLocalControllerSpec extends AnyFreeSpec with DockerControllerSpecS
   val tableName                           = "test"
 
   override protected val dockerControllers: Vector[DockerController] = Vector(controller)
-  val dynamoDBEndpoint                                               = s"http://$dockerHost:$hostPort"
-  val dynamoDBRegion: Regions                                        = Regions.AP_NORTHEAST_1
-  val dynamoDBAccessKeyId: String                                    = "x"
-  val dynamoDBSecretAccessKey: String                                = "x"
+
+  override protected val waitPredicatesSettings: Map[DockerController, WaitPredicateSetting] =
+    Map(controller -> WaitPredicateSetting(Duration.Inf, WaitPredicates.forListeningHostTcpPort(dockerHost, hostPort)))
+
+  val dynamoDBEndpoint                = s"http://$dockerHost:$hostPort"
+  val dynamoDBRegion: Regions         = Regions.AP_NORTHEAST_1
+  val dynamoDBAccessKeyId: String     = "x"
+  val dynamoDBSecretAccessKey: String = "x"
 
   protected val dynamoDBClient: AmazonDynamoDB = {
     AmazonDynamoDBClientBuilder
@@ -36,16 +40,6 @@ class DynamoDBLocalControllerSpec extends AnyFreeSpec with DockerControllerSpecS
         new AWSStaticCredentialsProvider(new BasicAWSCredentials(dynamoDBAccessKeyId, dynamoDBSecretAccessKey))
       )
       .build()
-  }
-
-  override protected def startDockerContainer(
-      dockerController: DockerController,
-      testName: Option[String]
-  ): DockerController = {
-    val result = dockerController
-      .startContainer()
-      .awaitCondition(Duration.Inf)(WaitPredicates.forListeningHostTcpPort(dockerHost, hostPort))
-    result
   }
 
   protected def createTable(): Unit = {
@@ -103,5 +97,4 @@ class DynamoDBLocalControllerSpec extends AnyFreeSpec with DockerControllerSpecS
       createTable()
     }
   }
-
 }
