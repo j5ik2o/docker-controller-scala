@@ -100,8 +100,7 @@ private[dockerController] class DockerControllerImpl(
   }
 
   protected def newCreateContainerCmd(): CreateContainerCmd = {
-    dockerClient
-      .createContainerCmd(repoTag)
+    dockerClient.createContainerCmd(repoTag)
   }
 
   protected def newRemoveContainerCmd(): RemoveContainerCmd = {
