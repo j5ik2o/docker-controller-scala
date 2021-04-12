@@ -17,7 +17,7 @@ val version = "..."
 
 libraryDependencies += Seq(
   "com.github.j5ik2o" %% "docker-controller-scala-core" % version,
-  "com.github.j5ik2o" %% "docker-controller-scala-scalatest" % version,
+  "com.github.j5ik2o" %% "docker-controller-scala-scalatest" % version, // for scalatest
   "com.github.j5ik2o" %% "docker-controller-scala-dynamodb-local" % version, // optional
   "com.github.j5ik2o" %% "docker-controller-scala-minio" % version, // optional
 )
