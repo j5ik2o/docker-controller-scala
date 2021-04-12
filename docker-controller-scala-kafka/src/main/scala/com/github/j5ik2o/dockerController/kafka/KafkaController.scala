@@ -16,16 +16,17 @@ import com.github.j5ik2o.dockerController.kafka.KafkaController._
 
 import java.util.UUID
 import scala.concurrent.duration.{ DurationInt, FiniteDuration }
+import scala.util.matching.Regex
 
 object KafkaController {
-  final val ImageName: String        = "wurstmeister/kafka"
-  final val ImageTag: Option[String] = Some("2.13-2.6.0")
-  final val RegexForWaitPredicate    = """.*\[KafkaServer id=1\] started.*""".r
+  final val ImageName: String            = "wurstmeister/kafka"
+  final val ImageTag: Option[String]     = Some("2.13-2.6.0")
+  final val RegexForWaitPredicate: Regex = """.*\[KafkaServer id=\d\] started.*""".r
 
   def apply(dockerClient: DockerClient, outputFrameInterval: FiniteDuration = 500.millis)(
       kafkaExternalHostName: String,
       kafkaExternalHostPort: Int,
-      createTopics: Seq[String]
+      createTopics: Seq[String] = Seq.empty
   ): KafkaController =
     new KafkaController(dockerClient, outputFrameInterval)(
       kafkaExternalHostName,
