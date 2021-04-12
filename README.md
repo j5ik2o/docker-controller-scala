@@ -58,18 +58,14 @@ class NginxSpec extends AnyFreeSpec with DockerControllerSpecSupport {
     Vector(nginx)
   }
 
-　// if customize the container startup, please do the following.
-  override protected def startDockerContainer(
-      dockerController: DockerController,
-      testName: Option[String]
-  ): DockerController = {
-    require(dockerController == nginx)
-    val result = super
-      .startDockerContainer(dockerController, testName)
-      .awaitCondition(Duration.Inf)(_.toString.contains("Configuration complete; ready for start up"))
-    Thread.sleep(1000)
-    result
-  }
+  // Set the condition to wait for the container to be started.
+  override protected val waitPredicatesSettings: Map[DockerController, WaitPredicateSetting] =
+    Map(
+      nginx -> WaitPredicateSetting(
+        Duration.Inf,
+        WaitPredicates.forLogMessageContained("Configuration complete; ready for start up")
+      )
+    )
 
   "nginx" - {
     "run-1" in {
