@@ -3,9 +3,8 @@ package com.github.j5ik2o.dockerController.dynamodbLocal
 import com.github.dockerjava.api.DockerClient
 import com.github.dockerjava.api.command.CreateContainerCmd
 import com.github.dockerjava.api.model.HostConfig.newHostConfig
-import com.github.dockerjava.api.model.{ ExposedPort, Frame, Ports }
-import com.github.j5ik2o.dockerController.WaitPredicates.WaitPredicate
-import com.github.j5ik2o.dockerController.{ DockerControllerImpl, WaitPredicates }
+import com.github.dockerjava.api.model.{ ExposedPort, Ports }
+import com.github.j5ik2o.dockerController.DockerControllerImpl
 import com.github.j5ik2o.dockerController.dynamodbLocal.DynamoDBLocalController._
 
 import scala.concurrent.duration.{ DurationInt, FiniteDuration }
