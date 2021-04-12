@@ -122,6 +122,17 @@ val `docker-controller-scala-dynamodb-local` = (project in file("docker-controll
       )
   ).dependsOn(`docker-controller-scala-core`, `docker-controller-scala-scalatest` % Test)
 
+val `docker-controller-scala-minio` = (project in file("docker-controller-scala-minio"))
+  .settings(baseSettings, deploySettings)
+  .settings(
+    name := "docker-controller-scala-minio",
+    libraryDependencies ++= Seq(
+        "org.scalatest"  %% "scalatest"            % scalaTestVersion % Test,
+        "ch.qos.logback" % "logback-classic"       % logbackVersion   % Test,
+        "com.amazonaws"  % "aws-java-sdk-s3" % "1.11.994"       % Test
+      )
+  ).dependsOn(`docker-controller-scala-core`, `docker-controller-scala-scalatest` % Test)
+
 val `docker-controller-scala-root` = (project in file("."))
   .settings(baseSettings, deploySettings)
   .settings(name := "docker-controller-scala-root")
