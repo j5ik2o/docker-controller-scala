@@ -27,11 +27,17 @@ case class CmdConfigures(
 
 trait DockerController {
   def containerId: Option[String]
+
   def dockerClient: DockerClient
+
   def imageName: String
   def tag: Option[String]
+
   def cmdConfigures: Option[CmdConfigures]
   def configureCmds(cmdConfigures: CmdConfigures): DockerController
+
+  def createNetwork(name: String, f: CreateNetworkCmd => CreateNetworkCmd = identity): CreateNetworkResponse
+  def removeNetwork(id: String, f: RemoveNetworkCmd => RemoveNetworkCmd = identity): Unit
 
   def configureCreateContainerCmd(f: CreateContainerCmd => CreateContainerCmd = identity): DockerController = {
     val newCmdConfigures = cmdConfigures match {
@@ -223,6 +229,7 @@ private[dockerController] class DockerControllerImpl(
       .setStyle(ProgressBarStyle.ASCII)
       .setConsumer(progressBarConsumer)
       .setInitialMax(max)
+      .setMaxRenderedLength(90)
       .build()
   }
 
@@ -300,4 +307,14 @@ private[dockerController] class DockerControllerImpl(
     this
   }
 
+  override def createNetwork(
+      name: String,
+      f: CreateNetworkCmd => CreateNetworkCmd = identity
+  ): CreateNetworkResponse = {
+    f(dockerClient.createNetworkCmd().withName(name)).exec()
+  }
+
+  override def removeNetwork(id: String, f: RemoveNetworkCmd => RemoveNetworkCmd): Unit = {
+    f(dockerClient.removeNetworkCmd(id)).exec()
+  }
 }

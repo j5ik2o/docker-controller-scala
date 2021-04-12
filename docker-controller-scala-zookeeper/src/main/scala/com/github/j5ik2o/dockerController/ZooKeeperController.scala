@@ -19,8 +19,8 @@ object ZooKeeperController {
       host: String,
       hostPort: Int,
       containerPort: Int = DefaultZooPort,
-      network: Option[Network] = None
-  ) = new ZooKeeperController(dockerClient, outputFrameInterval)(myId, host, hostPort, containerPort, network)
+      networkAlias: Option[NetworkAlias] = None
+  ) = new ZooKeeperController(dockerClient, outputFrameInterval)(myId, host, hostPort, containerPort, networkAlias)
 }
 
 class ZooKeeperController(dockerClient: DockerClient, outputFrameInterval: FiniteDuration = 500.millis)(
@@ -28,13 +28,13 @@ class ZooKeeperController(dockerClient: DockerClient, outputFrameInterval: Finit
     host: String,
     hostPort: Int,
     val containerPort: Int,
-    network: Option[Network] = None
+    networkAlias: Option[NetworkAlias] = None
 ) extends DockerControllerImpl(dockerClient, outputFrameInterval)(ImageName, ImageTag) {
 
   private def defaultEnvSettings(myId: Int) = Map(
     "ZOO_MY_ID"   -> myId.toString,
     "ZOO_PORT"    -> containerPort.toString,
-    "ZOO_SERVERS" -> s"server.$myId=$host:2888:3888"
+    "ZOO_SERVERS" -> s"server.$myId=0.0.0.0:2888:3888"
   )
 
   override protected def newCreateContainerCmd(): CreateContainerCmd = {
@@ -42,12 +42,12 @@ class ZooKeeperController(dockerClient: DockerClient, outputFrameInterval: Finit
     val portBinding = new Ports()
     portBinding.bind(zooPort, Ports.Binding.bindPort(hostPort))
     val defaultHostConfig = newHostConfig.withPortBindings(portBinding)
-    val hostConfig        = network.fold(defaultHostConfig) { n => defaultHostConfig.withNetworkMode(n.id) }
+    val hostConfig        = networkAlias.fold(defaultHostConfig) { n => defaultHostConfig.withNetworkMode(n.network.id) }
     val result = super
       .newCreateContainerCmd()
       .withEnv(defaultEnvSettings(myId).map { case (k, v) => s"$k=$v" }.toArray: _*)
       .withExposedPorts(zooPort, ExposedPort.tcp(2888), ExposedPort.tcp(3888))
       .withHostConfig(hostConfig)
-    network.fold(result) { n => result.withAliases(n.alias) }
+    networkAlias.fold(result) { n => result.withAliases(n.name) }
   }
 }
