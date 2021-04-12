@@ -27,7 +27,8 @@ object WaitPredicates {
       text: String,
       awaitDurationOpt: Option[FiniteDuration] = Some(500.milliseconds)
   ): WaitPredicate = { frame =>
-    val result = new String(frame.getPayload).contains(text)
+    val line   = new String(frame.getPayload).stripLineEnd
+    val result = line.contains(text)
     awaitDurationOpt.foreach { awaitDuration => Thread.sleep(awaitDuration.toMillis) }
     result
   }
@@ -36,7 +37,8 @@ object WaitPredicates {
       regex: Regex,
       awaitDurationOpt: Option[FiniteDuration] = Some(500.milliseconds)
   ): WaitPredicate = { frame =>
-    val result = regex.findFirstIn(new String(frame.getPayload)).isDefined
+    val line   = new String(frame.getPayload).stripLineEnd
+    val result = regex.findFirstIn(line).isDefined
     awaitDurationOpt.foreach { awaitDuration => Thread.sleep(awaitDuration.toMillis) }
     result
   }
