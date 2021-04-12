@@ -1,3 +1,10 @@
+## [1.0.4](https://github.com/j5ik2o/docker-controller-scala/compare/v1.0.3...v1.0.4) (2021-04-12)
+
+### Features
+
+* Add support for Minio module ([bc79771](https://github.com/j5ik2o/docker-controller-scala/commit/bc797713cbd07a5fc2197567bb489d1f27e46c7a))
+* add waitPredicatesSettings to DynamoDBLocalControllerSpec, Therefore, overriding startDockerCo ([4a5c7f3](https://github.com/j5ik2o/docker-controller-scala/commit/4a5c7f3353f46b7d649f06da7eb39e2bb7245e6e))
+
 ## [1.0.3](https://github.com/j5ik2o/docker-controller-scala/compare/v1.0.2...v1.0.3) (2021-04-12)
 
 ### Bug Fixes
@@ -18,7 +25,7 @@
 
 * Modify return type to Option[String]
 
-# 1.0.2 (2021-04-09)
+## 1.0.2 (2021-04-09)
 
 ### Bug Fixes
 
@@ -29,10 +36,10 @@
 * add configureCmds and configureCreateContainerCmd ([7da32c5](https://github.com/j5ik2o/docker-controller-scala/commit/7da32c5a32f106288a811abbc6d645e022e5917a))
 * add support for docker-compose ([37fff3d](https://github.com/j5ik2o/docker-controller-scala/commit/37fff3d9ef176207a3ff1f6cf2001952e7c370bc))
 
-# 1.0.1 (2021-04-09)
+## 1.0.1 (2021-04-09)
 
 * remove Main object
 
-# 1.0.0 (2021-04-08)
+## 1.0.0 (2021-04-08)
 
 * first release
