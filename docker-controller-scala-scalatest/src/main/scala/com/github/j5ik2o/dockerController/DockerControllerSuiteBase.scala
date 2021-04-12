@@ -13,11 +13,7 @@ trait DockerControllerSuiteBase extends SuiteMixin { this: Suite =>
 
   protected val dockerClientConfig: DockerClientConfig = DockerClientConfigUtil.buildConfigAwareOfDockerMachine()
 
-  protected val dockerHost: String =
-    if (dockerClientConfig.getDockerHost.getHost == null)
-      "127.0.0.1"
-    else
-      dockerClientConfig.getDockerHost.getHost
+  protected val dockerHost: String = DockerClientConfigUtil.dockerHost(dockerClientConfig)
 
   protected val dockerHttpClient: DockerHttpClient = new ApacheDockerHttpClient.Builder()
     .dockerHost(dockerClientConfig.getDockerHost)

@@ -8,6 +8,12 @@ import scala.util.{ Failure, Success }
 object DockerClientConfigUtil {
   private val logger = LoggerFactory.getLogger(getClass)
 
+  def dockerHost(dockerClientConfig: DockerClientConfig): String =
+    if (dockerClientConfig.getDockerHost.getHost == null)
+      "127.0.0.1"
+    else
+      dockerClientConfig.getDockerHost.getHost
+
   def buildConfigAwareOfDockerMachine(
       configBuilder: DefaultDockerClientConfig.Builder = DefaultDockerClientConfig.createDefaultConfigBuilder,
       profileName: String = "default"
