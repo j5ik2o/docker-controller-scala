@@ -25,11 +25,7 @@ class DockerComposeControllerSpec extends AnyFreeSpec with BeforeAndAfter with B
     DockerClientImpl.getInstance(dockerClientConfig, httpClient)
   }
 
-  val host: String =
-    if (dockerClientConfig.getDockerHost.getHost == null)
-      "127.0.0.1"
-    else
-      dockerClientConfig.getDockerHost.getHost
+  val host: String = DockerClientConfigUtil.dockerHost(dockerClientConfig)
 
   val hostPort: Int = RandomPortUtil.temporaryServerPort()
 
