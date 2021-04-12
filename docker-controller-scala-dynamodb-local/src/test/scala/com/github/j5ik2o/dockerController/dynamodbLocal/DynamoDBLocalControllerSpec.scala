@@ -3,21 +3,14 @@ package com.github.j5ik2o.dockerController.dynamodbLocal
 import com.amazonaws.auth.{ AWSStaticCredentialsProvider, BasicAWSCredentials }
 import com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration
 import com.amazonaws.regions.Regions
-import com.amazonaws.services.dynamodbv2.model.{
-  AttributeDefinition,
-  CreateTableRequest,
-  GlobalSecondaryIndex,
-  KeySchemaElement,
-  KeyType,
-  Projection,
-  ProjectionType,
-  ProvisionedThroughput,
-  ScalarAttributeType,
-  StreamSpecification,
-  StreamViewType
-}
+import com.amazonaws.services.dynamodbv2.model._
 import com.amazonaws.services.dynamodbv2.{ AmazonDynamoDB, AmazonDynamoDBClientBuilder }
-import com.github.j5ik2o.dockerController.{ DockerController, DockerControllerSpecSupport, RandomPortUtil }
+import com.github.j5ik2o.dockerController.{
+  DockerController,
+  DockerControllerSpecSupport,
+  RandomPortUtil,
+  WaitPredicates
+}
 import org.scalatest.freespec.AnyFreeSpec
 
 import scala.concurrent.duration.Duration
@@ -30,24 +23,12 @@ class DynamoDBLocalControllerSpec extends AnyFreeSpec with DockerControllerSpecS
   val tableName                           = "test"
 
   override protected val dockerControllers: Vector[DockerController] = Vector(controller)
+  val dynamoDBEndpoint                                               = s"http://$dockerHost:$hostPort"
+  val dynamoDBRegion: Regions                                        = Regions.AP_NORTHEAST_1
+  val dynamoDBAccessKeyId: String                                    = "x"
+  val dynamoDBSecretAccessKey: String                                = "x"
 
-  override protected def startDockerContainer(
-      dockerController: DockerController,
-      testName: Option[String]
-  ): DockerController = {
-    val result = dockerController
-      .startContainer()
-      .awaitCondition(Duration.Inf)(DynamoDBLocalController.awaitCondition)
-    Thread.sleep(1000)
-    result
-  }
-
-  val dynamoDBEndpoint                = s"http://$dockerHost:$hostPort"
-  val dynamoDBRegion: Regions         = Regions.AP_NORTHEAST_1
-  val dynamoDBAccessKeyId: String     = "x"
-  val dynamoDBSecretAccessKey: String = "x"
-
-  protected lazy val dynamoDBClient: AmazonDynamoDB = {
+  protected val dynamoDBClient: AmazonDynamoDB = {
     AmazonDynamoDBClientBuilder
       .standard()
       .withEndpointConfiguration(new EndpointConfiguration(dynamoDBEndpoint, dynamoDBRegion.getName))
@@ -55,6 +36,16 @@ class DynamoDBLocalControllerSpec extends AnyFreeSpec with DockerControllerSpecS
         new AWSStaticCredentialsProvider(new BasicAWSCredentials(dynamoDBAccessKeyId, dynamoDBSecretAccessKey))
       )
       .build()
+  }
+
+  override protected def startDockerContainer(
+      dockerController: DockerController,
+      testName: Option[String]
+  ): DockerController = {
+    val result = dockerController
+      .startContainer()
+      .awaitCondition(Duration.Inf)(WaitPredicates.forListeningHostTcpPort(dockerHost, hostPort))
+    result
   }
 
   protected def createTable(): Unit = {
