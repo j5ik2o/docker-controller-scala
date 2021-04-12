@@ -198,31 +198,32 @@ private[dockerController] class DockerControllerImpl(
   override def pullImage(f: PullImageCmd => PullImageCmd): DockerController = {
     logger.debug("pullContainer --- start")
     val progressBarMap = mutable.Map.empty[String, ProgressBar]
-    f(newPullImageCmd())
-      .exec(new ResultCallback.Adapter[PullResponseItem] {
-        override def onNext(frame: PullResponseItem): Unit = {
-          if (frame.getProgressDetail != null) {
-            val max     = frame.getProgressDetail.getTotal
-            val current = frame.getProgressDetail.getCurrent
-            val progressBar: ProgressBar = progressBarMap.getOrElseUpdate(
-              frame.getId,
-              newProgressBar(frame, max)
-            )
-            progressBar.maxHint(max).stepTo(current)
+    try {
+      f(newPullImageCmd())
+        .exec(new ResultCallback.Adapter[PullResponseItem] {
+          override def onNext(frame: PullResponseItem): Unit = {
+            if (frame.getProgressDetail != null) {
+              val max     = frame.getProgressDetail.getTotal
+              val current = frame.getProgressDetail.getCurrent
+              val progressBar = progressBarMap.getOrElseUpdate(
+                frame.getId,
+                newProgressBar(frame, max)
+              )
+              progressBar.maxHint(max).stepTo(current)
+            }
           }
-        }
-      })
-      .awaitCompletion()
-
-    progressBarMap.foreach {
-      case (_, progressBar: ProgressBar) =>
-        progressBar.close()
+        })
+        .awaitCompletion()
+    } finally {
+      progressBarMap.foreach {
+        case (_, progressBar) => progressBar.close()
+      }
     }
     logger.debug("pullContainer --- finish")
     this
   }
 
-  private def newProgressBar(frame: PullResponseItem, max: lang.Long) = {
+  protected def newProgressBar(frame: PullResponseItem, max: lang.Long) = {
     new ProgressBarBuilder()
       .setTaskName(s"pull image: ${frame.getStatus}, ${frame.getId}")
       .setStyle(ProgressBarStyle.ASCII)
