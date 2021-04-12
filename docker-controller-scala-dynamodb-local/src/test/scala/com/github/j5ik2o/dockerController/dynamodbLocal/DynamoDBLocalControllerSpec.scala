@@ -5,6 +5,7 @@ import com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration
 import com.amazonaws.regions.Regions
 import com.amazonaws.services.dynamodbv2.model._
 import com.amazonaws.services.dynamodbv2.{ AmazonDynamoDB, AmazonDynamoDBClientBuilder }
+import com.github.j5ik2o.dockerController.WaitPredicates.WaitPredicate
 import com.github.j5ik2o.dockerController.{
   DockerController,
   DockerControllerSpecSupport,
@@ -20,12 +21,20 @@ class DynamoDBLocalControllerSpec extends AnyFreeSpec with DockerControllerSpecS
 
   val hostPort: Int                       = RandomPortUtil.temporaryServerPort()
   val controller: DynamoDBLocalController = new DynamoDBLocalController(dockerClient)(hostPort)
-  val tableName                           = "test"
+
+  // val waitPredicate: WaitPredicate = WaitPredicates.forListeningHostTcpPort(dockerHost, hostPort)
+  val waitPredicate: WaitPredicate = WaitPredicates.forLogMessageByRegex(DynamoDBLocalController.RegexOfWaitPredicate)
+
+  val waitPredicateSetting: WaitPredicateSetting = WaitPredicateSetting(Duration.Inf, waitPredicate)
+
+  val tableName = "test"
 
   override protected val dockerControllers: Vector[DockerController] = Vector(controller)
 
   override protected val waitPredicatesSettings: Map[DockerController, WaitPredicateSetting] =
-    Map(controller -> WaitPredicateSetting(Duration.Inf, WaitPredicates.forListeningHostTcpPort(dockerHost, hostPort)))
+    Map(
+      controller -> waitPredicateSetting
+    )
 
   val dynamoDBEndpoint                = s"http://$dockerHost:$hostPort"
   val dynamoDBRegion: Regions         = Regions.AP_NORTHEAST_1

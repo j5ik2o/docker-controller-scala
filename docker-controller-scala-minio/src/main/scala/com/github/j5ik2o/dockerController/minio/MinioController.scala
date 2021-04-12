@@ -10,16 +10,19 @@ import com.github.j5ik2o.dockerController.minio.MinioController._
 import scala.concurrent.duration.{ DurationInt, FiniteDuration }
 
 object MinioController {
-  final val ImageName            = "minio/minio"
-  final val ImageTag             = Some("RELEASE.2021-03-17T02-33-02Z")
-  final val DefaultContainerPort = 9000
-  final val Regex                = """"Browser Access:.*"""".r
+  final val ImageName             = "minio/minio"
+  final val ImageTag              = Some("RELEASE.2021-03-17T02-33-02Z")
+  final val DefaultContainerPort  = 9000
+  final val RegexForWaitPredicate = """^Browser Access:.*""".r
+
+  final val DefaultMinioAccessKeyId: String     = "AKIAIOSFODNN7EXAMPLE"
+  final val DefaultMinioSecretAccessKey: String = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
 }
 
 class MinioController(dockerClient: DockerClient, outputFrameInterval: FiniteDuration = 500.millis)(
     hostPort: Int,
-    minioAccessKeyId: String = "x",
-    minioSecretAccessKey: String = "x"
+    minioAccessKeyId: String = DefaultMinioAccessKeyId,
+    minioSecretAccessKey: String = DefaultMinioSecretAccessKey
 ) extends DockerControllerImpl(dockerClient, outputFrameInterval)(ImageName, ImageTag) {
 
   override protected def newCreateContainerCmd(): CreateContainerCmd = {
@@ -31,7 +34,6 @@ class MinioController(dockerClient: DockerClient, outputFrameInterval: FiniteDur
       .withCmd("server", "--compat", "/data")
       .withEnv(
         Map(
-//          "MINIO_SERVER_HOST"   -> host,
           "MINIO_ROOT_USER"     -> minioAccessKeyId,
           "MINIO_ROOT_PASSWORD" -> minioSecretAccessKey
         ).map { case (k, v) => s"$k=$v" }.toArray: _*

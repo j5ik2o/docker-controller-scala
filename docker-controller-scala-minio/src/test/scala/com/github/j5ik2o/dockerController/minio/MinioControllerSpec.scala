@@ -4,6 +4,7 @@ import com.amazonaws.auth.{ AWSStaticCredentialsProvider, BasicAWSCredentials }
 import com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration
 import com.amazonaws.regions.Regions
 import com.amazonaws.services.s3.{ AmazonS3, AmazonS3Client }
+import com.github.j5ik2o.dockerController.WaitPredicates.WaitPredicate
 import com.github.j5ik2o.dockerController._
 import org.scalatest.freespec.AnyFreeSpec
 
@@ -19,14 +20,19 @@ class MinioControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport {
   val minioRegion: Regions         = Regions.AP_NORTHEAST_1
 
   val controller: MinioController = new MinioController(dockerClient)(minioPort, minioAccessKeyId, minioSecretAccessKey)
-  val bucketName                  = "test"
+
+  // val waitPredicate: WaitPredicate = WaitPredicates.forListeningHostTcpPort(dockerHost, minioPort)
+  val waitPredicate: WaitPredicate = WaitPredicates.forLogMessageByRegex(MinioController.RegexForWaitPredicate)
+
+  val waitPredicateSetting: WaitPredicateSetting = WaitPredicateSetting(Duration.Inf, waitPredicate)
+
+  val bucketName = "test"
 
   override protected val dockerControllers: Vector[DockerController] = Vector(controller)
 
   override protected val waitPredicatesSettings: Map[DockerController, WaitPredicateSetting] =
     Map(
-      controller ->
-      WaitPredicateSetting(Duration.Inf, WaitPredicates.forListeningHostTcpPort(dockerHost, minioPort))
+      controller -> waitPredicateSetting
     )
 
   protected val s3Client: AmazonS3 = {
