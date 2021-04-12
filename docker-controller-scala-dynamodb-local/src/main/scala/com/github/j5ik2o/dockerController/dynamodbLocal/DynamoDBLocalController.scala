@@ -15,6 +15,10 @@ object DynamoDBLocalController {
   final val ImageTag: Option[String]    = Some("1.13.2")
   final val DefaultContainerPort: Int   = 8000
   final val RegexOfWaitPredicate: Regex = s"""Port.*$DefaultContainerPort.*""".r
+
+  def apply(dockerClient: DockerClient, outputFrameInterval: FiniteDuration = 500.millis)(
+      hostPort: Int
+  ): DynamoDBLocalController = new DynamoDBLocalController(dockerClient, outputFrameInterval)(hostPort)
 }
 
 class DynamoDBLocalController(dockerClient: DockerClient, outputFrameInterval: FiniteDuration = 500.millis)(

@@ -144,6 +144,21 @@ val `docker-controller-scala-zookeeper` = (project in file("docker-controller-sc
       )
   ).dependsOn(`docker-controller-scala-core`, `docker-controller-scala-scalatest` % Test)
 
+val `docker-controller-scala-kafka` = (project in file("docker-controller-scala-kafka"))
+  .settings(baseSettings, deploySettings)
+  .settings(
+    name := "docker-controller-scala-kafka",
+    libraryDependencies ++= Seq(
+        "org.scalatest"    %% "scalatest"      % scalaTestVersion % Test,
+        "ch.qos.logback"   % "logback-classic" % logbackVersion   % Test,
+        "org.apache.kafka" % "kafka-clients"   % "2.6.1"          % Test
+      )
+  ).dependsOn(
+    `docker-controller-scala-core`,
+    `docker-controller-scala-zookeeper`,
+    `docker-controller-scala-scalatest` % Test
+  )
+
 val `docker-controller-scala-root` = (project in file("."))
   .settings(baseSettings, deploySettings)
   .settings(name := "docker-controller-scala-root")

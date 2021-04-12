@@ -18,32 +18,36 @@ object ZooKeeperController {
       myId: Int,
       host: String,
       hostPort: Int,
-      alias: Option[String] = None
-  ) = new ZooKeeperController(dockerClient, outputFrameInterval)(myId, host, hostPort, alias)
+      containerPort: Int = DefaultZooPort,
+      network: Option[Network] = None
+  ) = new ZooKeeperController(dockerClient, outputFrameInterval)(myId, host, hostPort, containerPort, network)
 }
 
 class ZooKeeperController(dockerClient: DockerClient, outputFrameInterval: FiniteDuration = 500.millis)(
     myId: Int,
     host: String,
     hostPort: Int,
-    alias: Option[String] = None
+    val containerPort: Int,
+    network: Option[Network] = None
 ) extends DockerControllerImpl(dockerClient, outputFrameInterval)(ImageName, ImageTag) {
 
   private def defaultEnvSettings(myId: Int) = Map(
     "ZOO_MY_ID"   -> myId.toString,
-    "ZOO_PORT"    -> DefaultZooPort.toString,
+    "ZOO_PORT"    -> containerPort.toString,
     "ZOO_SERVERS" -> s"server.$myId=$host:2888:3888"
   )
 
   override protected def newCreateContainerCmd(): CreateContainerCmd = {
-    val zooPort     = ExposedPort.tcp(DefaultZooPort)
+    val zooPort     = ExposedPort.tcp(containerPort)
     val portBinding = new Ports()
     portBinding.bind(zooPort, Ports.Binding.bindPort(hostPort))
+    val defaultHostConfig = newHostConfig.withPortBindings(portBinding)
+    val hostConfig        = network.fold(defaultHostConfig) { n => defaultHostConfig.withNetworkMode(n.id) }
     val result = super
       .newCreateContainerCmd()
       .withEnv(defaultEnvSettings(myId).map { case (k, v) => s"$k=$v" }.toArray: _*)
       .withExposedPorts(zooPort, ExposedPort.tcp(2888), ExposedPort.tcp(3888))
-      .withHostConfig(newHostConfig.withPortBindings(portBinding))
-    alias.fold(result) { s => result.withAliases(s) }
+      .withHostConfig(hostConfig)
+    network.fold(result) { n => result.withAliases(n.alias) }
   }
 }

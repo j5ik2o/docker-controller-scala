@@ -19,7 +19,7 @@ class MinioControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport {
   val minioEndpoint: String        = s"http://$minioHost:$minioPort"
   val minioRegion: Regions         = Regions.AP_NORTHEAST_1
 
-  val controller: MinioController = new MinioController(dockerClient)(minioPort, minioAccessKeyId, minioSecretAccessKey)
+  val controller: MinioController = MinioController(dockerClient)(minioPort, minioAccessKeyId, minioSecretAccessKey)
 
   // val waitPredicate: WaitPredicate = WaitPredicates.forListeningHostTcpPort(dockerHost, minioPort)
   val waitPredicate: WaitPredicate = WaitPredicates.forLogMessageByRegex(MinioController.RegexForWaitPredicate)

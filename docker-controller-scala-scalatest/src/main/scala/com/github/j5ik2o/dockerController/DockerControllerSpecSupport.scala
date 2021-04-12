@@ -58,6 +58,9 @@ trait DockerControllerSpecSupport extends DockerControllerSuiteBase { this: Test
     } else false
   }
 
+  protected def beforeCreateContainers(): Unit = {}
+  protected def afterRemoveContainers(): Unit  = {}
+
   abstract override def run(testName: Option[String], args: Args): Status = {
     (createRemoveLifecycle, startStopLifecycle) match {
       case (DockerContainerCreateRemoveLifecycle.ForEachTest, DockerContainerStartStopLifecycle.ForAllTest) =>
@@ -70,6 +73,7 @@ trait DockerControllerSpecSupport extends DockerControllerSuiteBase { this: Test
       var created = false
       var started = false
       try {
+        beforeCreateContainers()
         created = createDockerContainers(DockerContainerCreateRemoveLifecycle.ForAllTest, testName)
         started = startDockerContainers(DockerContainerStartStopLifecycle.ForAllTest, testName)
         super.run(testName, args)
@@ -81,7 +85,10 @@ trait DockerControllerSpecSupport extends DockerControllerSuiteBase { this: Test
           try {
             if (created)
               removeDockerContainers(DockerContainerCreateRemoveLifecycle.ForAllTest, testName)
-          } finally dockerClient.close()
+          } finally {
+            afterRemoveContainers()
+            dockerClient.close()
+          }
         }
       }
     }

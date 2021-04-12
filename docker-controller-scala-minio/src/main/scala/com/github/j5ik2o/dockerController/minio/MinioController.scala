@@ -17,6 +17,13 @@ object MinioController {
 
   final val DefaultMinioAccessKeyId: String     = "AKIAIOSFODNN7EXAMPLE"
   final val DefaultMinioSecretAccessKey: String = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+
+  def apply(dockerClient: DockerClient, outputFrameInterval: FiniteDuration = 500.millis)(
+      hostPort: Int,
+      minioAccessKeyId: String = DefaultMinioAccessKeyId,
+      minioSecretAccessKey: String = DefaultMinioSecretAccessKey
+  ): MinioController =
+    new MinioController(dockerClient, outputFrameInterval)(hostPort, minioAccessKeyId, minioSecretAccessKey)
 }
 
 class MinioController(dockerClient: DockerClient, outputFrameInterval: FiniteDuration = 500.millis)(

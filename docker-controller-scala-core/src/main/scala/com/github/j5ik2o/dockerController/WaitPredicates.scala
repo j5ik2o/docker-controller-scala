@@ -19,7 +19,8 @@ object WaitPredicates {
       awaitDurationOpt: Option[FiniteDuration] = Some(500.milliseconds)
   ): WaitPredicate = { frame =>
     val result = new String(frame.getPayload) == text
-    awaitDurationOpt.foreach { awaitDuration => Thread.sleep(awaitDuration.toMillis) }
+    if (result)
+      awaitDurationOpt.foreach { awaitDuration => Thread.sleep(awaitDuration.toMillis) }
     result
   }
 
@@ -29,7 +30,8 @@ object WaitPredicates {
   ): WaitPredicate = { frame =>
     val line   = new String(frame.getPayload).stripLineEnd
     val result = line.contains(text)
-    awaitDurationOpt.foreach { awaitDuration => Thread.sleep(awaitDuration.toMillis) }
+    if (result)
+      awaitDurationOpt.foreach { awaitDuration => Thread.sleep(awaitDuration.toMillis) }
     result
   }
 
@@ -39,7 +41,8 @@ object WaitPredicates {
   ): WaitPredicate = { frame =>
     val line   = new String(frame.getPayload).stripLineEnd
     val result = regex.findFirstIn(line).isDefined
-    awaitDurationOpt.foreach { awaitDuration => Thread.sleep(awaitDuration.toMillis) }
+    if (result)
+      awaitDurationOpt.foreach { awaitDuration => Thread.sleep(awaitDuration.toMillis) }
     result
   }
 
@@ -55,6 +58,8 @@ object WaitPredicates {
       s.connect(new InetSocketAddress(host, hostPort), connectionTimeout.toMillis.toInt)
       val result = s.isConnected
       logger.debug(s"connected: Socket#connect, result = $result")
+      if (result)
+        awaitDurationOpt.foreach { awaitDuration => Thread.sleep(awaitDuration.toMillis) }
       result
     } catch {
       case NonFatal(ex) =>
@@ -63,7 +68,6 @@ object WaitPredicates {
     } finally {
       if (s != null)
         s.close()
-      awaitDurationOpt.foreach { awaitDuration => Thread.sleep(awaitDuration.toMillis) }
     }
   }
 
@@ -102,6 +106,7 @@ object WaitPredicates {
       connection.setRequestMethod("GET")
       connection.connect()
       logger.debug("connected: HttpURLConnection#openConnection")
+      awaitDurationOpt.foreach { awaitDuration => Thread.sleep(awaitDuration.toMillis) }
       Some(connection)
     } catch {
       case NonFatal(ex) =>
@@ -110,7 +115,6 @@ object WaitPredicates {
     } finally {
       if (connection != null)
         connection.disconnect()
-      awaitDurationOpt.foreach { awaitDuration => Thread.sleep(awaitDuration.toMillis) }
     }
   }
 
