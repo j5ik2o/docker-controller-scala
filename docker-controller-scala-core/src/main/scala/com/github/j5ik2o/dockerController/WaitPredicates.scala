@@ -14,23 +14,43 @@ object WaitPredicates {
 
   protected val logger: Logger = LoggerFactory.getLogger(getClass)
 
-  def forLogMessageExactly(text: String): WaitPredicate = { frame => new String(frame.getPayload) == text }
+  def forLogMessageExactly(
+      text: String,
+      awaitDurationOpt: Option[FiniteDuration] = Some(500.milliseconds)
+  ): WaitPredicate = { frame =>
+    val result = new String(frame.getPayload) == text
+    awaitDurationOpt.foreach { awaitDuration => Thread.sleep(awaitDuration.toMillis) }
+    result
+  }
 
-  def forLogMessageContained(text: String): WaitPredicate = { frame => new String(frame.getPayload).contains(text) }
+  def forLogMessageContained(
+      text: String,
+      awaitDurationOpt: Option[FiniteDuration] = Some(500.milliseconds)
+  ): WaitPredicate = { frame =>
+    val result = new String(frame.getPayload).contains(text)
+    awaitDurationOpt.foreach { awaitDuration => Thread.sleep(awaitDuration.toMillis) }
+    result
+  }
 
-  def forLogMessageByRegex(regex: Regex): WaitPredicate = { frame =>
-    regex.findFirstIn(new String(frame.getPayload)).isDefined
+  def forLogMessageByRegex(
+      regex: Regex,
+      awaitDurationOpt: Option[FiniteDuration] = Some(500.milliseconds)
+  ): WaitPredicate = { frame =>
+    val result = regex.findFirstIn(new String(frame.getPayload)).isDefined
+    awaitDurationOpt.foreach { awaitDuration => Thread.sleep(awaitDuration.toMillis) }
+    result
   }
 
   def forListeningHostTcpPort(
       host: String,
       hostPort: Int,
-      timeout: FiniteDuration = 500.milliseconds
+      connectionTimeout: FiniteDuration = 500.milliseconds,
+      awaitDurationOpt: Option[FiniteDuration] = Some(500.milliseconds)
   ): WaitPredicate = { _: Frame =>
     val s: Socket = new Socket()
     try {
       logger.debug("try: Socket#connect ...")
-      s.connect(new InetSocketAddress(host, hostPort), timeout.toMillis.toInt)
+      s.connect(new InetSocketAddress(host, hostPort), connectionTimeout.toMillis.toInt)
       val result = s.isConnected
       logger.debug(s"connected: Socket#connect, result = $result")
       result
@@ -41,22 +61,37 @@ object WaitPredicates {
     } finally {
       if (s != null)
         s.close()
+      awaitDurationOpt.foreach { awaitDuration => Thread.sleep(awaitDuration.toMillis) }
     }
   }
 
-  def forListeningHttpPort(host: String, hostPort: Int): WaitPredicate = { _: Frame =>
-    forListeningHttp(host, hostPort).isDefined
+  def forListeningHttpPort(
+      host: String,
+      hostPort: Int,
+      awaitDurationOpt: Option[FiniteDuration] = Some(500.milliseconds)
+  ): WaitPredicate = { _: Frame => forListeningHttp(host, hostPort, awaitDurationOpt).isDefined }
+
+  def forListeningHttpPortWithPredicate(
+      host: String,
+      hostPort: Int,
+      awaitDurationOpt: Option[FiniteDuration] = Some(500.milliseconds)
+  )(p: HttpURLConnection => Boolean): WaitPredicate = { _: Frame =>
+    forListeningHttp(host, hostPort, awaitDurationOpt).exists(p)
   }
 
-  def forListeningHttpPortWithPredicate(host: String, hostPort: Int)(p: HttpURLConnection => Boolean): WaitPredicate = {
-    _: Frame => forListeningHttp(host, hostPort).exists(p)
+  def forListeningHttpPortWithStatusOK(
+      host: String,
+      hostPort: Int,
+      awaitDurationOpt: Option[FiniteDuration] = Some(500.milliseconds)
+  ): WaitPredicate = {
+    forListeningHttpPortWithPredicate(host, hostPort, awaitDurationOpt)(_.getResponseCode == 200)
   }
 
-  def forListeningHttpPortWithStatusOK(host: String, hostPort: Int): WaitPredicate = {
-    forListeningHttpPortWithPredicate(host, hostPort)(_.getResponseCode == 200)
-  }
-
-  private def forListeningHttp(host: String, hostPort: Int): Option[HttpURLConnection] = {
+  private def forListeningHttp(
+      host: String,
+      hostPort: Int,
+      awaitDurationOpt: Option[FiniteDuration] = Some(500.milliseconds)
+  ): Option[HttpURLConnection] = {
     var connection: HttpURLConnection = null
     try {
       val url = new URL(s"http://$host:$hostPort")
@@ -73,6 +108,7 @@ object WaitPredicates {
     } finally {
       if (connection != null)
         connection.disconnect()
+      awaitDurationOpt.foreach { awaitDuration => Thread.sleep(awaitDuration.toMillis) }
     }
   }
 
