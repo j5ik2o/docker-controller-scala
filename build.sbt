@@ -127,9 +127,20 @@ val `docker-controller-scala-minio` = (project in file("docker-controller-scala-
   .settings(
     name := "docker-controller-scala-minio",
     libraryDependencies ++= Seq(
-        "org.scalatest"  %% "scalatest"            % scalaTestVersion % Test,
-        "ch.qos.logback" % "logback-classic"       % logbackVersion   % Test,
+        "org.scalatest"  %% "scalatest"      % scalaTestVersion % Test,
+        "ch.qos.logback" % "logback-classic" % logbackVersion   % Test,
         "com.amazonaws"  % "aws-java-sdk-s3" % "1.11.994"       % Test
+      )
+  ).dependsOn(`docker-controller-scala-core`, `docker-controller-scala-scalatest` % Test)
+
+val `docker-controller-scala-zookeeper` = (project in file("docker-controller-scala-zookeeper"))
+  .settings(baseSettings, deploySettings)
+  .settings(
+    name := "docker-controller-scala-zookeeper",
+    libraryDependencies ++= Seq(
+        "org.scalatest"        %% "scalatest"      % scalaTestVersion % Test,
+        "ch.qos.logback"       % "logback-classic" % logbackVersion   % Test,
+        "org.apache.zookeeper" % "zookeeper"       % "3.7.0"          % Test
       )
   ).dependsOn(`docker-controller-scala-core`, `docker-controller-scala-scalatest` % Test)
 
