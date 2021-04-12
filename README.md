@@ -54,7 +54,7 @@ class NginxSpec extends AnyFreeSpec with DockerControllerSpecSupport {
   }
 
   // Specify DockerControllers to be launched.
-  override val dockerControllers: Vector[DockerController] = {
+  override protected val dockerControllers: Vector[DockerController] = {
     Vector(nginx)
   }
 
