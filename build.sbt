@@ -162,4 +162,11 @@ val `docker-controller-scala-kafka` = (project in file("docker-controller-scala-
 val `docker-controller-scala-root` = (project in file("."))
   .settings(baseSettings, deploySettings)
   .settings(name := "docker-controller-scala-root")
-  .aggregate(`docker-controller-scala-core`, `docker-controller-scala-scalatest`)
+  .aggregate(
+    `docker-controller-scala-core`,
+    `docker-controller-scala-scalatest`,
+    `docker-controller-scala-dynamodb-local`,
+    `docker-controller-scala-minio`,
+    `docker-controller-scala-zookeeper`,
+    `docker-controller-scala-kafka`
+  )
