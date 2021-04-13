@@ -23,8 +23,8 @@ class MySQLControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport {
         WaitPredicates.forListeningHostTcpPort(
           dockerHost,
           hostPort,
-          (1 * testTimeFactor).seconds,
-          Some((1 * testTimeFactor).seconds)
+          (3 * testTimeFactor).seconds,
+          Some((5 * testTimeFactor).seconds)
         )
       )
     )
