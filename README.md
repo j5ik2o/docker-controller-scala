@@ -45,9 +45,10 @@ class MySQLControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport {
   val testTimeFactor: Int = sys.env.getOrElse("TEST_TIME_FACTOR", "1").toInt
   logger.debug(s"testTimeFactor = $testTimeFactor")
 
-  val hostPort: Int                                                  = RandomPortUtil.temporaryServerPort()
-  val rootPassword: String                                           = "test"
-  val controller: MySQLController                                    = MySQLController(dockerClient)(hostPort, rootPassword, databaseName = Some("test"))
+  val hostPort: Int               = RandomPortUtil.temporaryServerPort()
+  val rootPassword: String        = "test"
+  val controller: MySQLController = MySQLController(dockerClient)(hostPort, rootPassword, databaseName = Some("test"))
+
   override protected val dockerControllers: Vector[DockerController] = Vector(controller)
 
   override protected val waitPredicatesSettings: Map[DockerController, WaitPredicateSetting] =
