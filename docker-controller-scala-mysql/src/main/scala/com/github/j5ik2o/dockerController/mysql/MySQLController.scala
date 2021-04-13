@@ -11,10 +11,9 @@ import scala.concurrent.duration.{ DurationInt, FiniteDuration }
 import scala.util.matching.Regex
 
 object MySQLController {
-  final val ImageName: String           = "mysql"
-  final val ImageTag: Option[String]    = Some("5.7")
-  final val DefaultContainerPort: Int   = 3306
-  final val RegexOfWaitPredicate: Regex = s"""Port.*$DefaultContainerPort.*""".r
+  final val ImageName: String         = "mysql"
+  final val ImageTag: Option[String]  = Some("5.7")
+  final val DefaultContainerPort: Int = 3306
 
   def apply(dockerClient: DockerClient, outputFrameInterval: FiniteDuration = 500.millis)(
       hostPort: Int,
