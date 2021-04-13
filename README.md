@@ -18,12 +18,73 @@ val version = "..."
 libraryDependencies += Seq(
   "com.github.j5ik2o" %% "docker-controller-scala-core" % version,
   "com.github.j5ik2o" %% "docker-controller-scala-scalatest" % version, // for scalatest
+  "com.github.j5ik2o" %% "docker-controller-scala-mysql" % version, // optional
   "com.github.j5ik2o" %% "docker-controller-scala-dynamodb-local" % version, // optional
   "com.github.j5ik2o" %% "docker-controller-scala-minio" % version, // optional
+  "com.github.j5ik2o" %% "docker-controller-scala-kafka" % version, // optional
+  "com.github.j5ik2o" %% "docker-controller-scala-elasticsearch" % version, // optional
 )
 ```
 
 ## Usage
+
+### How to test with preset DockerController
+
+```scala
+class MySQLControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport {
+  val testTimeFactor: Int = sys.env.getOrElse("TEST_TIME_FACTOR", "1").toInt
+  logger.debug(s"testTimeFactor = $testTimeFactor")
+
+  val hostPort: Int                                                  = RandomPortUtil.temporaryServerPort()
+  val rootPassword: String                                           = "test"
+  val controller: MySQLController                                    = MySQLController(dockerClient)(hostPort, rootPassword, databaseName = Some("test"))
+  override protected val dockerControllers: Vector[DockerController] = Vector(controller)
+
+  override protected val waitPredicatesSettings: Map[DockerController, WaitPredicateSetting] =
+    Map(
+      controller -> WaitPredicateSetting(
+        Duration.Inf,
+        WaitPredicates.forListeningHostTcpPort(
+          dockerHost,
+          hostPort,
+          (1 * testTimeFactor).seconds,
+          Some((3 * testTimeFactor).seconds)
+        )
+      )
+    )
+
+  "MySQLController" - {
+    "run" in {
+      var conn: Connection     = null
+      var stmt: Statement      = null
+      var resultSet: ResultSet = null
+      try {
+        Class.forName("com.mysql.cj.jdbc.Driver")
+        conn = DriverManager.getConnection(
+          s"jdbc:mysql://$dockerHost:$hostPort/test?user=root&password=$rootPassword"
+        )
+        stmt = conn.createStatement
+        resultSet = stmt.executeQuery("SELECT 1 FROM DUAL")
+        while (resultSet.next())
+          assert(resultSet.getInt(1) == 1)
+      } catch {
+        case NonFatal(ex) =>
+          fail("occurred error", ex)
+      } finally {
+        if (resultSet != null)
+          resultSet.close()
+        if (stmt != null)
+          stmt.close()
+        if (conn != null)
+          conn.close()
+      }
+    }
+  }
+}
+
+```
+
+### How to test with DockerController your customized
 
 To launch a Docker container for testing
 
