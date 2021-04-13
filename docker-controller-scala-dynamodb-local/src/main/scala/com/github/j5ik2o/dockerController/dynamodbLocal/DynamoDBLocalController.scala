@@ -11,19 +11,27 @@ import scala.concurrent.duration.{ DurationInt, FiniteDuration }
 import scala.util.matching.Regex
 
 object DynamoDBLocalController {
-  final val ImageName: String           = "amazon/dynamodb-local"
-  final val ImageTag: Option[String]    = Some("1.13.2")
-  final val DefaultContainerPort: Int   = 8000
-  final val RegexOfWaitPredicate: Regex = s"""Port.*$DefaultContainerPort.*""".r
+  final val DefaultImageName: String        = "amazon/dynamodb-local"
+  final val DefaultImageTag: Option[String] = Some("1.13.2")
+  final val DefaultContainerPort: Int       = 8000
+  final val RegexOfWaitPredicate: Regex     = s"""Port.*$DefaultContainerPort.*""".r
 
-  def apply(dockerClient: DockerClient, outputFrameInterval: FiniteDuration = 500.millis)(
+  def apply(
+      dockerClient: DockerClient,
+      outputFrameInterval: FiniteDuration = 500.millis,
+      imageName: String = DefaultImageName,
+      imageTag: Option[String] = DefaultImageTag
+  )(
       hostPort: Int
-  ): DynamoDBLocalController = new DynamoDBLocalController(dockerClient, outputFrameInterval)(hostPort)
+  ): DynamoDBLocalController =
+    new DynamoDBLocalController(dockerClient, outputFrameInterval)(hostPort, imageName, imageTag)
 }
 
 class DynamoDBLocalController(dockerClient: DockerClient, outputFrameInterval: FiniteDuration = 500.millis)(
-    hostPort: Int
-) extends DockerControllerImpl(dockerClient, outputFrameInterval)(ImageName, ImageTag) {
+    hostPort: Int,
+    imageName: String = DefaultImageName,
+    imageTag: Option[String] = DefaultImageTag
+) extends DockerControllerImpl(dockerClient, outputFrameInterval)(imageName, imageTag) {
 
   override protected def newCreateContainerCmd(): CreateContainerCmd = {
     val containerPort = ExposedPort.tcp(DefaultContainerPort)

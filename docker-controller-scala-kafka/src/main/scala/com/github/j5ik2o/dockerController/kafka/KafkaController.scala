@@ -1,53 +1,50 @@
 package com.github.j5ik2o.dockerController.kafka
 
 import com.github.dockerjava.api.DockerClient
-import com.github.dockerjava.api.command.{
-  CreateContainerCmd,
-  CreateContainerResponse,
-  RemoveContainerCmd,
-  StartContainerCmd,
-  StopContainerCmd
-}
+import com.github.dockerjava.api.command._
 import com.github.dockerjava.api.model.HostConfig.newHostConfig
 import com.github.dockerjava.api.model.{ ExposedPort, Frame, Ports }
 import com.github.j5ik2o.dockerController.WaitPredicates.WaitPredicate
-import com.github.j5ik2o.dockerController.{
-  DockerController,
-  DockerControllerImpl,
-  Network,
-  NetworkAlias,
-  RandomPortUtil,
-  WaitPredicates
-}
 import com.github.j5ik2o.dockerController.kafka.KafkaController._
 import com.github.j5ik2o.dockerController.zooKeeper.ZooKeeperController
+import com.github.j5ik2o.dockerController._
 
 import java.util.UUID
 import scala.concurrent.duration.{ Duration, DurationInt, FiniteDuration }
 import scala.util.matching.Regex
 
 object KafkaController {
-  final val ImageName: String            = "wurstmeister/kafka"
-  final val ImageTag: Option[String]     = Some("2.13-2.6.0")
-  final val RegexForWaitPredicate: Regex = """.*\[KafkaServer id=\d\] started.*""".r
+  final val DefaultImageName: String        = "wurstmeister/kafka"
+  final val DefaultImageTag: Option[String] = Some("2.13-2.6.0")
+  final val RegexForWaitPredicate: Regex    = """.*\[KafkaServer id=\d\] started.*""".r
 
-  def apply(dockerClient: DockerClient, outputFrameInterval: FiniteDuration = 500.millis)(
+  def apply(
+      dockerClient: DockerClient,
+      outputFrameInterval: FiniteDuration = 500.millis,
+      imageName: String = DefaultImageName,
+      imageTag: Option[String] = DefaultImageTag
+  )(
       kafkaExternalHostName: String,
       kafkaExternalHostPort: Int,
       createTopics: Seq[String] = Seq.empty
   ): KafkaController =
-    new KafkaController(dockerClient, outputFrameInterval)(
+    new KafkaController(dockerClient, outputFrameInterval, imageName, imageTag)(
       kafkaExternalHostName,
       kafkaExternalHostPort,
       createTopics
     )
 }
 
-class KafkaController(dockerClient: DockerClient, outputFrameInterval: FiniteDuration = 500.millis)(
+class KafkaController(
+    dockerClient: DockerClient,
+    outputFrameInterval: FiniteDuration = 500.millis,
+    imageName: String = DefaultImageName,
+    imageTag: Option[String] = DefaultImageTag
+)(
     kafkaExternalHostName: String,
     kafkaExternalHostPort: Int,
     createTopics: Seq[String]
-) extends DockerControllerImpl(dockerClient, outputFrameInterval)(ImageName, ImageTag) {
+) extends DockerControllerImpl(dockerClient, outputFrameInterval)(imageName, imageTag) {
   val networkId: String = dockerClient.createNetworkCmd().withName("kafka-" + UUID.randomUUID().toString).exec().getId
 
   val kafkaNetwork: Network    = Network(networkId)
@@ -58,7 +55,6 @@ class KafkaController(dockerClient: DockerClient, outputFrameInterval: FiniteDur
 
   val zooKeeperController: ZooKeeperController = ZooKeeperController(dockerClient)(
     myId = 1,
-    host = kafkaExternalHostName,
     hostPort = zooKeeperHostPort,
     containerPort = zooKeeperHostPort, // ZooKeeperController.DefaultZooPort,
     networkAlias = Some(zkAlias)

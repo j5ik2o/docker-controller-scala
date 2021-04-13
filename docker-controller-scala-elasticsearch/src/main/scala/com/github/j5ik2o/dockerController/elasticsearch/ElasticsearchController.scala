@@ -1,0 +1,53 @@
+package com.github.j5ik2o.dockerController.elasticsearch
+
+import com.github.dockerjava.api.DockerClient
+import com.github.dockerjava.api.command.CreateContainerCmd
+import com.github.dockerjava.api.model.HostConfig.newHostConfig
+import com.github.dockerjava.api.model.{ ExposedPort, Ports }
+import com.github.j5ik2o.dockerController.DockerControllerImpl
+import com.github.j5ik2o.dockerController.elasticsearch.ElasticsearchController._
+
+import scala.concurrent.duration._
+
+object ElasticsearchController {
+  final val DefaultImageName: String        = "docker.elastic.co/elasticsearch/elasticsearch"
+  final val DefaultImageTag: Option[String] = Some("7.12.0")
+  final val DefaultContainerPorts: Seq[Int] = Seq(9200, 9300)
+
+  def apply(
+      dockerClient: DockerClient,
+      outputFrameInterval: FiniteDuration = 500.millis,
+      imageName: String = DefaultImageName,
+      imageTag: Option[String] = DefaultImageTag
+  )(
+      hostPort1: Int,
+      hostPort2: Int
+  ): ElasticsearchController =
+    new ElasticsearchController(dockerClient, outputFrameInterval, imageName, imageTag)(hostPort1, hostPort2)
+}
+
+class ElasticsearchController(
+    dockerClient: DockerClient,
+    outputFrameInterval: FiniteDuration = 500.millis,
+    imageName: String = DefaultImageName,
+    imageTag: Option[String] = DefaultImageTag
+)(
+    hostPort1: Int,
+    hostPort2: Int
+) extends DockerControllerImpl(dockerClient, outputFrameInterval)(imageName, imageTag) {
+
+  override protected def newCreateContainerCmd(): CreateContainerCmd = {
+    val containerPorts = DefaultContainerPorts.map(ExposedPort.tcp)
+    val portBinding    = new Ports()
+    containerPorts.zip(Seq(hostPort1, hostPort2)).foreach {
+      case (containerPort, hostPort) =>
+        portBinding.bind(containerPort, Ports.Binding.bindPort(hostPort))
+    }
+    val result = super
+      .newCreateContainerCmd()
+      .withEnv("discovery.type=single-node")
+      .withExposedPorts(containerPorts: _*)
+      .withHostConfig(newHostConfig().withPortBindings(portBinding))
+    result
+  }
+}

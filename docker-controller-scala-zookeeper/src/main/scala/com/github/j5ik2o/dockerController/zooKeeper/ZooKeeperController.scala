@@ -10,27 +10,41 @@ import com.github.j5ik2o.dockerController.{ DockerControllerImpl, NetworkAlias }
 import scala.concurrent.duration.{ DurationInt, FiniteDuration }
 
 object ZooKeeperController {
-  final val ImageName             = "zookeeper"
-  final val ImageTag              = Some("3.4.9")
+  final val DefaultImageName      = "zookeeper"
+  final val DefaultImageTag       = Some("3.4.9")
   final val DefaultZooPort        = 2181
   final val RegexForWaitPredicate = """binding to port 0.0.0.0/0.0.0.0:.*""".r
 
-  def apply(dockerClient: DockerClient, outputFrameInterval: FiniteDuration = 500.millis)(
+  def apply(
+      dockerClient: DockerClient,
+      outputFrameInterval: FiniteDuration = 500.millis,
+      imageName: String = DefaultImageName,
+      imageTag: Option[String] = DefaultImageTag
+  )(
       myId: Int,
-      host: String,
       hostPort: Int,
       containerPort: Int = DefaultZooPort,
       networkAlias: Option[NetworkAlias] = None
-  ) = new ZooKeeperController(dockerClient, outputFrameInterval)(myId, host, hostPort, containerPort, networkAlias)
+  ): ZooKeeperController =
+    new ZooKeeperController(dockerClient, outputFrameInterval, imageName, imageTag)(
+      myId,
+      hostPort,
+      containerPort,
+      networkAlias
+    )
 }
 
-class ZooKeeperController(dockerClient: DockerClient, outputFrameInterval: FiniteDuration = 500.millis)(
+class ZooKeeperController(
+    dockerClient: DockerClient,
+    outputFrameInterval: FiniteDuration = 500.millis,
+    imageName: String = DefaultImageName,
+    imageTag: Option[String] = DefaultImageTag
+)(
     myId: Int,
-    host: String,
     hostPort: Int,
     val containerPort: Int,
     networkAlias: Option[NetworkAlias] = None
-) extends DockerControllerImpl(dockerClient, outputFrameInterval)(ImageName, ImageTag) {
+) extends DockerControllerImpl(dockerClient, outputFrameInterval)(imageName, imageTag) {
 
   private def defaultEnvSettings(myId: Int) = Map(
     "ZOO_MY_ID"   -> myId.toString,

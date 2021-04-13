@@ -10,27 +10,41 @@ import com.github.j5ik2o.dockerController.minio.MinioController._
 import scala.concurrent.duration.{ DurationInt, FiniteDuration }
 
 object MinioController {
-  final val ImageName             = "minio/minio"
-  final val ImageTag              = Some("RELEASE.2021-03-17T02-33-02Z")
+  final val DefaultImageName      = "minio/minio"
+  final val DefaultImageTag       = Some("RELEASE.2021-03-17T02-33-02Z")
   final val DefaultContainerPort  = 9000
   final val RegexForWaitPredicate = """^Browser Access:.*""".r
 
   final val DefaultMinioAccessKeyId: String     = "AKIAIOSFODNN7EXAMPLE"
   final val DefaultMinioSecretAccessKey: String = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
 
-  def apply(dockerClient: DockerClient, outputFrameInterval: FiniteDuration = 500.millis)(
+  def apply(
+      dockerClient: DockerClient,
+      outputFrameInterval: FiniteDuration = 500.millis,
+      imageName: String = DefaultImageName,
+      imageTag: Option[String] = DefaultImageTag
+  )(
       hostPort: Int,
       minioAccessKeyId: String = DefaultMinioAccessKeyId,
       minioSecretAccessKey: String = DefaultMinioSecretAccessKey
   ): MinioController =
-    new MinioController(dockerClient, outputFrameInterval)(hostPort, minioAccessKeyId, minioSecretAccessKey)
+    new MinioController(dockerClient, outputFrameInterval, imageName, imageTag)(
+      hostPort,
+      minioAccessKeyId,
+      minioSecretAccessKey
+    )
 }
 
-class MinioController(dockerClient: DockerClient, outputFrameInterval: FiniteDuration = 500.millis)(
+class MinioController(
+    dockerClient: DockerClient,
+    outputFrameInterval: FiniteDuration = 500.millis,
+    imageName: String = DefaultImageName,
+    imageTag: Option[String] = DefaultImageTag
+)(
     hostPort: Int,
     minioAccessKeyId: String = DefaultMinioAccessKeyId,
     minioSecretAccessKey: String = DefaultMinioSecretAccessKey
-) extends DockerControllerImpl(dockerClient, outputFrameInterval)(ImageName, ImageTag) {
+) extends DockerControllerImpl(dockerClient, outputFrameInterval)(imageName, imageTag) {
 
   override protected def newCreateContainerCmd(): CreateContainerCmd = {
     val containerPort = ExposedPort.tcp(DefaultContainerPort)
