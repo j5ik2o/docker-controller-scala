@@ -14,8 +14,8 @@ import scala.concurrent.duration._
 import scala.util.control.Breaks
 
 class KafkaControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport {
-
   val testTimeFactor: Int = sys.env.getOrElse("TEST_TIME_FACTOR", "1").toInt
+  logger.debug(s"testTimeFactor = $testTimeFactor")
 
   val topicName = "mytopic"
 

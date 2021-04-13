@@ -15,6 +15,7 @@ import scala.util.control.NonFatal
 
 class ElasticsearchControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport {
   val testTimeFactor: Int = sys.env.getOrElse("TEST_TIME_FACTOR", "1").toInt
+  logger.debug(s"testTimeFactor = $testTimeFactor")
 
   val hostPort1: Int                      = RandomPortUtil.temporaryServerPort()
   val hostPort2: Int                      = RandomPortUtil.temporaryServerPort()

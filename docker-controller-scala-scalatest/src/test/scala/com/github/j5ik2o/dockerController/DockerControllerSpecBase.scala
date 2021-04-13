@@ -10,6 +10,7 @@ import scala.concurrent.duration._
 
 abstract class DockerControllerSpecBase extends AnyFreeSpec with DockerControllerSpecSupport {
   val testTimeFactor: Int = sys.env.getOrElse("TEST_TIME_FACTOR", "1").toInt
+  logger.debug(s"testTimeFactor = $testTimeFactor")
 
   val nginx: DockerController = DockerController(dockerClient)(
     imageName = "nginx",

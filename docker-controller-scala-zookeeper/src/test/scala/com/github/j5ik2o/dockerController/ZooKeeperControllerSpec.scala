@@ -11,6 +11,7 @@ import scala.concurrent.duration._
 
 class ZooKeeperControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport {
   val testTimeFactor: Int = sys.env.getOrElse("TEST_TIME_FACTOR", "1").toInt
+  logger.debug(s"testTimeFactor = $testTimeFactor")
 
   lazy val hostPort: Int                            = RandomPortUtil.temporaryServerPort()
   lazy val zooKeeperController: ZooKeeperController = ZooKeeperController(dockerClient)(1, hostPort)

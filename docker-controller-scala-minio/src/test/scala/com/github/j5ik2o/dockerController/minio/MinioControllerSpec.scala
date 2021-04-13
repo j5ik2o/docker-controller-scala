@@ -13,6 +13,7 @@ import scala.jdk.CollectionConverters._
 
 class MinioControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport {
   val testTimeFactor: Int = sys.env.getOrElse("TEST_TIME_FACTOR", "1").toInt
+  logger.debug(s"testTimeFactor = $testTimeFactor")
 
   val minioAccessKeyId: String     = "AKIAIOSFODNN7EXAMPLE"
   val minioSecretAccessKey: String = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
