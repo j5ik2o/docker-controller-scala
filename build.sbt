@@ -170,6 +170,17 @@ val `docker-controller-scala-mysql` = (project in file("docker-controller-scala-
       )
   ).dependsOn(`docker-controller-scala-core`, `docker-controller-scala-scalatest` % Test)
 
+val `docker-controller-scala-elasticsearch` = (project in file("docker-controller-scala-elasticsearch"))
+  .settings(baseSettings, deploySettings)
+  .settings(
+    name := "docker-controller-scala-elasticsearch",
+    libraryDependencies ++= Seq(
+        "org.scalatest"            %% "scalatest"                           % scalaTestVersion % Test,
+        "ch.qos.logback"           % "logback-classic"                      % logbackVersion   % Test,
+        "org.elasticsearch.client" % "elasticsearch-rest-high-level-client" % "7.12.0"         % Test
+      )
+  ).dependsOn(`docker-controller-scala-core`, `docker-controller-scala-scalatest` % Test)
+
 val `docker-controller-scala-root` = (project in file("."))
   .settings(baseSettings, deploySettings)
   .settings(name := "docker-controller-scala-root")
@@ -180,5 +191,6 @@ val `docker-controller-scala-root` = (project in file("."))
     `docker-controller-scala-dynamodb-local`,
     `docker-controller-scala-minio`,
     `docker-controller-scala-zookeeper`,
-    `docker-controller-scala-kafka`
+    `docker-controller-scala-kafka`,
+    `docker-controller-scala-elasticsearch`
   )
