@@ -5,9 +5,11 @@ import org.scalatest.freespec.AnyFreeSpec
 
 import java.sql.{ Connection, DriverManager, ResultSet, Statement }
 import scala.concurrent.duration.{ Duration, DurationInt }
+import scala.util.control.NonFatal
 
 class MySQLControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport {
   val testTimeFactor: Int = sys.env.getOrElse("TEST_TIME_FACTOR", "1").toInt
+  logger.debug(s"testTimeFactor = $testTimeFactor")
 
   val hostPort: Int                                                  = RandomPortUtil.temporaryServerPort()
   val rootPassword: String                                           = "test"
@@ -41,6 +43,9 @@ class MySQLControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport {
         resultSet = stmt.executeQuery("SELECT 1 FROM DUAL")
         assert(resultSet.next())
         assert(resultSet.getInt(1) == 1)
+      } catch {
+        case NonFatal(ex) =>
+          ex.printStackTrace()
       } finally {
         if (resultSet != null)
           resultSet.close()

@@ -46,7 +46,7 @@ class ElasticsearchControllerSpec extends AnyFreeSpec with DockerControllerSpecS
         )
         val result = client.ping(RequestOptions.DEFAULT)
         assert(result)
-      } finally client.close()
+      } finally if (client != null) client.close()
     }
   }
 }
