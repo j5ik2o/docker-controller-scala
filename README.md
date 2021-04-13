@@ -33,7 +33,7 @@ libraryDependencies += Seq(
 The DockerController for the corresponding preset is as follows.
 
 - [MySQLController](docker-controller-scala-mysql/src/main/scala/com/github/j5ik2o/dockerController/mysql/MySQLController.scala)
-- DynamoDBLocalController
+- [DynamoDBLocalController](docker-controller-scala-dynamodb-local/src/main/scala/com/github/j5ik2o/dockerController/dynamodbLocal/DynamoDBLocalController.scala)
 - MinioController
 - KafkaController
 - ZooKeeperController  
