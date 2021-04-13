@@ -11,6 +11,7 @@ import org.scalatest.freespec.AnyFreeSpec
 import org.apache.http.HttpHost
 
 import scala.concurrent.duration.{ Duration, DurationInt }
+import scala.util.control.NonFatal
 
 class ElasticsearchControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport {
   val testTimeFactor: Int = sys.env.getOrElse("TEST_TIME_FACTOR", "1").toInt
@@ -46,6 +47,9 @@ class ElasticsearchControllerSpec extends AnyFreeSpec with DockerControllerSpecS
         )
         val result = client.ping(RequestOptions.DEFAULT)
         assert(result)
+      } catch {
+        case NonFatal(ex) =>
+          ex.printStackTrace()
       } finally if (client != null) client.close()
     }
   }
