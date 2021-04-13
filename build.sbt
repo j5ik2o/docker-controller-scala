@@ -159,12 +159,24 @@ val `docker-controller-scala-kafka` = (project in file("docker-controller-scala-
     `docker-controller-scala-scalatest` % Test
   )
 
+val `docker-controller-scala-mysql` = (project in file("docker-controller-scala-mysql"))
+  .settings(baseSettings, deploySettings)
+  .settings(
+    name := "docker-controller-scala-mysql",
+    libraryDependencies ++= Seq(
+        "org.scalatest"  %% "scalatest"           % scalaTestVersion % Test,
+        "ch.qos.logback" % "logback-classic"      % logbackVersion   % Test,
+        "mysql"          % "mysql-connector-java" % "8.0.23"         % Test
+      )
+  ).dependsOn(`docker-controller-scala-core`, `docker-controller-scala-scalatest` % Test)
+
 val `docker-controller-scala-root` = (project in file("."))
   .settings(baseSettings, deploySettings)
   .settings(name := "docker-controller-scala-root")
   .aggregate(
     `docker-controller-scala-core`,
     `docker-controller-scala-scalatest`,
+    `docker-controller-scala-mysql`,
     `docker-controller-scala-dynamodb-local`,
     `docker-controller-scala-minio`,
     `docker-controller-scala-zookeeper`,

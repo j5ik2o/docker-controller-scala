@@ -58,19 +58,19 @@ object WaitPredicates {
       hostPort: Int,
       connectionTimeout: FiniteDuration = 500.milliseconds,
       awaitDurationOpt: Option[FiniteDuration] = Some(500.milliseconds)
-  ): WaitPredicate = { _: Frame =>
+  ): WaitPredicate = { f: Frame =>
+    val line      = new String(f.getPayload)
     val s: Socket = new Socket()
     try {
-      logger.debug("try: Socket#connect ...")
       s.connect(new InetSocketAddress(host, hostPort), connectionTimeout.toMillis.toInt)
       val result = s.isConnected
-      logger.debug(s"connected: Socket#connect, result = $result")
-      if (result)
+      if (result) {
+        logger.debug(s"forListeningHostTcpPort: result = $result, line = $line")
         awaitDurationOpt.foreach { awaitDuration => Thread.sleep(awaitDuration.toMillis) }
+      }
       result
     } catch {
-      case NonFatal(ex) =>
-        logger.debug("occurred error", ex)
+      case NonFatal(_) =>
         false
     } finally {
       if (s != null)
