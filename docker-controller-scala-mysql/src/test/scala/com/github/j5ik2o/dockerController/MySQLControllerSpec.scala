@@ -41,8 +41,8 @@ class MySQLControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport {
         )
         stmt = conn.createStatement
         resultSet = stmt.executeQuery("SELECT 1 FROM DUAL")
-        assert(resultSet.next())
-        assert(resultSet.getInt(1) == 1)
+        while (resultSet.next())
+          assert(resultSet.getInt(1) == 1)
       } catch {
         case NonFatal(ex) =>
           ex.printStackTrace()
