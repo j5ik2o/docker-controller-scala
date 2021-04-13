@@ -5,20 +5,24 @@ import com.github.j5ik2o.dockerController._
 import org.apache.kafka.clients.consumer.{ ConsumerConfig, KafkaConsumer }
 import org.apache.kafka.clients.producer.{ KafkaProducer, ProducerConfig, ProducerRecord }
 import org.apache.kafka.common.TopicPartition
+import org.apache.kafka.common.serialization.{ StringDeserializer, StringSerializer }
 import org.scalatest.freespec.AnyFreeSpec
 
 import java.time.{ LocalDateTime, Duration => JavaDuration }
 import java.util.{ Collections, Properties }
 import scala.concurrent.duration.Duration
+import scala.util.control.Breaks
 
 class KafkaControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport {
+
+  val topicName = "mytopic"
 
   val kafkaExternalHostPort: Int = RandomPortUtil.temporaryServerPort()
 
   val kafkaController = new KafkaController(dockerClient)(
     kafkaExternalHostName = dockerHost,
     kafkaExternalHostPort = kafkaExternalHostPort,
-    createTopics = Seq("mytopic")
+    createTopics = Seq(topicName)
   )
 
   override protected val dockerControllers: Vector[DockerController] =
@@ -49,39 +53,53 @@ class KafkaControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport {
           consumerProperties.put(ConsumerConfig.GROUP_ID_CONFIG, "myConsumerGroup")
           consumerProperties.put(
             ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
-            "org.apache.kafka.common.serialization.StringDeserializer"
+            classOf[StringDeserializer].getName
           )
           consumerProperties.put(
             ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
-            "org.apache.kafka.common.serialization.StringDeserializer"
+            classOf[StringDeserializer].getName
           )
           val consumer = new KafkaConsumer[String, String](consumerProperties)
-          consumer.subscribe(Collections.singletonList("mytopic"))
-          try {
+          consumer.subscribe(Collections.singletonList(topicName))
+          val b = new Breaks
+          b.breakable {
             while (true) {
-              logger.debug("consumer:=============================")
-              val records = consumer.poll(JavaDuration.ofMillis(1000))
-              logger.debug("consumer:=============================")
-              logger.debug("[record size] " + records.count());
-              records.forEach { record =>
+              try {
                 logger.debug("consumer:=============================")
-                logger.debug("consumer:" + LocalDateTime.now)
-                logger.debug("consumer:topic: " + record.topic)
-                logger.debug("consumer:partition: " + record.partition)
-                logger.debug("consumer:key: " + record.key)
-                logger.debug("consumer:value: " + record.value)
-                logger.debug("consumer:offset: " + record.offset)
-                val topicPartition    = new TopicPartition(record.topic, record.partition)
-                val offsetAndMetadata = consumer.committed(topicPartition)
-                if (offsetAndMetadata != null)
-                  logger.debug("partition offset: " + offsetAndMetadata.offset)
+                val records = consumer.poll(JavaDuration.ofMillis(1000))
+                logger.debug("consumer:=============================")
+                logger.debug("[record size] " + records.count());
+                records.forEach { record =>
+                  logger.debug("consumer:=============================")
+                  logger.debug("consumer:" + LocalDateTime.now)
+                  logger.debug("consumer:topic: " + record.topic)
+                  logger.debug("consumer:partition: " + record.partition)
+                  logger.debug("consumer:key: " + record.key)
+                  logger.debug("consumer:value: " + record.value)
+                  logger.debug("consumer:offset: " + record.offset)
+                  val topicPartition    = new TopicPartition(record.topic, record.partition)
+                  val offsetAndMetadata = consumer.committed(topicPartition)
+                  if (offsetAndMetadata != null)
+                    logger.debug("partition offset: " + offsetAndMetadata.offset)
+                }
+              } catch {
+                case ex: org.apache.kafka.common.errors.InterruptException =>
+                  logger.warn("occurred error", ex)
+                  b.break()
+                case ex: InterruptedException =>
+                  logger.warn("occurred error", ex)
+                  b.break()
               }
             }
+          }
+          try {
+            consumer.close()
           } catch {
+            case ex: org.apache.kafka.common.errors.InterruptException =>
+              logger.warn("occurred error", ex)
             case ex: InterruptedException =>
               logger.warn("occurred error", ex)
           }
-          consumer.close()
         }
       }
       val t = new Thread(consumerRunnable)
@@ -90,15 +108,15 @@ class KafkaControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport {
       producerProperties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, s"$dockerHost:$kafkaExternalHostPort")
       producerProperties.put(
         ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
-        "org.apache.kafka.common.serialization.StringSerializer"
+        classOf[StringSerializer].getName
       )
       producerProperties.put(
         ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
-        "org.apache.kafka.common.serialization.StringSerializer"
+        classOf[StringSerializer].getName
       )
       val producer = new KafkaProducer[String, String](producerProperties)
       (1 to 10).foreach { n =>
-        val record         = new ProducerRecord[String, String]("mytopic", "my-value-" + n)
+        val record         = new ProducerRecord[String, String](topicName, "my-value-" + n)
         val send           = producer.send(record)
         val recordMetadata = send.get
         logger.debug("producer:=============================")
