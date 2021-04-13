@@ -73,10 +73,9 @@ class KafkaController(dockerClient: DockerClient, outputFrameInterval: FiniteDur
     "KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR" -> "1"
   )
 
-  override def removeContainer(f: RemoveContainerCmd => RemoveContainerCmd): DockerController = {
-    val result = super.removeContainer(f)
+  override def removeContainer(f: RemoveContainerCmd => RemoveContainerCmd): Unit = {
+    super.removeContainer(f)
     dockerClient.removeNetworkCmd(networkId).exec()
-    result
   }
 
   override protected def newCreateContainerCmd(): CreateContainerCmd = {

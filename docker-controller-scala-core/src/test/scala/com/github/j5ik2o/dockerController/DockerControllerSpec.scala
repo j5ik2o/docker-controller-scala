@@ -53,9 +53,8 @@ class DockerControllerSpec extends AnyFreeSpec with BeforeAndAfter with BeforeAn
         .withExposedPorts(http)
         .withHostConfig(newHostConfig().withPortBindings(portBinding))
     }
-    dockerController
-      .pullImageIfNotExists()
-      .createContainer()
+    dockerController.pullImageIfNotExists()
+    dockerController.createContainer()
   }
 
   override protected def afterAll(): Unit = {
@@ -64,9 +63,8 @@ class DockerControllerSpec extends AnyFreeSpec with BeforeAndAfter with BeforeAn
   }
 
   before {
-    dockerController
-      .startContainer()
-      .awaitCondition(Duration.Inf)(_.toString.contains("Configuration complete; ready for start up"))
+    dockerController.startContainer()
+    dockerController.awaitCondition(Duration.Inf)(_.toString.contains("Configuration complete; ready for start up"))
     Thread.sleep(1000)
   }
 

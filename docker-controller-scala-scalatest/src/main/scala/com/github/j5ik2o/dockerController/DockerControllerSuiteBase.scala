@@ -34,24 +34,24 @@ trait DockerControllerSuiteBase extends SuiteMixin { this: Suite =>
   protected def createDockerContainer(
       dockerController: DockerController,
       testName: Option[String]
-  ): DockerController = {
+  ): Unit = {
     logger.debug(s"createDockerContainer --- $testName")
-    val result = dockerController.pullImageIfNotExists().createContainer()
+    dockerController.pullImageIfNotExists()
+    dockerController.createContainer()
     afterDockerContainerCreated(dockerController, testName)
-    result
   }
 
-  protected def startDockerContainer(dockerController: DockerController, testName: Option[String]): DockerController = {
+  protected def startDockerContainer(dockerController: DockerController, testName: Option[String]): Unit = {
     logger.debug(s"startDockerContainer --- $testName")
-    val waitPredicate = waitPredicatesSettings(dockerController)
-    val result = dockerController
-      .startContainer()
-      .awaitCondition(waitPredicate.awaitDuration)(waitPredicate.waitPredicate)
+    dockerController.startContainer()
+    val waitPredicateOpt = waitPredicatesSettings.get(dockerController)
+    waitPredicateOpt.foreach { waitPredicate =>
+      dockerController.awaitCondition(waitPredicate.awaitDuration)(waitPredicate.waitPredicate)
+    }
     afterDocketContainerStarted(dockerController, testName)
-    result
   }
 
-  protected def stopDockerContainer(dockerController: DockerController, testName: Option[String]): DockerController = {
+  protected def stopDockerContainer(dockerController: DockerController, testName: Option[String]): Unit = {
     logger.debug(s"stopDockerContainer --- $testName")
     beforeDockerContainerStopped(dockerController, testName)
     dockerController.stopContainer()
@@ -60,7 +60,7 @@ trait DockerControllerSuiteBase extends SuiteMixin { this: Suite =>
   protected def removeDockerContainer(
       dockerController: DockerController,
       testName: Option[String]
-  ): DockerController = {
+  ): Unit = {
     logger.debug(s"removeDockerContainer --- $testName")
     beforeDockerContainerRemoved(dockerController, testName)
     dockerController.removeContainer()

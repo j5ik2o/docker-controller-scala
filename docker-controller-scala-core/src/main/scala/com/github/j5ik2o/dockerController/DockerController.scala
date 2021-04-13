@@ -49,16 +49,16 @@ trait DockerController {
     configureCmds(newCmdConfigures)
   }
 
-  def createContainer(f: CreateContainerCmd => CreateContainerCmd = identity): DockerController
-  def removeContainer(f: RemoveContainerCmd => RemoveContainerCmd = identity): DockerController
-  def startContainer(f: StartContainerCmd => StartContainerCmd = identity): DockerController
-  def stopContainer(f: StopContainerCmd => StopContainerCmd = identity): DockerController
+  def createContainer(f: CreateContainerCmd => CreateContainerCmd = identity): CreateContainerResponse
+  def removeContainer(f: RemoveContainerCmd => RemoveContainerCmd = identity): Unit
+  def startContainer(f: StartContainerCmd => StartContainerCmd = identity): Unit
+  def stopContainer(f: StopContainerCmd => StopContainerCmd = identity): Unit
   def inspectContainer(f: InspectContainerCmd => InspectContainerCmd = identity): InspectContainerResponse
   def listImages(f: ListImagesCmd => ListImagesCmd = identity): Vector[Image]
   def existsImage(p: Image => Boolean): Boolean
-  def pullImageIfNotExists(f: PullImageCmd => PullImageCmd = identity): DockerController
-  def pullImage(f: PullImageCmd => PullImageCmd = identity): DockerController
-  def awaitCondition(duration: Duration)(predicate: Frame => Boolean): DockerController
+  def pullImageIfNotExists(f: PullImageCmd => PullImageCmd = identity): Unit
+  def pullImage(f: PullImageCmd => PullImageCmd = identity): Unit
+  def awaitCondition(duration: Duration)(predicate: Frame => Boolean): Unit
 }
 
 object DockerController {
@@ -143,22 +143,22 @@ private[dockerController] class DockerControllerImpl(
     dockerClient.stopContainerCmd(containerId.get)
   }
 
-  override def createContainer(f: CreateContainerCmd => CreateContainerCmd): DockerController = {
+  override def createContainer(f: CreateContainerCmd => CreateContainerCmd): CreateContainerResponse = {
     logger.debug("createContainer --- start")
     val configureFunction: CreateContainerCmd => CreateContainerCmd =
       cmdConfigures.map(_.createContainerCmdConfigure).getOrElse(identity)
-    _containerId = Some(f(configureFunction(newCreateContainerCmd())).exec().getId)
+    val result = f(configureFunction(newCreateContainerCmd())).exec()
+    _containerId = Some(result.getId)
     logger.debug("createContainer --- finish")
-    this
+    result
   }
 
-  override def removeContainer(f: RemoveContainerCmd => RemoveContainerCmd): DockerController = {
+  override def removeContainer(f: RemoveContainerCmd => RemoveContainerCmd): Unit = {
     logger.debug("removeContainer --- start")
     val configureFunction: RemoveContainerCmd => RemoveContainerCmd =
       cmdConfigures.map(_.removeContainerCmdConfigure).getOrElse(identity)
     f(configureFunction(newRemoveContainerCmd())).exec()
     logger.debug("removeContainer --- finish")
-    this
   }
 
   override def inspectContainer(f: InspectContainerCmd => InspectContainerCmd): InspectContainerResponse = {
@@ -186,16 +186,15 @@ private[dockerController] class DockerControllerImpl(
     result
   }
 
-  override def pullImageIfNotExists(f: PullImageCmd => PullImageCmd): DockerController = {
+  override def pullImageIfNotExists(f: PullImageCmd => PullImageCmd): Unit = {
     logger.debug("pullImageIfNotExists --- start")
     if (!existsImage(p => p.getRepoTags.contains(repoTag))) {
       pullImage(f)
     }
     logger.debug("pullImageIfNotExists --- finish")
-    this
   }
 
-  override def pullImage(f: PullImageCmd => PullImageCmd): DockerController = {
+  override def pullImage(f: PullImageCmd => PullImageCmd): Unit = {
     logger.debug("pullContainer --- start")
     val progressBarMap = mutable.Map.empty[String, ProgressBar]
     try {
@@ -233,25 +232,23 @@ private[dockerController] class DockerControllerImpl(
       .build()
   }
 
-  override def startContainer(f: StartContainerCmd => StartContainerCmd): DockerController = {
+  override def startContainer(f: StartContainerCmd => StartContainerCmd): Unit = {
     logger.debug("startContainer --- start")
     val configureFunction: StartContainerCmd => StartContainerCmd =
       cmdConfigures.map(_.startContainerCmdConfigure).getOrElse(identity)
     f(configureFunction(newStartContainerCmd())).exec()
     logger.debug("startContainer --- finish")
-    this
   }
 
-  override def stopContainer(f: StopContainerCmd => StopContainerCmd): DockerController = {
+  override def stopContainer(f: StopContainerCmd => StopContainerCmd): Unit = {
     logger.debug("stopContainer --- start")
     val configureFunction: StopContainerCmd => StopContainerCmd =
       cmdConfigures.map(_.stopContainerCmdConfigure).getOrElse(identity)
     f(configureFunction(newStopContainerCmd())).exec()
     logger.debug("stopContainer --- finish")
-    this
   }
 
-  override def awaitCondition(duration: Duration)(predicate: Frame => Boolean): DockerController = {
+  override def awaitCondition(duration: Duration)(predicate: Frame => Boolean): Unit = {
     logger.debug("awaitCompletion --- start")
     val frameQueue: LinkedBlockingQueue[Frame] = new LinkedBlockingQueue[Frame]()
 

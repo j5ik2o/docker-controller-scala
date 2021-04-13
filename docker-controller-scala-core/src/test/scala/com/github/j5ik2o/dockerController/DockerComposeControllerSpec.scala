@@ -64,9 +64,8 @@ class DockerComposeControllerSpec extends AnyFreeSpec with BeforeAndAfter with B
       "docker-compose-2.yml.ftl",
       Map("nginxHostPort" -> hostPort.toString)
     )
-    dockerController
-      .pullImageIfNotExists()
-      .createContainer()
+    dockerController.pullImageIfNotExists()
+    dockerController.createContainer()
   }
 
   override protected def afterAll(): Unit = {
@@ -75,10 +74,10 @@ class DockerComposeControllerSpec extends AnyFreeSpec with BeforeAndAfter with B
   }
 
   before {
-    dockerController
-      .startContainer().awaitCondition(Duration.Inf)(
-        _.toString.contains("Configuration complete; ready for start up")
-      )
+    dockerController.startContainer()
+    dockerController.awaitCondition(Duration.Inf)(
+      _.toString.contains("Configuration complete; ready for start up")
+    )
     Thread.sleep(1000)
   }
 
