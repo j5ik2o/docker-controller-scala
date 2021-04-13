@@ -44,8 +44,6 @@ The `DockerController` for the corresponding preset is as follows. Please see th
 
 ```scala
 class MySQLControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport {
-  val testTimeFactor: Int = sys.env.getOrElse("TEST_TIME_FACTOR", "1").toInt
-  logger.debug(s"testTimeFactor = $testTimeFactor")
 
   val hostPort: Int               = RandomPortUtil.temporaryServerPort()
   val rootPassword: String        = "test"
@@ -62,8 +60,8 @@ class MySQLControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport {
         WaitPredicates.forListeningHostTcpPort(
           dockerHost,
           hostPort,
-          (1 * testTimeFactor).seconds,
-          Some((3 * testTimeFactor).seconds)
+          1.seconds,
+          Some(3.seconds)
         )
       )
     )
