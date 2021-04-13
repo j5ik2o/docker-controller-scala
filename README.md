@@ -47,7 +47,10 @@ class MySQLControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport {
 
   val hostPort: Int               = RandomPortUtil.temporaryServerPort()
   val rootPassword: String        = "test"
-  val controller: MySQLController = MySQLController(dockerClient)(hostPort, rootPassword, databaseName = Some("test"))
+  val dbName                      = "test"
+  
+  // MySQL
+  val controller: MySQLController = MySQLController(dockerClient)(hostPort, rootPassword, databaseName = Some(dbName))
 
   // Specify DockerControllers to be launched.
   override protected val dockerControllers: Vector[DockerController] = Vector(controller)
@@ -74,7 +77,7 @@ class MySQLControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport {
       try {
         Class.forName("com.mysql.cj.jdbc.Driver")
         conn = DriverManager.getConnection(
-          s"jdbc:mysql://$dockerHost:$hostPort/test?user=root&password=$rootPassword"
+          s"jdbc:mysql://$dockerHost:$hostPort/$dbName?user=root&password=$rootPassword"
         )
         stmt = conn.createStatement
         resultSet = stmt.executeQuery("SELECT 1 FROM DUAL")
