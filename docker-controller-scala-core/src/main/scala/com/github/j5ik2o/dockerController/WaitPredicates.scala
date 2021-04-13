@@ -14,13 +14,30 @@ object WaitPredicates {
 
   protected val logger: Logger = LoggerFactory.getLogger(getClass)
 
+  def forCompose(w1: WaitPredicate, w2: WaitPredicate): Frame => Boolean = {
+    var w1State = false
+    f: Frame =>
+      logger.debug(s"w1State = $w1State")
+      if (!w1State && w1(f)) {
+        logger.debug("w1State = true")
+        w1State = true
+        false
+      } else {
+        logger.debug("w2(f)")
+        w2(f)
+      }
+  }
+
   def forLogMessageExactly(
       text: String,
       awaitDurationOpt: Option[FiniteDuration] = Some(500.milliseconds)
   ): WaitPredicate = { frame =>
-    val result = new String(frame.getPayload) == text
-    if (result)
+    val line   = new String(frame.getPayload).stripLineEnd
+    val result = line == text
+    if (result) {
+      logger.debug(s"forLogMessageExactly: result = $result, line = $line")
       awaitDurationOpt.foreach { awaitDuration => Thread.sleep(awaitDuration.toMillis) }
+    }
     result
   }
 
@@ -30,8 +47,10 @@ object WaitPredicates {
   ): WaitPredicate = { frame =>
     val line   = new String(frame.getPayload).stripLineEnd
     val result = line.contains(text)
-    if (result)
+    if (result) {
+      logger.debug(s"forLogMessageContained: result = $result, line = $line")
       awaitDurationOpt.foreach { awaitDuration => Thread.sleep(awaitDuration.toMillis) }
+    }
     result
   }
 
@@ -41,8 +60,10 @@ object WaitPredicates {
   ): WaitPredicate = { frame =>
     val line   = new String(frame.getPayload).stripLineEnd
     val result = regex.findFirstIn(line).isDefined
-    if (result)
+    if (result) {
+      logger.debug(s"forLogMessageByRegex: result = $result, line = $line")
       awaitDurationOpt.foreach { awaitDuration => Thread.sleep(awaitDuration.toMillis) }
+    }
     result
   }
 
