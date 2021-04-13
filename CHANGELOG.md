@@ -1,3 +1,12 @@
+## [1.0.6](https://github.com/j5ik2o/docker-controller-scala/compare/v1.0.5...v1.0.6) (2021-04-13)
+
+
+### Features
+
+* Add the module for MySQL ([d5488bb](https://github.com/j5ik2o/docker-controller-scala/commit/d5488bbc6d98b82a0958879566c6e919eac197ab))
+
+
+
 ## [1.0.5](https://github.com/j5ik2o/docker-controller-scala/compare/v1.0.4...v1.0.5) (2021-04-13)
 
 ### Bug Fixes
