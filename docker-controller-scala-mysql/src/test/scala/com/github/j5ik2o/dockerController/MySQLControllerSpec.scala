@@ -24,7 +24,7 @@ class MySQLControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport {
           dockerHost,
           hostPort,
           (1 * testTimeFactor).seconds,
-          Some((1 * testTimeFactor).seconds)
+          Some((3 * testTimeFactor).seconds)
         )
       )
     )
