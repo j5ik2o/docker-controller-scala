@@ -30,6 +30,15 @@ libraryDependencies += Seq(
 
 ### How to test with preset DockerController
 
+The DockerController for the corresponding preset is as follows.
+
+- MySQLController
+- DynamoDBLocalController
+- MinioController
+- KafkaController
+- ZooKeeperController  
+- ElasticsearchController
+
 ```scala
 class MySQLControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport {
   val testTimeFactor: Int = sys.env.getOrElse("TEST_TIME_FACTOR", "1").toInt
