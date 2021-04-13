@@ -156,7 +156,7 @@ class NginxSpec extends AnyFreeSpec with DockerControllerSpecSupport {
 }
 ```
 
-If use Docker Compose
+### How to use Docker Compose
 
 - Place the `docker-compose.yml.ftl`(ftl is Freemarker template) in `src/test/resources`. `docker-compose.yml.ftl` can be renamed to anything you want.
 - The variables in the ftl can be freely determined.
