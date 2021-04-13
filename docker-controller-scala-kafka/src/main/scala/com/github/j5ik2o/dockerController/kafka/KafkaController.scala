@@ -1,21 +1,29 @@
 package com.github.j5ik2o.dockerController.kafka
 
 import com.github.dockerjava.api.DockerClient
-import com.github.dockerjava.api.command.{ CreateContainerCmd, RemoveContainerCmd, StartContainerCmd, StopContainerCmd }
+import com.github.dockerjava.api.command.{
+  CreateContainerCmd,
+  CreateContainerResponse,
+  RemoveContainerCmd,
+  StartContainerCmd,
+  StopContainerCmd
+}
 import com.github.dockerjava.api.model.HostConfig.newHostConfig
-import com.github.dockerjava.api.model.{ ExposedPort, Ports }
+import com.github.dockerjava.api.model.{ ExposedPort, Frame, Ports }
+import com.github.j5ik2o.dockerController.WaitPredicates.WaitPredicate
 import com.github.j5ik2o.dockerController.{
   DockerController,
   DockerControllerImpl,
   Network,
   NetworkAlias,
   RandomPortUtil,
+  WaitPredicates,
   ZooKeeperController
 }
 import com.github.j5ik2o.dockerController.kafka.KafkaController._
 
 import java.util.UUID
-import scala.concurrent.duration.{ DurationInt, FiniteDuration }
+import scala.concurrent.duration.{ Duration, DurationInt, FiniteDuration }
 import scala.util.matching.Regex
 
 object KafkaController {
@@ -56,6 +64,9 @@ class KafkaController(dockerClient: DockerClient, outputFrameInterval: FiniteDur
     networkAlias = Some(zkAlias)
   )
 
+  protected val zooKeeperWaitPredicate: WaitPredicate =
+    WaitPredicates.forLogMessageByRegex(ZooKeeperController.RegexForWaitPredicate)
+
   private val kafkaContainerName     = kafkaAlias.name
   private val zooKeeperContainerName = zkAlias.name
   private val zooKeeperContainerPort = zooKeeperController.containerPort
@@ -73,9 +84,30 @@ class KafkaController(dockerClient: DockerClient, outputFrameInterval: FiniteDur
     "KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR" -> "1"
   )
 
+  override def createContainer(f: CreateContainerCmd => CreateContainerCmd): CreateContainerResponse = {
+    zooKeeperController.createContainer()
+    super.createContainer(f)
+  }
+
+  override def startContainer(f: StartContainerCmd => StartContainerCmd): Unit = {
+    zooKeeperController.startContainer()
+    super.startContainer(f)
+  }
+
+  override def stopContainer(f: StopContainerCmd => StopContainerCmd): Unit = {
+    super.stopContainer(f)
+    zooKeeperController.stopContainer()
+  }
+
   override def removeContainer(f: RemoveContainerCmd => RemoveContainerCmd): Unit = {
     super.removeContainer(f)
+    zooKeeperController.removeContainer()
     dockerClient.removeNetworkCmd(networkId).exec()
+  }
+
+  override def awaitCondition(duration: Duration)(predicate: Frame => Boolean): Unit = {
+    zooKeeperController.awaitCondition(duration)(zooKeeperWaitPredicate)
+    super.awaitCondition(duration)(predicate)
   }
 
   override protected def newCreateContainerCmd(): CreateContainerCmd = {

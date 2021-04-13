@@ -25,20 +25,14 @@ class KafkaControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport {
     createTopics = Seq(topicName)
   )
 
-  override protected val dockerControllers: Vector[DockerController] =
-    Vector(kafkaController.zooKeeperController, kafkaController)
-
-  val zooKeeperWaitPredicate: WaitPredicate =
-    WaitPredicates.forLogMessageByRegex(ZooKeeperController.RegexForWaitPredicate)
-  val zooKeeperWaitPredicateSetting: WaitPredicateSetting = WaitPredicateSetting(Duration.Inf, zooKeeperWaitPredicate)
+  override protected val dockerControllers: Vector[DockerController] = Vector(kafkaController)
 
   val kafkaWaitPredicate: WaitPredicate               = WaitPredicates.forLogMessageByRegex(KafkaController.RegexForWaitPredicate)
   val kafkaWaitPredicateSetting: WaitPredicateSetting = WaitPredicateSetting(Duration.Inf, kafkaWaitPredicate)
 
   override protected val waitPredicatesSettings: Map[DockerController, WaitPredicateSetting] = {
     Map(
-      kafkaController.zooKeeperController -> zooKeeperWaitPredicateSetting,
-      kafkaController                     -> kafkaWaitPredicateSetting
+      kafkaController -> kafkaWaitPredicateSetting
     )
   }
 
