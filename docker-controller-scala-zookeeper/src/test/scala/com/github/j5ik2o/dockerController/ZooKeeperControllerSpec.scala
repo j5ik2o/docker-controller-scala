@@ -7,16 +7,19 @@ import org.scalatest.freespec.AnyFreeSpec
 import org.apache.zookeeper.Watcher.Event.KeeperState
 
 import java.util.concurrent.{ CountDownLatch, TimeUnit }
-import scala.concurrent.duration.Duration
+import scala.concurrent.duration._
 
 class ZooKeeperControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport {
+  val testTimeFactor: Int = sys.env.getOrElse("TEST_TIME_FACTOR", "1").toInt
+
   lazy val hostPort: Int                            = RandomPortUtil.temporaryServerPort()
   lazy val zooKeeperController: ZooKeeperController = ZooKeeperController(dockerClient)(1, hostPort)
 
   override protected val dockerControllers: Vector[DockerController] = Vector(zooKeeperController)
 
   // val waitPredicate: WaitPredicate = WaitPredicates.forListeningHostTcpPort(dockerHost, minioPort)
-  val waitPredicate: WaitPredicate = WaitPredicates.forLogMessageByRegex(ZooKeeperController.RegexForWaitPredicate)
+  val waitPredicate: WaitPredicate =
+    WaitPredicates.forLogMessageByRegex(ZooKeeperController.RegexForWaitPredicate, Some((1 * testTimeFactor).seconds))
 
   val waitPredicateSetting: WaitPredicateSetting = WaitPredicateSetting(Duration.Inf, waitPredicate)
 

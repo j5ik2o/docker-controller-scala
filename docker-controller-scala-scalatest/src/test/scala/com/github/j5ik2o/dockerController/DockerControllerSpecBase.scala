@@ -6,9 +6,10 @@ import com.github.j5ik2o.dockerController.NetworkSettingsImplicits._
 import org.scalatest.freespec.AnyFreeSpec
 
 import java.net.URL
-import scala.concurrent.duration.Duration
+import scala.concurrent.duration._
 
 abstract class DockerControllerSpecBase extends AnyFreeSpec with DockerControllerSpecSupport {
+  val testTimeFactor: Int = sys.env.getOrElse("TEST_TIME_FACTOR", "1").toInt
 
   val nginx: DockerController = DockerController(dockerClient)(
     imageName = "nginx",
@@ -32,7 +33,8 @@ abstract class DockerControllerSpecBase extends AnyFreeSpec with DockerControlle
     Map(
       nginx -> WaitPredicateSetting(
         Duration.Inf,
-        WaitPredicates.forLogMessageContained("Configuration complete; ready for start up")
+        WaitPredicates
+          .forLogMessageContained("Configuration complete; ready for start up", Some((1 * testTimeFactor).seconds))
       )
     )
 

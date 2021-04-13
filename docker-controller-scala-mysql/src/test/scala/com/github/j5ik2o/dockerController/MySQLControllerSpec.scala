@@ -4,9 +4,11 @@ import com.github.j5ik2o.dockerController.mysql.MySQLController
 import org.scalatest.freespec.AnyFreeSpec
 
 import java.sql.{ Connection, DriverManager, ResultSet, Statement }
-import scala.concurrent.duration.Duration
+import scala.concurrent.duration.{ Duration, DurationInt }
 
 class MySQLControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport {
+  val testTimeFactor: Int = sys.env.getOrElse("TEST_TIME_FACTOR", "1").toInt
+
   val hostPort: Int                                                  = RandomPortUtil.temporaryServerPort()
   val rootPassword: String                                           = "test"
   val controller: MySQLController                                    = MySQLController(dockerClient)(hostPort, rootPassword, databaseName = Some("test"))
@@ -14,7 +16,15 @@ class MySQLControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport {
 
   override protected val waitPredicatesSettings: Map[DockerController, WaitPredicateSetting] =
     Map(
-      controller -> WaitPredicateSetting(Duration.Inf, WaitPredicates.forListeningHostTcpPort(dockerHost, hostPort))
+      controller -> WaitPredicateSetting(
+        Duration.Inf,
+        WaitPredicates.forListeningHostTcpPort(
+          dockerHost,
+          hostPort,
+          (1 * testTimeFactor).seconds,
+          Some((1 * testTimeFactor).seconds)
+        )
+      )
     )
 
   "MySQLController" - {

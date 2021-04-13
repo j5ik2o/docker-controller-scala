@@ -14,16 +14,20 @@ import com.github.j5ik2o.dockerController.{
 }
 import org.scalatest.freespec.AnyFreeSpec
 
-import scala.concurrent.duration.Duration
+import scala.concurrent.duration._
 import scala.jdk.CollectionConverters.{ asScalaBufferConverter, seqAsJavaListConverter }
 
 class DynamoDBLocalControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport {
+  val testTimeFactor: Int = sys.env.getOrElse("TEST_TIME_FACTOR", "1").toInt
 
   val hostPort: Int                       = RandomPortUtil.temporaryServerPort()
   val controller: DynamoDBLocalController = new DynamoDBLocalController(dockerClient)(hostPort)
 
   // val waitPredicate: WaitPredicate = WaitPredicates.forListeningHostTcpPort(dockerHost, hostPort)
-  val waitPredicate: WaitPredicate = WaitPredicates.forLogMessageByRegex(DynamoDBLocalController.RegexOfWaitPredicate)
+  val waitPredicate: WaitPredicate = WaitPredicates.forLogMessageByRegex(
+    DynamoDBLocalController.RegexOfWaitPredicate,
+    Some((1 * testTimeFactor).seconds)
+  )
 
   val waitPredicateSetting: WaitPredicateSetting = WaitPredicateSetting(Duration.Inf, waitPredicate)
 

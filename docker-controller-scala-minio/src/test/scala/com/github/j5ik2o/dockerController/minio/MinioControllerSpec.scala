@@ -8,10 +8,12 @@ import com.github.j5ik2o.dockerController.WaitPredicates.WaitPredicate
 import com.github.j5ik2o.dockerController._
 import org.scalatest.freespec.AnyFreeSpec
 
-import scala.concurrent.duration.Duration
+import scala.concurrent.duration._
 import scala.jdk.CollectionConverters._
 
 class MinioControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport {
+  val testTimeFactor: Int = sys.env.getOrElse("TEST_TIME_FACTOR", "1").toInt
+
   val minioAccessKeyId: String     = "AKIAIOSFODNN7EXAMPLE"
   val minioSecretAccessKey: String = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
   val minioHost: String            = DockerClientConfigUtil.dockerHost(dockerClientConfig)
@@ -22,7 +24,8 @@ class MinioControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport {
   val controller: MinioController = MinioController(dockerClient)(minioPort, minioAccessKeyId, minioSecretAccessKey)
 
   // val waitPredicate: WaitPredicate = WaitPredicates.forListeningHostTcpPort(dockerHost, minioPort)
-  val waitPredicate: WaitPredicate = WaitPredicates.forLogMessageByRegex(MinioController.RegexForWaitPredicate)
+  val waitPredicate: WaitPredicate =
+    WaitPredicates.forLogMessageByRegex(MinioController.RegexForWaitPredicate, Some((1 * testTimeFactor).seconds))
 
   val waitPredicateSetting: WaitPredicateSetting = WaitPredicateSetting(Duration.Inf, waitPredicate)
 

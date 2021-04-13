@@ -10,10 +10,12 @@ import org.scalatest.freespec.AnyFreeSpec
 
 import java.time.{ LocalDateTime, Duration => JavaDuration }
 import java.util.{ Collections, Properties }
-import scala.concurrent.duration.Duration
+import scala.concurrent.duration._
 import scala.util.control.Breaks
 
 class KafkaControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport {
+
+  val testTimeFactor: Int = sys.env.getOrElse("TEST_TIME_FACTOR", "1").toInt
 
   val topicName = "mytopic"
 
@@ -27,7 +29,8 @@ class KafkaControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport {
 
   override protected val dockerControllers: Vector[DockerController] = Vector(kafkaController)
 
-  val kafkaWaitPredicate: WaitPredicate               = WaitPredicates.forLogMessageByRegex(KafkaController.RegexForWaitPredicate)
+  val kafkaWaitPredicate: WaitPredicate =
+    WaitPredicates.forLogMessageByRegex(KafkaController.RegexForWaitPredicate, Some((1 * testTimeFactor).seconds))
   val kafkaWaitPredicateSetting: WaitPredicateSetting = WaitPredicateSetting(Duration.Inf, kafkaWaitPredicate)
 
   override protected val waitPredicatesSettings: Map[DockerController, WaitPredicateSetting] = {

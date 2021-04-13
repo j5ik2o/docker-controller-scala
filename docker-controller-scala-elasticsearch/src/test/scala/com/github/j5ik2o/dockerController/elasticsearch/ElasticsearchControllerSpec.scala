@@ -10,9 +10,11 @@ import org.elasticsearch.client.{ RequestOptions, RestClient, RestHighLevelClien
 import org.scalatest.freespec.AnyFreeSpec
 import org.apache.http.HttpHost
 
-import scala.concurrent.duration.Duration
+import scala.concurrent.duration.{ Duration, DurationInt }
 
 class ElasticsearchControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport {
+  val testTimeFactor: Int = sys.env.getOrElse("TEST_TIME_FACTOR", "1").toInt
+
   val hostPort1: Int                      = RandomPortUtil.temporaryServerPort()
   val hostPort2: Int                      = RandomPortUtil.temporaryServerPort()
   val controller: ElasticsearchController = ElasticsearchController(dockerClient)(hostPort1, hostPort2)
@@ -21,7 +23,15 @@ class ElasticsearchControllerSpec extends AnyFreeSpec with DockerControllerSpecS
 
   override protected val waitPredicatesSettings: Map[DockerController, WaitPredicateSetting] =
     Map(
-      controller -> WaitPredicateSetting(Duration.Inf, WaitPredicates.forListeningHostTcpPort(dockerHost, hostPort1))
+      controller -> WaitPredicateSetting(
+        Duration.Inf,
+        WaitPredicates.forListeningHostTcpPort(
+          dockerHost,
+          hostPort1,
+          (1 * testTimeFactor).seconds,
+          Some((1 * testTimeFactor).seconds)
+        )
+      )
     )
 
   "ElasticsearchController" - {
