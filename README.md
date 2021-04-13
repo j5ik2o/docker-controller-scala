@@ -35,7 +35,7 @@ The DockerController for the corresponding preset is as follows.
 
 - [MySQLController](docker-controller-scala-mysql/src/main/scala/com/github/j5ik2o/dockerController/mysql/MySQLController.scala) / [MySQLControllerSpec](docker-controller-scala-mysql/src/test/scala/com/github/j5ik2o/dockerController/MySQLControllerSpec.scala)
 - [DynamoDBLocalController](docker-controller-scala-dynamodb-local/src/main/scala/com/github/j5ik2o/dockerController/dynamodbLocal/DynamoDBLocalController.scala) / [DynamoDBLocalControllerSpec](docker-controller-scala-dynamodb-local/src/test/scala/com/github/j5ik2o/dockerController/dynamodbLocal/DynamoDBLocalControllerSpec.scala)
-- [MinioController](docker-controller-scala-minio/src/main/scala/com/github/j5ik2o/dockerController/minio/MinioController.scala)
+- [MinioController](docker-controller-scala-minio/src/main/scala/com/github/j5ik2o/dockerController/minio/MinioController.scala) / [MinioControllerSpec](docker-controller-scala-minio/src/test/scala/com/github/j5ik2o/dockerController/minio/MinioControllerSpec.scala)
 - [KafkaController](docker-controller-scala-kafka/src/main/scala/com/github/j5ik2o/dockerController/kafka/KafkaController.scala)
 - [ZooKeeperController](docker-controller-scala-zookeeper/src/main/scala/com/github/j5ik2o/dockerController/zooKeeper/ZooKeeperController.scala)
 - [ElasticsearchController](docker-controller-scala-elasticsearch/src/main/scala/com/github/j5ik2o/dockerController/elasticsearch/ElasticsearchController.scala)
