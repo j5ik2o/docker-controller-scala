@@ -15,7 +15,7 @@ import com.github.j5ik2o.dockerController.{
 import org.scalatest.freespec.AnyFreeSpec
 
 import scala.concurrent.duration._
-import scala.jdk.CollectionConverters.{ asScalaBufferConverter, seqAsJavaListConverter }
+import scala.jdk.CollectionConverters._
 
 class DynamoDBLocalControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport {
   val testTimeFactor: Int = sys.env.getOrElse("TEST_TIME_FACTOR", "1").toInt
