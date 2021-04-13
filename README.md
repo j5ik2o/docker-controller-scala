@@ -21,6 +21,7 @@ libraryDependencies += Seq(
   "com.github.j5ik2o" %% "docker-controller-scala-mysql" % version, // optional
   "com.github.j5ik2o" %% "docker-controller-scala-dynamodb-local" % version, // optional
   "com.github.j5ik2o" %% "docker-controller-scala-minio" % version, // optional
+  "com.github.j5ik2o" %% "docker-controller-scala-zookeeper" % version, // optional
   "com.github.j5ik2o" %% "docker-controller-scala-kafka" % version, // optional
   "com.github.j5ik2o" %% "docker-controller-scala-elasticsearch" % version, // optional
 )
