@@ -49,7 +49,7 @@ class ElasticsearchControllerSpec extends AnyFreeSpec with DockerControllerSpecS
         assert(result)
       } catch {
         case NonFatal(ex) =>
-          ex.printStackTrace()
+          fail("occurred error", ex)
       } finally if (client != null) client.close()
     }
   }
