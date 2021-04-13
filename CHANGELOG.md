@@ -1,3 +1,25 @@
+## [1.0.5](https://github.com/j5ik2o/docker-controller-scala/compare/v1.0.4...v1.0.5) (2021-04-13)
+
+### Bug Fixes
+
+* Fix ProgressBar close leak ([c81bb10](https://github.com/j5ik2o/docker-controller-scala/commit/c81bb105ede702da0e11d39418e5adb8b06c6fbf))
+
+### Code Refactoring
+
+* Modifed the return type of DockerController ([a1c8595](https://github.com/j5ik2o/docker-controller-scala/commit/a1c8595b5f6f041fdbf52456b54616b5237bdc91))
+
+### Features
+
+* Add the module for kafka ([ac8d903](https://github.com/j5ik2o/docker-controller-scala/commit/ac8d9036197dbe284a6d76082de624fe4bc2e66f))
+* Add the module for kafka ([b6d3550](https://github.com/j5ik2o/docker-controller-scala/commit/b6d3550ca5f0247ff3c98d82053ad77f9fc1bcc2))
+* Add the module for ZooKeeper ([ca0d152](https://github.com/j5ik2o/docker-controller-scala/commit/ca0d152c1f4aff6ce9bab8587a7d2893cc1b5772))
+* changed KafkaController to include ZooKeeperController. ([a05eeef](https://github.com/j5ik2o/docker-controller-scala/commit/a05eeef9628dfe1f4d3f86e55c494df7804a65bf))
+
+### BREAKING CHANGES
+
+* The return type of the method has been changed from DockerController to the
+respective specified type
+
 ## [1.0.4](https://github.com/j5ik2o/docker-controller-scala/compare/v1.0.3...v1.0.4) (2021-04-12)
 
 ### Features
