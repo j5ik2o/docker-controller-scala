@@ -51,8 +51,10 @@ class MySQLControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport {
   val rootPassword: String        = "test"
   val controller: MySQLController = MySQLController(dockerClient)(hostPort, rootPassword, databaseName = Some("test"))
 
+  // Specify DockerControllers to be launched.
   override protected val dockerControllers: Vector[DockerController] = Vector(controller)
 
+  // Set the condition to wait for the container to be started.
   override protected val waitPredicatesSettings: Map[DockerController, WaitPredicateSetting] =
     Map(
       controller -> WaitPredicateSetting(
