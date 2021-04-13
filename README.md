@@ -29,6 +29,8 @@ libraryDependencies += Seq(
 
 ## Usage
 
+`DockerController` that the thin wrapper for [docker-java](https://github.com/docker-java/docker-java) controls Docker Image and Docker Container for testing.
+
 ### How to test with preset DockerController
 
 The `DockerController` for the corresponding preset is as follows. Please see the corresponding `**Spec` for specific usage.
