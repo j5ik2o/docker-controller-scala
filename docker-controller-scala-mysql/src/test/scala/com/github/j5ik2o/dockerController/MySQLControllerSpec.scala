@@ -1,5 +1,6 @@
 package com.github.j5ik2o.dockerController
 
+import com.github.j5ik2o.dockerController.mysql.MySQLController
 import org.scalatest.freespec.AnyFreeSpec
 
 import java.sql.{ Connection, DriverManager, ResultSet, Statement }

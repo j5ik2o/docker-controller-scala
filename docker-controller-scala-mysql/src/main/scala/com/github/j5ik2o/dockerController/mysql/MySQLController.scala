@@ -1,10 +1,11 @@
-package com.github.j5ik2o.dockerController
+package com.github.j5ik2o.dockerController.mysql
 
 import com.github.dockerjava.api.DockerClient
 import com.github.dockerjava.api.command.CreateContainerCmd
 import com.github.dockerjava.api.model.HostConfig.newHostConfig
 import com.github.dockerjava.api.model.{ ExposedPort, Ports }
-import com.github.j5ik2o.dockerController.MySQLController._
+import com.github.j5ik2o.dockerController.DockerControllerImpl
+import com.github.j5ik2o.dockerController.mysql.MySQLController._
 
 import scala.concurrent.duration.{ DurationInt, FiniteDuration }
 import scala.util.matching.Regex
