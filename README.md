@@ -29,7 +29,7 @@ libraryDependencies += Seq(
 
 ## Usage
 
-`DockerController` that the thin wrapper for [docker-java](https://github.com/docker-java/docker-java) controls Docker Image and Docker Container for testing.
+[DockerController](docker-controller-scala-core/src/main/scala/com/github/j5ik2o/dockerController/DockerController.scala) that the thin wrapper for [docker-java](https://github.com/docker-java/docker-java) controls Docker Image and Docker Container for testing.
 
 ### How to test with preset DockerController
 
