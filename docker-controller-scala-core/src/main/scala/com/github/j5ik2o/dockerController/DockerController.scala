@@ -219,7 +219,6 @@ private[dockerController] class DockerControllerImpl(
       }
     }
     logger.debug("pullContainer --- finish")
-    this
   }
 
   protected def newProgressBar(frame: PullResponseItem, max: lang.Long): ProgressBar = {
@@ -301,7 +300,6 @@ private[dockerController] class DockerControllerImpl(
     }
     thread.join()
     logger.debug("awaitCompletion --- finish")
-    this
   }
 
   override def createNetwork(
