@@ -22,13 +22,14 @@ object MinioController {
       dockerClient: DockerClient,
       outputFrameInterval: FiniteDuration = 500.millis,
       imageName: String = DefaultImageName,
-      imageTag: Option[String] = DefaultImageTag
+      imageTag: Option[String] = DefaultImageTag,
+      envVars: Map[String, String] = Map.empty
   )(
       hostPort: Int,
       minioAccessKeyId: String = DefaultMinioAccessKeyId,
       minioSecretAccessKey: String = DefaultMinioSecretAccessKey
   ): MinioController =
-    new MinioController(dockerClient, outputFrameInterval, imageName, imageTag)(
+    new MinioController(dockerClient, outputFrameInterval, imageName, imageTag, envVars)(
       hostPort,
       minioAccessKeyId,
       minioSecretAccessKey
@@ -39,12 +40,18 @@ class MinioController(
     dockerClient: DockerClient,
     outputFrameInterval: FiniteDuration = 500.millis,
     imageName: String = DefaultImageName,
-    imageTag: Option[String] = DefaultImageTag
+    imageTag: Option[String] = DefaultImageTag,
+    envVars: Map[String, String] = Map.empty
 )(
     hostPort: Int,
     minioAccessKeyId: String = DefaultMinioAccessKeyId,
     minioSecretAccessKey: String = DefaultMinioSecretAccessKey
 ) extends DockerControllerImpl(dockerClient, outputFrameInterval)(imageName, imageTag) {
+
+  private val environmentVariables = Map(
+      "MINIO_ROOT_USER"     -> minioAccessKeyId,
+      "MINIO_ROOT_PASSWORD" -> minioSecretAccessKey
+    ) ++ envVars
 
   override protected def newCreateContainerCmd(): CreateContainerCmd = {
     val containerPort = ExposedPort.tcp(DefaultContainerPort)
@@ -54,10 +61,7 @@ class MinioController(
       .newCreateContainerCmd()
       .withCmd("server", "--compat", "/data")
       .withEnv(
-        Map(
-          "MINIO_ROOT_USER"     -> minioAccessKeyId,
-          "MINIO_ROOT_PASSWORD" -> minioSecretAccessKey
-        ).map { case (k, v) => s"$k=$v" }.toArray: _*
+        environmentVariables.map { case (k, v) => s"$k=$v" }.toArray: _*
       )
       .withExposedPorts(containerPort)
       .withHostConfig(newHostConfig().withPortBindings(portBinding))

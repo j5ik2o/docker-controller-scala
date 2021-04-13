@@ -18,14 +18,15 @@ object MySQLController {
       dockerClient: DockerClient,
       outputFrameInterval: FiniteDuration = 500.millis,
       imageName: String = DefaultImageName,
-      imageTag: Option[String] = DefaultImageTag
+      imageTag: Option[String] = DefaultImageTag,
+      envVars: Map[String, String] = Map.empty
   )(
       hostPort: Int,
       rootPassword: String,
       userNameAndPassword: Option[MySQLUserNameAndPassword] = None,
       databaseName: Option[String] = None
   ): MySQLController =
-    new MySQLController(dockerClient, outputFrameInterval, imageName, imageTag)(
+    new MySQLController(dockerClient, outputFrameInterval, imageName, imageTag, envVars)(
       hostPort,
       rootPassword,
       userNameAndPassword,
@@ -37,7 +38,8 @@ class MySQLController(
     dockerClient: DockerClient,
     outputFrameInterval: FiniteDuration = 500.millis,
     imageName: String = DefaultImageName,
-    imageTag: Option[String] = DefaultImageTag
+    imageTag: Option[String] = DefaultImageTag,
+    envVars: Map[String, String] = Map.empty
 )(
     hostPort: Int,
     rootPassword: String,
@@ -45,21 +47,25 @@ class MySQLController(
     databaseName: Option[String] = None
 ) extends DockerControllerImpl(dockerClient, outputFrameInterval)(imageName, imageTag) {
 
+  private val environmentVariables: Map[String, String] = {
+    val env1 = Map[String, String](
+        "MYSQL_ROOT_PASSWORD" -> rootPassword
+      ) ++ envVars
+    val env2 = userNameAndPassword.fold(env1) {
+      case MySQLUserNameAndPassword(u, p) =>
+        env1 ++ Map("MYSQL_USER" -> u, "MYSQL_PASSWORD" -> p)
+    }
+    databaseName.fold(env2) { name => env2 ++ Map("MYSQL_DATABASE" -> name) }
+  }
+
   override protected def newCreateContainerCmd(): CreateContainerCmd = {
     val containerPort = ExposedPort.tcp(DefaultContainerPort)
     val portBinding   = new Ports()
     portBinding.bind(containerPort, Ports.Binding.bindPort(hostPort))
-    val result1 = super
+    super
       .newCreateContainerCmd()
-      .withEnv(s"MYSQL_ROOT_PASSWORD=$rootPassword")
+      .withEnv(environmentVariables.map { case (k, v) => s"$k=$v" }.toArray: _*)
       .withExposedPorts(containerPort)
       .withHostConfig(newHostConfig().withPortBindings(portBinding))
-    val result2 = userNameAndPassword.fold(result1) {
-      case MySQLUserNameAndPassword(u, p) =>
-        val op = Map("MYSQL_USER" -> u, "MYSQL_PASSWORD" -> p).map { case (k, v) => s"$k=$v" }.toArray
-        result1.withEnv(result1.getEnv ++ op: _*)
-    }
-    val result3 = databaseName.fold(result2) { name => result2.withEnv(result2.getEnv :+ s"MYSQL_DATABASE=$name": _*) }
-    result3
   }
 }

@@ -20,17 +20,22 @@ object DynamoDBLocalController {
       dockerClient: DockerClient,
       outputFrameInterval: FiniteDuration = 500.millis,
       imageName: String = DefaultImageName,
-      imageTag: Option[String] = DefaultImageTag
+      imageTag: Option[String] = DefaultImageTag,
+      envVars: Map[String, String] = Map.empty
   )(
       hostPort: Int
   ): DynamoDBLocalController =
-    new DynamoDBLocalController(dockerClient, outputFrameInterval)(hostPort, imageName, imageTag)
+    new DynamoDBLocalController(dockerClient, outputFrameInterval, imageName, imageTag, envVars)(hostPort)
 }
 
-class DynamoDBLocalController(dockerClient: DockerClient, outputFrameInterval: FiniteDuration = 500.millis)(
-    hostPort: Int,
+class DynamoDBLocalController(
+    dockerClient: DockerClient,
+    outputFrameInterval: FiniteDuration = 500.millis,
     imageName: String = DefaultImageName,
-    imageTag: Option[String] = DefaultImageTag
+    imageTag: Option[String] = DefaultImageTag,
+    envVars: Map[String, String] = Map.empty
+)(
+    hostPort: Int
 ) extends DockerControllerImpl(dockerClient, outputFrameInterval)(imageName, imageTag) {
 
   override protected def newCreateContainerCmd(): CreateContainerCmd = {
@@ -40,6 +45,7 @@ class DynamoDBLocalController(dockerClient: DockerClient, outputFrameInterval: F
     super
       .newCreateContainerCmd()
       .withCmd("-jar", "DynamoDBLocal.jar", "-dbPath", ".", "-sharedDb")
+      .withEnv(envVars.map { case (k, v) => s"$k=$v" }.toArray: _*)
       .withExposedPorts(containerPort)
       .withHostConfig(newHostConfig().withPortBindings(portBinding))
   }

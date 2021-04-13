@@ -19,14 +19,15 @@ object ZooKeeperController {
       dockerClient: DockerClient,
       outputFrameInterval: FiniteDuration = 500.millis,
       imageName: String = DefaultImageName,
-      imageTag: Option[String] = DefaultImageTag
+      imageTag: Option[String] = DefaultImageTag,
+      envVars: Map[String, String] = Map.empty
   )(
       myId: Int,
       hostPort: Int,
       containerPort: Int = DefaultZooPort,
       networkAlias: Option[NetworkAlias] = None
   ): ZooKeeperController =
-    new ZooKeeperController(dockerClient, outputFrameInterval, imageName, imageTag)(
+    new ZooKeeperController(dockerClient, outputFrameInterval, imageName, imageTag, envVars)(
       myId,
       hostPort,
       containerPort,
@@ -38,7 +39,8 @@ class ZooKeeperController(
     dockerClient: DockerClient,
     outputFrameInterval: FiniteDuration = 500.millis,
     imageName: String = DefaultImageName,
-    imageTag: Option[String] = DefaultImageTag
+    imageTag: Option[String] = DefaultImageTag,
+    envVars: Map[String, String] = Map.empty
 )(
     myId: Int,
     hostPort: Int,
@@ -46,11 +48,12 @@ class ZooKeeperController(
     networkAlias: Option[NetworkAlias] = None
 ) extends DockerControllerImpl(dockerClient, outputFrameInterval)(imageName, imageTag) {
 
-  private def defaultEnvSettings(myId: Int) = Map(
-    "ZOO_MY_ID"   -> myId.toString,
-    "ZOO_PORT"    -> containerPort.toString,
-    "ZOO_SERVERS" -> s"server.$myId=0.0.0.0:2888:3888"
-  )
+  private def environmentVariables(myId: Int) =
+    Map(
+      "ZOO_MY_ID"   -> myId.toString,
+      "ZOO_PORT"    -> containerPort.toString,
+      "ZOO_SERVERS" -> s"server.$myId=0.0.0.0:2888:3888"
+    ) ++ envVars
 
   override protected def newCreateContainerCmd(): CreateContainerCmd = {
     val zooPort     = ExposedPort.tcp(containerPort)
@@ -60,7 +63,7 @@ class ZooKeeperController(
     val hostConfig        = networkAlias.fold(defaultHostConfig) { n => defaultHostConfig.withNetworkMode(n.network.id) }
     val result = super
       .newCreateContainerCmd()
-      .withEnv(defaultEnvSettings(myId).map { case (k, v) => s"$k=$v" }.toArray: _*)
+      .withEnv(environmentVariables(myId).map { case (k, v) => s"$k=$v" }.toArray: _*)
       .withExposedPorts(zooPort, ExposedPort.tcp(2888), ExposedPort.tcp(3888))
       .withHostConfig(hostConfig)
     networkAlias.fold(result) { n => result.withAliases(n.name) }

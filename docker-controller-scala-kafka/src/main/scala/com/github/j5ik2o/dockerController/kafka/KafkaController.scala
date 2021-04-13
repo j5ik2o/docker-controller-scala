@@ -22,13 +22,14 @@ object KafkaController {
       dockerClient: DockerClient,
       outputFrameInterval: FiniteDuration = 500.millis,
       imageName: String = DefaultImageName,
-      imageTag: Option[String] = DefaultImageTag
+      imageTag: Option[String] = DefaultImageTag,
+      envVars: Map[String, String] = Map.empty
   )(
       kafkaExternalHostName: String,
       kafkaExternalHostPort: Int,
       createTopics: Seq[String] = Seq.empty
   ): KafkaController =
-    new KafkaController(dockerClient, outputFrameInterval, imageName, imageTag)(
+    new KafkaController(dockerClient, outputFrameInterval, imageName, imageTag, envVars)(
       kafkaExternalHostName,
       kafkaExternalHostPort,
       createTopics
@@ -39,7 +40,8 @@ class KafkaController(
     dockerClient: DockerClient,
     outputFrameInterval: FiniteDuration = 500.millis,
     imageName: String = DefaultImageName,
-    imageTag: Option[String] = DefaultImageTag
+    imageTag: Option[String] = DefaultImageTag,
+    envVars: Map[String, String] = Map.empty
 )(
     kafkaExternalHostName: String,
     kafkaExternalHostPort: Int,
@@ -67,18 +69,18 @@ class KafkaController(
   private val zooKeeperContainerName = zkAlias.name
   private val zooKeeperContainerPort = zooKeeperController.containerPort
 
-  private val env = Map(
-    "KAFKA_AUTO_CREATE_TOPICS_ENABLE"        -> (if (createTopics.isEmpty) "false" else "true"),
-    "KAFKA_CREATE_TOPICS"                    -> createTopics.mkString(","),
-    "KAFKA_BROKER_ID"                        -> "1",
-    "KAFKA_ADVERTISED_LISTENERS"             -> s"LISTENER_DOCKER_INTERNAL://$kafkaContainerName:19092,LISTENER_DOCKER_EXTERNAL://$kafkaExternalHostName:$kafkaExternalHostPort",
-    "KAFKA_LISTENERS"                        -> s"LISTENER_DOCKER_INTERNAL://:19092,LISTENER_DOCKER_EXTERNAL://:$kafkaExternalHostPort",
-    "KAFKA_LISTENER_SECURITY_PROTOCOL_MAP"   -> "LISTENER_DOCKER_INTERNAL:PLAINTEXT,LISTENER_DOCKER_EXTERNAL:PLAINTEXT",
-    "KAFKA_INTER_BROKER_LISTENER_NAME"       -> "LISTENER_DOCKER_INTERNAL",
-    "KAFKA_ZOOKEEPER_CONNECT"                -> s"$zooKeeperContainerName:$zooKeeperContainerPort",
-    "KAFKA_LOG4J_LOGGERS"                    -> "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO",
-    "KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR" -> "1"
-  )
+  private val environmentVariables = Map(
+      "KAFKA_AUTO_CREATE_TOPICS_ENABLE"        -> (if (createTopics.isEmpty) "false" else "true"),
+      "KAFKA_CREATE_TOPICS"                    -> createTopics.mkString(","),
+      "KAFKA_BROKER_ID"                        -> "1",
+      "KAFKA_ADVERTISED_LISTENERS"             -> s"LISTENER_DOCKER_INTERNAL://$kafkaContainerName:19092,LISTENER_DOCKER_EXTERNAL://$kafkaExternalHostName:$kafkaExternalHostPort",
+      "KAFKA_LISTENERS"                        -> s"LISTENER_DOCKER_INTERNAL://:19092,LISTENER_DOCKER_EXTERNAL://:$kafkaExternalHostPort",
+      "KAFKA_LISTENER_SECURITY_PROTOCOL_MAP"   -> "LISTENER_DOCKER_INTERNAL:PLAINTEXT,LISTENER_DOCKER_EXTERNAL:PLAINTEXT",
+      "KAFKA_INTER_BROKER_LISTENER_NAME"       -> "LISTENER_DOCKER_INTERNAL",
+      "KAFKA_ZOOKEEPER_CONNECT"                -> s"$zooKeeperContainerName:$zooKeeperContainerPort",
+      "KAFKA_LOG4J_LOGGERS"                    -> "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO",
+      "KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR" -> "1"
+    ) ++ envVars
 
   override def createContainer(f: CreateContainerCmd => CreateContainerCmd): CreateContainerResponse = {
     zooKeeperController.createContainer()
@@ -113,7 +115,7 @@ class KafkaController(
     val hostConfig = newHostConfig().withPortBindings(portBinding).withNetworkMode(kafkaAlias.network.id)
     super
       .newCreateContainerCmd()
-      .withEnv(env.map { case (k, v) => s"$k=$v" }.toArray: _*)
+      .withEnv(environmentVariables.map { case (k, v) => s"$k=$v" }.toArray: _*)
       .withExposedPorts(containerPort)
       .withHostConfig(hostConfig).withAliases(kafkaAlias.name)
   }

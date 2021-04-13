@@ -18,23 +18,29 @@ object ElasticsearchController {
       dockerClient: DockerClient,
       outputFrameInterval: FiniteDuration = 500.millis,
       imageName: String = DefaultImageName,
-      imageTag: Option[String] = DefaultImageTag
+      imageTag: Option[String] = DefaultImageTag,
+      envVars: Map[String, String] = Map.empty
   )(
       hostPort1: Int,
       hostPort2: Int
   ): ElasticsearchController =
-    new ElasticsearchController(dockerClient, outputFrameInterval, imageName, imageTag)(hostPort1, hostPort2)
+    new ElasticsearchController(dockerClient, outputFrameInterval, imageName, imageTag, envVars)(hostPort1, hostPort2)
 }
 
 class ElasticsearchController(
     dockerClient: DockerClient,
     outputFrameInterval: FiniteDuration = 500.millis,
     imageName: String = DefaultImageName,
-    imageTag: Option[String] = DefaultImageTag
+    imageTag: Option[String] = DefaultImageTag,
+    envVars: Map[String, String] = Map.empty
 )(
     hostPort1: Int,
     hostPort2: Int
 ) extends DockerControllerImpl(dockerClient, outputFrameInterval)(imageName, imageTag) {
+
+  private val environmentVariables = Map(
+      "discovery.type" -> "single-node"
+    ) ++ envVars
 
   override protected def newCreateContainerCmd(): CreateContainerCmd = {
     val containerPorts = DefaultContainerPorts.map(ExposedPort.tcp)
@@ -45,7 +51,7 @@ class ElasticsearchController(
     }
     val result = super
       .newCreateContainerCmd()
-      .withEnv("discovery.type=single-node")
+      .withEnv(environmentVariables.map { case (k, v) => s"$k=$v" }.toArray: _*)
       .withExposedPorts(containerPorts: _*)
       .withHostConfig(newHostConfig().withPortBindings(portBinding))
     result
