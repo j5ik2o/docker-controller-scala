@@ -1,6 +1,7 @@
 package com.github.j5ik2o.dockerController
 
 import com.github.j5ik2o.dockerController.WaitPredicates.WaitPredicate
+import com.github.j5ik2o.dockerController.zooKeeper.ZooKeeperController
 import org.apache.zookeeper.{ WatchedEvent, Watcher, ZooKeeper }
 import org.scalatest.freespec.AnyFreeSpec
 import org.apache.zookeeper.Watcher.Event.KeeperState

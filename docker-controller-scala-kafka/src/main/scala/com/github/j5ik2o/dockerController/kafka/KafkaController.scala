@@ -17,10 +17,10 @@ import com.github.j5ik2o.dockerController.{
   Network,
   NetworkAlias,
   RandomPortUtil,
-  WaitPredicates,
-  ZooKeeperController
+  WaitPredicates
 }
 import com.github.j5ik2o.dockerController.kafka.KafkaController._
+import com.github.j5ik2o.dockerController.zooKeeper.ZooKeeperController
 
 import java.util.UUID
 import scala.concurrent.duration.{ Duration, DurationInt, FiniteDuration }

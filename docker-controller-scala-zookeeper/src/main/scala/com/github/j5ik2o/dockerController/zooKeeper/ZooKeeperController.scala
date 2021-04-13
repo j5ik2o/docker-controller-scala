@@ -1,10 +1,11 @@
-package com.github.j5ik2o.dockerController
+package com.github.j5ik2o.dockerController.zooKeeper
 
 import com.github.dockerjava.api.DockerClient
 import com.github.dockerjava.api.command.CreateContainerCmd
 import com.github.dockerjava.api.model.HostConfig.newHostConfig
 import com.github.dockerjava.api.model.{ ExposedPort, Ports }
-import com.github.j5ik2o.dockerController.ZooKeeperController._
+import com.github.j5ik2o.dockerController.zooKeeper.ZooKeeperController._
+import com.github.j5ik2o.dockerController.{ DockerControllerImpl, NetworkAlias }
 
 import scala.concurrent.duration.{ DurationInt, FiniteDuration }
 
