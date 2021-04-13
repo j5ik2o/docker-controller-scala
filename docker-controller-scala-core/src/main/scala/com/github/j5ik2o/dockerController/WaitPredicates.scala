@@ -14,20 +14,6 @@ object WaitPredicates {
 
   protected val logger: Logger = LoggerFactory.getLogger(getClass)
 
-  def forCompose(w1: WaitPredicate, w2: WaitPredicate): Frame => Boolean = {
-    var w1State = false
-    f: Frame =>
-      logger.debug(s"w1State = $w1State")
-      if (!w1State && w1(f)) {
-        logger.debug("w1State = true")
-        w1State = true
-        false
-      } else {
-        logger.debug("w2(f)")
-        w2(f)
-      }
-  }
-
   def forLogMessageExactly(
       text: String,
       awaitDurationOpt: Option[FiniteDuration] = Some(500.milliseconds)
