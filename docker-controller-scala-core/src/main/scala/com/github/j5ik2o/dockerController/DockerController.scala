@@ -222,7 +222,7 @@ private[dockerController] class DockerControllerImpl(
     this
   }
 
-  protected def newProgressBar(frame: PullResponseItem, max: lang.Long) = {
+  protected def newProgressBar(frame: PullResponseItem, max: lang.Long): ProgressBar = {
     new ProgressBarBuilder()
       .setTaskName(s"pull image: ${frame.getStatus}, ${frame.getId}")
       .setStyle(ProgressBarStyle.ASCII)
