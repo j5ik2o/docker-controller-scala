@@ -30,7 +30,7 @@ class ElasticsearchControllerSpec extends AnyFreeSpec with DockerControllerSpecS
           dockerHost,
           hostPort1,
           (1 * testTimeFactor).seconds,
-          Some((3 * testTimeFactor).seconds)
+          Some((5 * testTimeFactor).seconds)
         )
       )
     )
