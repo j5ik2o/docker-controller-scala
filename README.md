@@ -31,7 +31,7 @@ libraryDependencies += Seq(
 
 ### How to test with preset DockerController
 
-The DockerController for the corresponding preset is as follows.
+The `DockerController` for the corresponding preset is as follows. Please see the corresponding `**Spec` for specific usage.
 
 - [MySQLController](docker-controller-scala-mysql/src/main/scala/com/github/j5ik2o/dockerController/mysql/MySQLController.scala) / [MySQLControllerSpec](docker-controller-scala-mysql/src/test/scala/com/github/j5ik2o/dockerController/MySQLControllerSpec.scala)
 - [DynamoDBLocalController](docker-controller-scala-dynamodb-local/src/main/scala/com/github/j5ik2o/dockerController/dynamodbLocal/DynamoDBLocalController.scala) / [DynamoDBLocalControllerSpec](docker-controller-scala-dynamodb-local/src/test/scala/com/github/j5ik2o/dockerController/dynamodbLocal/DynamoDBLocalControllerSpec.scala)
@@ -97,7 +97,7 @@ class MySQLControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport {
 
 ### How to test with DockerController your customized
 
-To launch a Docker container for testing
+To launch a docker container for testing
 
 ```scala
 // In ScalaTest, please mix-in DockerControllerSpecSupport.
