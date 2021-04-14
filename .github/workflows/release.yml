@@ -17,7 +17,6 @@ jobs:
       - uses: olafurpg/setup-scala@v10
       - uses: olafurpg/setup-gpg@v3
       - run: |
-          git fetch --tags
           sbt ci-release
         env:
           PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE }}
