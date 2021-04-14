@@ -1,8 +1,8 @@
 name: Release
 on:
-  workflow_run:
-    workflows: ["CI"]
-    types: [completed]
+#  workflow_run:
+#    workflows: ["CI"]
+#    types: [completed]
   push:
     branches: [main]
     tags: ["*"]
