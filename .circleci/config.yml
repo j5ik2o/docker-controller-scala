@@ -29,31 +29,31 @@ jobs:
       - save_cache:
           paths: [ "~/.sbt/boot", "~/.ivy2/cache", "~/.cache/coursier" ]
           key: scala-library-dependencies-{{ checksum "build.sbt" }}
-  release:
-    docker:
-      - image: circleci/openjdk:8-jdk
-    steps:
-      - checkout
-      - restore_cache:
-          key: scala-library-dependencies-{{ checksum "build.sbt" }}
-      - run:
-          command: git fetch --tags
-      - run:
-          command: sbt ci-release
-workflows:
-  version: 2
-  build-and-release:
-    jobs:
-      - build:
-          filters:
-            tags:
-              only: /^v\d+\.\d+\.\d+$/
-      - release:
-          requires:
-            - build
-          filters:
-            branches:
-              only: main
-            tags:
-              only: /^v\d+\.\d+\.\d+$/
+#  release:
+#    docker:
+#      - image: circleci/openjdk:8-jdk
+#    steps:
+#      - checkout
+#      - restore_cache:
+#          key: scala-library-dependencies-{{ checksum "build.sbt" }}
+#      - run:
+#          command: git fetch --tags
+#      - run:
+#          command: sbt ci-release
+#workflows:
+#  version: 2
+#  build-and-release:
+#    jobs:
+#      - build:
+#          filters:
+#            tags:
+#              only: /^v\d+\.\d+\.\d+$/
+#      - release:
+#          requires:
+#            - build
+#          filters:
+#            branches:
+#              only: main
+#            tags:
+#              only: /^v\d+\.\d+\.\d+$/
 
