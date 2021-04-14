@@ -81,7 +81,8 @@ val `docker-controller-scala-core` = (project in file("docker-controller-scala-c
         seasar.s2util,
         freemarker.freemarker,
         logback.classic % Test,
-        commons.io
+        commons.io,
+        beachape.enumeratum
       ),
     libraryDependencies ++= {
       CrossVersion.partialVersion(scalaVersion.value) match {
@@ -172,6 +173,18 @@ val `docker-controller-scala-elasticsearch` = (project in file("docker-controlle
         scalatest.scalatest               % Test,
         logback.classic                   % Test,
         elasticsearch.restHighLevelClient % Test
+      )
+  ).dependsOn(`docker-controller-scala-core`, `docker-controller-scala-scalatest` % Test)
+
+val `docker-controller-scala-localstack` = (project in file("docker-controller-scala-localstack"))
+  .settings(baseSettings, deploySettings)
+  .settings(
+    name := "docker-controller-scala-localstack",
+    libraryDependencies ++= Seq(
+        scalatest.scalatest % Test,
+        logback.classic     % Test,
+        amazonAws.s3        % Test,
+        amazonAws.dynamodb  % Test
       )
   ).dependsOn(`docker-controller-scala-core`, `docker-controller-scala-scalatest` % Test)
 

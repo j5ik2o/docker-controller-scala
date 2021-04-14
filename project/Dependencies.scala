@@ -10,6 +10,7 @@ object Dependencies {
     val scalaCollectionCompatVersion = "2.4.3"
     val dockerJavaVersion            = "3.2.7"
     val progressBarVersion           = "0.9.1"
+    val enumeratumVersion            = "1.6.1"
   }
 
   object scalaLang {
@@ -89,6 +90,11 @@ object Dependencies {
 
   object commons {
     val io = "commons-io" % "commons-io" % "2.8.0"
+  }
+
+  object beachape {
+    val enumeratum = "com.beachape" %% "enumeratum" % Versions.enumeratumVersion
+
   }
 
 }
