@@ -1,5 +1,4 @@
-name: Scala CI
-
+name: CI
 on:
   push:
     branches: [ main ]
