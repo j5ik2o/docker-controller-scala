@@ -15,7 +15,7 @@
     <logger name="org.apache" level="INFO">
     </logger>
 
-    <root level="INFO">
+    <root level="DEBUG">
         <appender-ref ref="ASYNCSTDOUT" />
     </root>
 
