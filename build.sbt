@@ -7,41 +7,18 @@ def crossScalacOptions(scalaVersion: String): Seq[String] = CrossVersion.partial
     Seq("-Yinline-warnings")
 }
 
-lazy val deploySettings = Seq(
-  sonatypeProfileName := "com.github.j5ik2o",
-  publishMavenStyle := true,
-  Test / publishArtifact := false,
-  pomIncludeRepository := { _ => false },
-  pomExtra := {
-    <url>https://github.com/j5ik2o/docker-controller-scala</url>
-      <licenses>
-        <license>
-          <name>The MIT License</name>
-          <url>http://opensource.org/licenses/MIT</url>
-        </license>
-      </licenses>
-      <scm>
-        <url>git@github.com:j5ik2o/docker-controller-scala.git</url>
-        <connection>scm:git:github.com/j5ik2o/docker-controller-scala</connection>
-        <developerConnection>scm:git:git@github.com:j5ik2o/docker-controller-scala.git</developerConnection>
-      </scm>
-      <developers>
-        <developer>
-          <id>j5ik2o</id>
-          <name>Junichi Kato</name>
-        </developer>
-      </developers>
-  },
-  publishTo := sonatypePublishToBundle.value,
-  credentials := {
-    val ivyCredentials = (LocalRootProject / baseDirectory).value / ".credentials"
-    val gpgCredentials = (LocalRootProject / baseDirectory).value / ".gpgCredentials"
-    Credentials(ivyCredentials) :: Credentials(gpgCredentials) :: Nil
-  }
-)
-
 lazy val baseSettings = Seq(
   organization := "com.github.j5ik2o",
+  homepage := Some(url("https://github.com/j5ik2o/docker-controller-scala")),
+  licenses := List("The MIT License" -> url("http://opensource.org/licenses/MIT")),
+  developers := List(
+      Developer(
+        id = "j5ik2o",
+        name = "Junichi Kato",
+        email = "j5ik2o@gmail.com",
+        url = url("https://blog.j5ik2o.me")
+      )
+    ),
   scalaVersion := Versions.scala212Version,
   crossScalaVersions := Seq(Versions.scala212Version, Versions.scala213Version),
   scalacOptions ++= (Seq(
@@ -62,13 +39,14 @@ lazy val baseSettings = Seq(
   libraryDependencies ++= Seq(
       scalatest.scalatest % Test
     ),
+  Test / publishArtifact := false,
   Test / fork := true,
   Test / parallelExecution := false,
   ThisBuild / scalafmtOnCompile := true
 )
 
 val `docker-controller-scala-core` = (project in file("docker-controller-scala-core"))
-  .settings(baseSettings, deploySettings)
+  .settings(baseSettings)
   .settings(
     name := "docker-controller-scala-core",
     libraryDependencies ++= Seq(
@@ -97,7 +75,7 @@ val `docker-controller-scala-core` = (project in file("docker-controller-scala-c
   )
 
 val `docker-controller-scala-scalatest` = (project in file("docker-controller-scala-scalatest"))
-  .settings(baseSettings, deploySettings)
+  .settings(baseSettings)
   .settings(
     name := "docker-controller-scala-scalatest",
     libraryDependencies ++= Seq(
@@ -107,7 +85,7 @@ val `docker-controller-scala-scalatest` = (project in file("docker-controller-sc
   ).dependsOn(`docker-controller-scala-core`)
 
 val `docker-controller-scala-dynamodb-local` = (project in file("docker-controller-scala-dynamodb-local"))
-  .settings(baseSettings, deploySettings)
+  .settings(baseSettings)
   .settings(
     name := "docker-controller-scala-dynamodb-local",
     libraryDependencies ++= Seq(
@@ -118,7 +96,7 @@ val `docker-controller-scala-dynamodb-local` = (project in file("docker-controll
   ).dependsOn(`docker-controller-scala-core`, `docker-controller-scala-scalatest` % Test)
 
 val `docker-controller-scala-minio` = (project in file("docker-controller-scala-minio"))
-  .settings(baseSettings, deploySettings)
+  .settings(baseSettings)
   .settings(
     name := "docker-controller-scala-minio",
     libraryDependencies ++= Seq(
@@ -129,7 +107,7 @@ val `docker-controller-scala-minio` = (project in file("docker-controller-scala-
   ).dependsOn(`docker-controller-scala-core`, `docker-controller-scala-scalatest` % Test)
 
 val `docker-controller-scala-zookeeper` = (project in file("docker-controller-scala-zookeeper"))
-  .settings(baseSettings, deploySettings)
+  .settings(baseSettings)
   .settings(
     name := "docker-controller-scala-zookeeper",
     libraryDependencies ++= Seq(
@@ -140,7 +118,7 @@ val `docker-controller-scala-zookeeper` = (project in file("docker-controller-sc
   ).dependsOn(`docker-controller-scala-core`, `docker-controller-scala-scalatest` % Test)
 
 val `docker-controller-scala-kafka` = (project in file("docker-controller-scala-kafka"))
-  .settings(baseSettings, deploySettings)
+  .settings(baseSettings)
   .settings(
     name := "docker-controller-scala-kafka",
     libraryDependencies ++= Seq(
@@ -155,7 +133,7 @@ val `docker-controller-scala-kafka` = (project in file("docker-controller-scala-
   )
 
 val `docker-controller-scala-mysql` = (project in file("docker-controller-scala-mysql"))
-  .settings(baseSettings, deploySettings)
+  .settings(baseSettings)
   .settings(
     name := "docker-controller-scala-mysql",
     libraryDependencies ++= Seq(
@@ -166,7 +144,7 @@ val `docker-controller-scala-mysql` = (project in file("docker-controller-scala-
   ).dependsOn(`docker-controller-scala-core`, `docker-controller-scala-scalatest` % Test)
 
 val `docker-controller-scala-elasticsearch` = (project in file("docker-controller-scala-elasticsearch"))
-  .settings(baseSettings, deploySettings)
+  .settings(baseSettings)
   .settings(
     name := "docker-controller-scala-elasticsearch",
     libraryDependencies ++= Seq(
@@ -177,7 +155,7 @@ val `docker-controller-scala-elasticsearch` = (project in file("docker-controlle
   ).dependsOn(`docker-controller-scala-core`, `docker-controller-scala-scalatest` % Test)
 
 val `docker-controller-scala-localstack` = (project in file("docker-controller-scala-localstack"))
-  .settings(baseSettings, deploySettings)
+  .settings(baseSettings)
   .settings(
     name := "docker-controller-scala-localstack",
     libraryDependencies ++= Seq(
@@ -189,7 +167,7 @@ val `docker-controller-scala-localstack` = (project in file("docker-controller-s
   ).dependsOn(`docker-controller-scala-core`, `docker-controller-scala-scalatest` % Test)
 
 val `docker-controller-scala-root` = (project in file("."))
-  .settings(baseSettings, deploySettings)
+  .settings(baseSettings)
   .settings(name := "docker-controller-scala-root")
   .aggregate(
     `docker-controller-scala-core`,
