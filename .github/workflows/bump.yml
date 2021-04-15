@@ -1,17 +1,27 @@
-name: Bump version
+name: Bump Version
 on:
-  workflow_dispatch
+  workflow_dispatch:
+  schedule:
+    - cron:  '0 0 * * *'
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  bump-version:
+    runs-on: ubuntu-20.04
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v2.3.4
       with:
-        fetch-depth: '0'
+        fetch-depth: 0
+        persist-credentials: false
+        token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
     - name: Bump version and push tag
-      uses: anothrNick/github-tag-action@1.26.0
+      id: tag_version
+      uses: mathieudutour/github-tag-action@v5.4
+      with:
+        github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+    - name: Create a GitHub release
+      uses: actions/create-release@v1
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        WITH_V: true
-        DEFAULT_BUMP: patch
-        RELEASE_BRANCHES: main
+        GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+      with:
+        tag_name: ${{ steps.tag_version.outputs.new_tag }}
+        release_name: Release ${{ steps.tag_version.outputs.new_tag }}
+        body: ${{ steps.tag_version.outputs.changelog }}
