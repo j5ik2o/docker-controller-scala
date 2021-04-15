@@ -1,6 +1,6 @@
 # docker-controller-scala
 
-[![Scala CI](https://github.com/j5ik2odocker-controller-scala/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/j5ik2o/docker-controller-scala/actions/workflows/ci.yml)
+[![Scala CI](https://github.com/j5ik2o/docker-controller-scala/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/j5ik2o/docker-controller-scala/actions/workflows/ci.yml)
 [![Mergify Status](https://img.shields.io/endpoint.svg?url=https://gh.mergify.io/badges/j5ik2o/docker-controller-scala&style=flat)](https://mergify.io)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.j5ik2o/docker-controller-scala-core_2.13/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.j5ik2o/docker-controller-scala-core_2.13)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
