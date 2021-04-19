@@ -41,7 +41,7 @@ class DynamoDBLocalControllerSpec extends AnyFreeSpec with DockerControllerSpecS
       controller -> waitPredicateSetting
     )
 
-  val dynamoDBEndpoint                = s"http://$dockerHost:$hostPort"
+  val dynamoDBEndpoint: String        = s"http://$dockerHost:$hostPort"
   val dynamoDBRegion: Regions         = Regions.AP_NORTHEAST_1
   val dynamoDBAccessKeyId: String     = "x"
   val dynamoDBSecretAccessKey: String = "x"

@@ -8,12 +8,13 @@ import com.github.j5ik2o.dockerController.DockerControllerImpl
 import com.github.j5ik2o.dockerController.minio.MinioController._
 
 import scala.concurrent.duration.{ DurationInt, FiniteDuration }
+import scala.util.matching.Regex
 
 object MinioController {
-  final val DefaultImageName      = "minio/minio"
-  final val DefaultImageTag       = Some("RELEASE.2021-03-17T02-33-02Z")
-  final val DefaultContainerPort  = 9000
-  final val RegexForWaitPredicate = """^Browser Access:.*""".r
+  final val DefaultImageName              = "minio/minio"
+  final val DefaultImageTag: Some[String] = Some("RELEASE.2021-03-17T02-33-02Z")
+  final val DefaultContainerPort          = 9000
+  final val RegexForWaitPredicate: Regex  = """^Browser Access:.*""".r
 
   final val DefaultMinioAccessKeyId: String     = "AKIAIOSFODNN7EXAMPLE"
   final val DefaultMinioSecretAccessKey: String = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"

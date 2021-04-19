@@ -1,7 +1,6 @@
 package com.github.j5ik2o.dockerController
 
 import com.github.dockerjava.api.DockerClient
-import com.github.dockerjava.api.command.CreateContainerCmd
 import com.github.dockerjava.api.model.HostConfig.newHostConfig
 import com.github.dockerjava.api.model.{ ExposedPort, Ports }
 import com.github.dockerjava.core.{ DockerClientConfig, DockerClientImpl }
@@ -74,7 +73,7 @@ class DockerControllerSpec extends AnyFreeSpec with BeforeAndAfter with BeforeAn
 
   val url = new URL(s"http://$host:$hostPort")
 
-  def wget = {
+  def wget: Unit = {
     var connection: HttpURLConnection = null
     var in: InputStream               = null
     try {

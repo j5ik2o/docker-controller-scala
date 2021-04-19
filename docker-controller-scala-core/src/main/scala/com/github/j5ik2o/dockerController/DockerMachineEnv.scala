@@ -12,7 +12,7 @@ case class DockerMachineEnv(tlsVerify: Boolean, dockerHost: String, dockerCertPa
 }
 
 object DockerMachineEnv {
-  private val logger = LoggerFactory.getLogger(getClass)
+  LoggerFactory.getLogger(getClass)
 
   private val tlsVerifyRegex: Regex = """export DOCKER_TLS_VERIFY="(.*)"""".r
 

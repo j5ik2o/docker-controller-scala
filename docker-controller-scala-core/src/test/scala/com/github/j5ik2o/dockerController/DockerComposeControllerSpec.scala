@@ -31,7 +31,7 @@ class DockerComposeControllerSpec extends AnyFreeSpec with BeforeAndAfter with B
 
   val url = new URL(s"http://$host:$hostPort")
 
-  def wget = {
+  def wget: Unit = {
     var connection: HttpURLConnection = null
     var in: InputStream               = null
     try {

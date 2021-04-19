@@ -8,12 +8,13 @@ import com.github.j5ik2o.dockerController.zooKeeper.ZooKeeperController._
 import com.github.j5ik2o.dockerController.{ DockerControllerImpl, NetworkAlias }
 
 import scala.concurrent.duration.{ DurationInt, FiniteDuration }
+import scala.util.matching.Regex
 
 object ZooKeeperController {
-  final val DefaultImageName      = "zookeeper"
-  final val DefaultImageTag       = Some("3.4.9")
-  final val DefaultZooPort        = 2181
-  final val RegexForWaitPredicate = """binding to port 0.0.0.0/0.0.0.0:.*""".r
+  final val DefaultImageName              = "zookeeper"
+  final val DefaultImageTag: Some[String] = Some("3.4.9")
+  final val DefaultZooPort                = 2181
+  final val RegexForWaitPredicate: Regex  = """binding to port 0.0.0.0/0.0.0.0:.*""".r
 
   def apply(
       dockerClient: DockerClient,
