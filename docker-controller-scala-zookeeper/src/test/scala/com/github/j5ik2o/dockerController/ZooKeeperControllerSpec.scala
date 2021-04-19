@@ -32,13 +32,17 @@ class ZooKeeperControllerSpec extends AnyFreeSpec with DockerControllerSpecSuppo
       var zk: ZooKeeper = null
       try {
         val connectionLatch = new CountDownLatch(1)
-        zk = new ZooKeeper(s"$dockerHost:$hostPort", 3000, new Watcher {
-          override def process(event: WatchedEvent): Unit = {
-            logger.debug(s"event = $event")
-            if (event.getState == KeeperState.SyncConnected)
-              connectionLatch.countDown()
+        zk = new ZooKeeper(
+          s"$dockerHost:$hostPort",
+          3000,
+          new Watcher {
+            override def process(event: WatchedEvent): Unit = {
+              logger.debug(s"event = $event")
+              if (event.getState == KeeperState.SyncConnected)
+                connectionLatch.countDown()
+            }
           }
-        })
+        )
         connectionLatch.await(10, TimeUnit.SECONDS)
       } finally if (zk != null)
         zk.close()

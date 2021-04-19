@@ -50,9 +50,9 @@ class MinioController(
 ) extends DockerControllerImpl(dockerClient, outputFrameInterval)(imageName, imageTag) {
 
   private val environmentVariables = Map(
-      "MINIO_ROOT_USER"     -> minioAccessKeyId,
-      "MINIO_ROOT_PASSWORD" -> minioSecretAccessKey
-    ) ++ envVars
+    "MINIO_ROOT_USER"     -> minioAccessKeyId,
+    "MINIO_ROOT_PASSWORD" -> minioSecretAccessKey
+  ) ++ envVars
 
   override protected def newCreateContainerCmd(): CreateContainerCmd = {
     val containerPort = ExposedPort.tcp(DefaultContainerPort)

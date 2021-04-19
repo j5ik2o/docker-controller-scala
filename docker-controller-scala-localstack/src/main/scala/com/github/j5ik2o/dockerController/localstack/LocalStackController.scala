@@ -79,26 +79,24 @@ class LocalStackController(
 ) extends DockerControllerImpl(dockerClient, outputFrameInterval)(imageName, imageTag) {
 
   private val environmentVariables: Map[String, String] = Map(
-      "SERVICES" -> services.map(_.entryName).mkString(",")
-    ) ++
-    hostName.fold(Map.empty[String, String]) { h => Map("HOSTNAME"                  -> h) } ++
+    "SERVICES" -> services.map(_.entryName).mkString(",")
+  ) ++
+    hostName.fold(Map.empty[String, String]) { h => Map("HOSTNAME" -> h) } ++
     hostNameExternal.fold(Map.empty[String, String]) { h => Map("HOSTNAME_EXTERNAL" -> h) } ++
-    defaultRegion.fold(Map.empty[String, String]) { r => Map("DEFAULT_REGION"       -> r) } ++
-    hostPorts.foldLeft(Map.empty[String, String]) {
-      case (result, (s, p)) => result ++ Map(s.entryName.toUpperCase + "_PORT_EXTERNAL" -> p.toString)
+    defaultRegion.fold(Map.empty[String, String]) { r => Map("DEFAULT_REGION" -> r) } ++
+    hostPorts.foldLeft(Map.empty[String, String]) { case (result, (s, p)) =>
+      result ++ Map(s.entryName.toUpperCase + "_PORT_EXTERNAL" -> p.toString)
     } ++ envVars
 
   logger.debug(s"environmentVariables= $environmentVariables")
 
   override protected def newCreateContainerCmd(): CreateContainerCmd = {
     val portBinding = new Ports()
-    val containerPortWithHostPorts = hostPorts.map {
-      case (service, port) =>
-        (ExposedPort.tcp(service.port), port)
+    val containerPortWithHostPorts = hostPorts.map { case (service, port) =>
+      (ExposedPort.tcp(service.port), port)
     }
-    containerPortWithHostPorts.foreach {
-      case (servicePort, hostPort) =>
-        portBinding.bind(servicePort, Ports.Binding.bindPort(hostPort))
+    containerPortWithHostPorts.foreach { case (servicePort, hostPort) =>
+      portBinding.bind(servicePort, Ports.Binding.bindPort(hostPort))
     }
     super
       .newCreateContainerCmd()

@@ -39,15 +39,14 @@ class ElasticsearchController(
 ) extends DockerControllerImpl(dockerClient, outputFrameInterval)(imageName, imageTag) {
 
   private val environmentVariables = Map(
-      "discovery.type" -> "single-node"
-    ) ++ envVars
+    "discovery.type" -> "single-node"
+  ) ++ envVars
 
   override protected def newCreateContainerCmd(): CreateContainerCmd = {
     val containerPorts = DefaultContainerPorts.map(ExposedPort.tcp)
     val portBinding    = new Ports()
-    containerPorts.zip(Seq(hostPort1, hostPort2)).foreach {
-      case (containerPort, hostPort) =>
-        portBinding.bind(containerPort, Ports.Binding.bindPort(hostPort))
+    containerPorts.zip(Seq(hostPort1, hostPort2)).foreach { case (containerPort, hostPort) =>
+      portBinding.bind(containerPort, Ports.Binding.bindPort(hostPort))
     }
     val result = super
       .newCreateContainerCmd()
