@@ -5,6 +5,7 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.j5ik2o/docker-controller-scala-core_2.13/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.j5ik2o/docker-controller-scala-core_2.13)
 [![Scaladoc](http://javadoc-badge.appspot.com/com.github.j5ik2o/docker-controller-scala-core_2.13.svg?label=scaladoc)](http://javadoc-badge.appspot.com/com.github.j5ik2o/docker-controller-scala-core_2.13/com/github/j5ik2o/dockerController/index.html?javadocio=true)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fj5ik2o%2Fdocker-controller-scala.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fj5ik2o%2Fdocker-controller-scala?ref=badge_shield)
 
 This library provides an easy and simple way to handle Docker Container or Docker Compose on ScalaTest, based on [docker-java](https://github.com/docker-java/docker-java). The implementation of this library is thin, and if you know [docker-java](https://github.com/docker-java/docker-java), your learning cost will be negligible.
 
@@ -199,3 +200,7 @@ class NginxSpec extends AnyFreeSpec with DockerControllerSpecSupport {
 // ...
 }     
 ```
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fj5ik2o%2Fdocker-controller-scala.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fj5ik2o%2Fdocker-controller-scala?ref=badge_large)
