@@ -5,7 +5,7 @@ import java.nio.channels.ServerSocketChannel
 
 trait RandomPortUtil {
 
-  def temporaryServerAddress(interface: String = "127.0.0.1"): InetSocketAddress = {
+  def temporaryServerAddress(interface: String = "127.0.0.1"): InetSocketAddress = synchronized {
     val serverSocket = ServerSocketChannel.open()
     try {
       serverSocket.socket.bind(new InetSocketAddress(interface, 0))
@@ -14,7 +14,7 @@ trait RandomPortUtil {
     } finally serverSocket.close()
   }
 
-  def temporaryServerHostnameAndPort(interface: String = "127.0.0.1"): (String, Int) = {
+  def temporaryServerHostnameAndPort(interface: String = "127.0.0.1"): (String, Int) = synchronized {
     val socketAddress = temporaryServerAddress(interface)
     socketAddress.getHostName -> socketAddress.getPort
   }
