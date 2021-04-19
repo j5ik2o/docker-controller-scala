@@ -29,7 +29,9 @@ lazy val baseSettings = Seq(
       "UTF-8",
       "-language:_",
       "-Ydelambdafy:method",
-      "-target:jvm-1.8"
+      "-target:jvm-1.8",
+      "-Yrangepos",
+      "-Ywarn-unused"
     ) ++ crossScalacOptions(scalaVersion.value)),
   resolvers ++= Seq(
       Resolver.sonatypeRepo("snapshots"),
@@ -39,10 +41,12 @@ lazy val baseSettings = Seq(
   libraryDependencies ++= Seq(
       scalatest.scalatest % Test
     ),
+  ThisBuild / scalafixScalaBinaryVersion := CrossVersion.binaryScalaVersion(scalaVersion.value),
+  semanticdbEnabled := true,
+  semanticdbVersion := scalafixSemanticdb.revision,
   Test / publishArtifact := false,
   Test / fork := true,
-  Test / parallelExecution := false,
-  ThisBuild / scalafmtOnCompile := true
+  Test / parallelExecution := false
 )
 
 val `docker-controller-scala-core` = (project in file("docker-controller-scala-core"))
@@ -179,3 +183,7 @@ val `docker-controller-scala-root` = (project in file("."))
     `docker-controller-scala-kafka`,
     `docker-controller-scala-elasticsearch`
   )
+
+// --- Custom commands
+addCommandAlias("lint", ";scalafmtCheck;test:scalafmtCheck;scalafmtSbtCheck;scalafixAll --check")
+addCommandAlias("fmt", ";scalafmtAll;scalafmtSbt")
