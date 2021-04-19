@@ -83,6 +83,7 @@ class KafkaController(
     ) ++ envVars
 
   override def createContainer(f: CreateContainerCmd => CreateContainerCmd): CreateContainerResponse = {
+    zooKeeperController.pullImageIfNotExists()
     zooKeeperController.createContainer()
     super.createContainer(f)
   }
