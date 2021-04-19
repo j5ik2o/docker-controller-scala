@@ -214,8 +214,8 @@ private[dockerController] class DockerControllerImpl(
         })
         .awaitCompletion()
     } finally {
-      progressBarMap.foreach {
-        case (_, progressBar) => progressBar.close()
+      progressBarMap.foreach { case (_, progressBar) =>
+        progressBar.close()
       }
     }
     logger.debug("pullContainer --- finish")
@@ -264,13 +264,15 @@ private[dockerController] class DockerControllerImpl(
       override def run(): Unit = {
         @tailrec
         def loop(): Unit = {
-          if (!terminate && {
-                val frame = frameQueue.poll(outputFrameInterval.toMillis, TimeUnit.MILLISECONDS)
-                if (frame != null) {
-                  logger.debug(frame.toString)
-                  !predicate(frame)
-                } else true
-              }) {
+          if (
+            !terminate && {
+              val frame = frameQueue.poll(outputFrameInterval.toMillis, TimeUnit.MILLISECONDS)
+              if (frame != null) {
+                logger.debug(frame.toString)
+                !predicate(frame)
+              } else true
+            }
+          ) {
             loop()
           }
         }
@@ -290,12 +292,15 @@ private[dockerController] class DockerControllerImpl(
     thread.start()
     if (duration.isFinite) {
       val timer = new Timer()
-      timer.schedule(new TimerTask {
-        override def run(): Unit = {
-          terminate = true
-          thread.interrupt()
-        }
-      }, duration.toMillis)
+      timer.schedule(
+        new TimerTask {
+          override def run(): Unit = {
+            terminate = true
+            thread.interrupt()
+          }
+        },
+        duration.toMillis
+      )
       timer.cancel()
     }
     thread.join()

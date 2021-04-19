@@ -12,35 +12,35 @@ lazy val baseSettings = Seq(
   homepage := Some(url("https://github.com/j5ik2o/docker-controller-scala")),
   licenses := List("The MIT License" -> url("http://opensource.org/licenses/MIT")),
   developers := List(
-      Developer(
-        id = "j5ik2o",
-        name = "Junichi Kato",
-        email = "j5ik2o@gmail.com",
-        url = url("https://blog.j5ik2o.me")
-      )
-    ),
+    Developer(
+      id = "j5ik2o",
+      name = "Junichi Kato",
+      email = "j5ik2o@gmail.com",
+      url = url("https://blog.j5ik2o.me")
+    )
+  ),
   scalaVersion := Versions.scala212Version,
   crossScalaVersions := Seq(Versions.scala212Version, Versions.scala213Version),
   scalacOptions ++= (Seq(
-      "-feature",
-      "-deprecation",
-      "-unchecked",
-      "-encoding",
-      "UTF-8",
-      "-language:_",
-      "-Ydelambdafy:method",
-      "-target:jvm-1.8",
-      "-Yrangepos",
-      "-Ywarn-unused"
-    ) ++ crossScalacOptions(scalaVersion.value)),
+    "-feature",
+    "-deprecation",
+    "-unchecked",
+    "-encoding",
+    "UTF-8",
+    "-language:_",
+    "-Ydelambdafy:method",
+    "-target:jvm-1.8",
+    "-Yrangepos",
+    "-Ywarn-unused"
+  ) ++ crossScalacOptions(scalaVersion.value)),
   resolvers ++= Seq(
-      Resolver.sonatypeRepo("snapshots"),
-      Resolver.sonatypeRepo("releases"),
-      "Seasar Repository" at "https://maven.seasar.org/maven2/"
-    ),
+    Resolver.sonatypeRepo("snapshots"),
+    Resolver.sonatypeRepo("releases"),
+    "Seasar Repository" at "https://maven.seasar.org/maven2/"
+  ),
   libraryDependencies ++= Seq(
-      scalatest.scalatest % Test
-    ),
+    scalatest.scalatest % Test
+  ),
   ThisBuild / scalafixScalaBinaryVersion := CrossVersion.binaryScalaVersion(scalaVersion.value),
   semanticdbEnabled := true,
   semanticdbVersion := scalafixSemanticdb.revision,
@@ -63,18 +63,18 @@ val `docker-controller-scala-core` = (project in file("docker-controller-scala-c
   .settings(
     name := "docker-controller-scala-core",
     libraryDependencies ++= Seq(
-        slf4j.api,
-        dockerJava.dockerJava,
-        dockerJava.dockerJavaTransportJersey,
-        dockerJava.dockerJavaTransportHttpclient5,
-        dockerJava.dockerJavaTransportOkhttp,
-        tongfei.progressbar,
-        seasar.s2util,
-        freemarker.freemarker,
-        logback.classic % Test,
-        commons.io,
-        beachape.enumeratum
-      ),
+      slf4j.api,
+      dockerJava.dockerJava,
+      dockerJava.dockerJavaTransportJersey,
+      dockerJava.dockerJavaTransportHttpclient5,
+      dockerJava.dockerJavaTransportOkhttp,
+      tongfei.progressbar,
+      seasar.s2util,
+      freemarker.freemarker,
+      logback.classic % Test,
+      commons.io,
+      beachape.enumeratum
+    ),
     libraryDependencies ++= {
       CrossVersion.partialVersion(scalaVersion.value) match {
         case Some((2L, scalaMajor)) if scalaMajor == 13 =>
@@ -92,9 +92,9 @@ val `docker-controller-scala-scalatest` = (project in file("docker-controller-sc
   .settings(
     name := "docker-controller-scala-scalatest",
     libraryDependencies ++= Seq(
-        scalatest.scalatest,
-        logback.classic
-      )
+      scalatest.scalatest,
+      logback.classic
+    )
   ).dependsOn(`docker-controller-scala-core`)
 
 val `docker-controller-scala-dynamodb-local` = (project in file("docker-controller-scala-dynamodb-local"))
@@ -102,10 +102,10 @@ val `docker-controller-scala-dynamodb-local` = (project in file("docker-controll
   .settings(
     name := "docker-controller-scala-dynamodb-local",
     libraryDependencies ++= Seq(
-        scalatest.scalatest % Test,
-        logback.classic     % Test,
-        amazonAws.dynamodb  % Test
-      )
+      scalatest.scalatest % Test,
+      logback.classic     % Test,
+      amazonAws.dynamodb  % Test
+    )
   ).dependsOn(`docker-controller-scala-core`, `docker-controller-scala-scalatest` % Test)
 
 val `docker-controller-scala-minio` = (project in file("docker-controller-scala-minio"))
@@ -113,10 +113,10 @@ val `docker-controller-scala-minio` = (project in file("docker-controller-scala-
   .settings(
     name := "docker-controller-scala-minio",
     libraryDependencies ++= Seq(
-        scalatest.scalatest % Test,
-        logback.classic     % Test,
-        amazonAws.s3        % Test
-      )
+      scalatest.scalatest % Test,
+      logback.classic     % Test,
+      amazonAws.s3        % Test
+    )
   ).dependsOn(`docker-controller-scala-core`, `docker-controller-scala-scalatest` % Test)
 
 val `docker-controller-scala-zookeeper` = (project in file("docker-controller-scala-zookeeper"))
@@ -124,10 +124,10 @@ val `docker-controller-scala-zookeeper` = (project in file("docker-controller-sc
   .settings(
     name := "docker-controller-scala-zookeeper",
     libraryDependencies ++= Seq(
-        scalatest.scalatest        % Test,
-        logback.classic            % Test,
-        apache.zooKeeper.zooKeeper % Test
-      )
+      scalatest.scalatest        % Test,
+      logback.classic            % Test,
+      apache.zooKeeper.zooKeeper % Test
+    )
   ).dependsOn(`docker-controller-scala-core`, `docker-controller-scala-scalatest` % Test)
 
 val `docker-controller-scala-kafka` = (project in file("docker-controller-scala-kafka"))
@@ -135,10 +135,10 @@ val `docker-controller-scala-kafka` = (project in file("docker-controller-scala-
   .settings(
     name := "docker-controller-scala-kafka",
     libraryDependencies ++= Seq(
-        scalatest.scalatest       % Test,
-        logback.classic           % Test,
-        apache.kafka.kafkaClients % Test
-      )
+      scalatest.scalatest       % Test,
+      logback.classic           % Test,
+      apache.kafka.kafkaClients % Test
+    )
   ).dependsOn(
     `docker-controller-scala-core`,
     `docker-controller-scala-zookeeper`,
@@ -150,10 +150,10 @@ val `docker-controller-scala-mysql` = (project in file("docker-controller-scala-
   .settings(
     name := "docker-controller-scala-mysql",
     libraryDependencies ++= Seq(
-        scalatest.scalatest % Test,
-        logback.classic     % Test,
-        mysql.connectorJava % Test
-      )
+      scalatest.scalatest % Test,
+      logback.classic     % Test,
+      mysql.connectorJava % Test
+    )
   ).dependsOn(`docker-controller-scala-core`, `docker-controller-scala-scalatest` % Test)
 
 val `docker-controller-scala-elasticsearch` = (project in file("docker-controller-scala-elasticsearch"))
@@ -161,10 +161,10 @@ val `docker-controller-scala-elasticsearch` = (project in file("docker-controlle
   .settings(
     name := "docker-controller-scala-elasticsearch",
     libraryDependencies ++= Seq(
-        scalatest.scalatest               % Test,
-        logback.classic                   % Test,
-        elasticsearch.restHighLevelClient % Test
-      )
+      scalatest.scalatest               % Test,
+      logback.classic                   % Test,
+      elasticsearch.restHighLevelClient % Test
+    )
   ).dependsOn(`docker-controller-scala-core`, `docker-controller-scala-scalatest` % Test)
 
 val `docker-controller-scala-localstack` = (project in file("docker-controller-scala-localstack"))
@@ -172,11 +172,11 @@ val `docker-controller-scala-localstack` = (project in file("docker-controller-s
   .settings(
     name := "docker-controller-scala-localstack",
     libraryDependencies ++= Seq(
-        scalatest.scalatest % Test,
-        logback.classic     % Test,
-        amazonAws.s3        % Test,
-        amazonAws.dynamodb  % Test
-      )
+      scalatest.scalatest % Test,
+      logback.classic     % Test,
+      amazonAws.s3        % Test,
+      amazonAws.dynamodb  % Test
+    )
   ).dependsOn(`docker-controller-scala-core`, `docker-controller-scala-scalatest` % Test)
 
 val `docker-controller-scala-root` = (project in file("."))

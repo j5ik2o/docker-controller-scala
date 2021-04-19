@@ -49,11 +49,10 @@ class MySQLController(
 
   private val environmentVariables: Map[String, String] = {
     val env1 = Map[String, String](
-        "MYSQL_ROOT_PASSWORD" -> rootPassword
-      ) ++ envVars
-    val env2 = userNameAndPassword.fold(env1) {
-      case MySQLUserNameAndPassword(u, p) =>
-        env1 ++ Map("MYSQL_USER" -> u, "MYSQL_PASSWORD" -> p)
+      "MYSQL_ROOT_PASSWORD" -> rootPassword
+    ) ++ envVars
+    val env2 = userNameAndPassword.fold(env1) { case MySQLUserNameAndPassword(u, p) =>
+      env1 ++ Map("MYSQL_USER" -> u, "MYSQL_PASSWORD" -> p)
     }
     databaseName.fold(env2) { name => env2 ++ Map("MYSQL_DATABASE" -> name) }
   }

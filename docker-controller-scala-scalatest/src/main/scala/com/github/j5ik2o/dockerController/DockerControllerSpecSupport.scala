@@ -59,7 +59,7 @@ trait DockerControllerSpecSupport extends DockerControllerSuiteBase { this: Test
   }
 
   protected def beforeCreateContainers(): Unit = {}
-  protected def afterRemoveContainers(): Unit  = {}
+  protected def afterRemoveContainers(): Unit = {}
 
   abstract override def run(testName: Option[String], args: Args): Status = {
     (createRemoveLifecycle, startStopLifecycle) match {
