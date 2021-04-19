@@ -45,6 +45,7 @@ class MySQLControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport {
           assert(resultSet.getInt(1) == 1)
       } catch {
         case NonFatal(ex) =>
+          ex.printStackTrace()
           fail("occurred error", ex)
       } finally {
         if (resultSet != null)
