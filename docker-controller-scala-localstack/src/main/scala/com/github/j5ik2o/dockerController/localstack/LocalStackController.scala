@@ -3,13 +3,12 @@ package com.github.j5ik2o.dockerController.localstack
 import com.github.dockerjava.api.DockerClient
 import com.github.dockerjava.api.command.CreateContainerCmd
 import com.github.dockerjava.api.model.HostConfig.newHostConfig
-import com.github.dockerjava.api.model.{ ExposedPort, Ports }
+import com.github.dockerjava.api.model.{ExposedPort, Ports}
 import com.github.j5ik2o.dockerController.DockerControllerImpl
 import com.github.j5ik2o.dockerController.localstack.LocalStackController._
-import enumeratum._
 
 import scala.collection.immutable
-import scala.concurrent.duration.{ DurationInt, FiniteDuration }
+import scala.concurrent.duration.{DurationInt, FiniteDuration}
 
 object LocalStackController {
   final val DefaultImageName              = "localstack/localstack"
@@ -37,10 +36,9 @@ object LocalStackController {
     )
 }
 
-sealed abstract class Service(override val entryName: String, val port: Int) extends EnumEntry
+sealed abstract class Service(val entryName: String, val port: Int)
 
-object Service extends Enum[Service] {
-  override def values: immutable.IndexedSeq[Service] = findValues
+object Service {
   case object ApiGateway      extends Service("apigateway", 4567)
   case object DynamoDB        extends Service("dynamodb", 4569)
   case object DynamoDBStreams extends Service("dynamodbstreams", 4570)
