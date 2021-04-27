@@ -12,8 +12,8 @@ import scala.collection.immutable
 import scala.concurrent.duration.{ DurationInt, FiniteDuration }
 
 object LocalStackController {
-  final val DefaultImageName = "localstack/localstack"
-  final val DefaultImageTag: Some[String]  = Some("0.11.2")
+  final val DefaultImageName              = "localstack/localstack"
+  final val DefaultImageTag: Some[String] = Some("0.11.2")
 
   def apply(
       dockerClient: DockerClient,
