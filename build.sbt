@@ -1,8 +1,17 @@
 import Dependencies._
 
 def crossScalacOptions(scalaVersion: String): Seq[String] = CrossVersion.partialVersion(scalaVersion) match {
+  case Some((3L, _)) =>
+    Seq(
+      "-source:3.0-migration"
+    )
   case Some((2L, scalaMajor)) if scalaMajor >= 12 =>
-    Seq.empty
+    Seq(
+      "-Ydelambdafy:method",
+      "-target:jvm-1.8",
+      "-Yrangepos",
+      "-Ywarn-unused"
+    )
   case Some((2L, scalaMajor)) if scalaMajor <= 11 =>
     Seq("-Yinline-warnings")
 }
@@ -20,18 +29,14 @@ lazy val baseSettings = Seq(
     )
   ),
   scalaVersion := Versions.scala212Version,
-  crossScalaVersions := Seq(Versions.scala212Version, Versions.scala213Version),
+  crossScalaVersions := Seq(Versions.scala212Version, Versions.scala213Version, Versions.scala3Version),
   scalacOptions ++= (Seq(
+    "-unchecked",
     "-feature",
     "-deprecation",
-    "-unchecked",
     "-encoding",
     "UTF-8",
-    "-language:_",
-    "-Ydelambdafy:method",
-    "-target:jvm-1.8",
-    "-Yrangepos",
-    "-Ywarn-unused"
+    "-language:_"
   ) ++ crossScalacOptions(scalaVersion.value)),
   resolvers ++= Seq(
     Resolver.sonatypeRepo("snapshots"),
@@ -73,10 +78,12 @@ val `docker-controller-scala-core` = (project in file("docker-controller-scala-c
       freemarker.freemarker,
       logback.classic % Test,
       commons.io,
-      beachape.enumeratum
+      beachape.enumeratum.cross(CrossVersion.for3Use2_13)
     ),
     libraryDependencies ++= {
       CrossVersion.partialVersion(scalaVersion.value) match {
+        case Some((3L, _)) =>
+          Seq.empty
         case Some((2L, scalaMajor)) if scalaMajor == 13 =>
           Seq.empty
         case Some((2L, scalaMajor)) if scalaMajor == 12 =>

@@ -5,7 +5,8 @@ object Dependencies {
   object Versions {
     val scala212Version              = "2.12.13"
     val scala213Version              = "2.13.5"
-    val scalaTestVersion             = "3.2.8"
+    val scala3Version                = "3.0.0-RC2"
+    val scalaTestVersion             = "3.2.7"
     val logbackVersion               = "1.2.3"
     val scalaCollectionCompatVersion = "2.4.3"
     val dockerJavaVersion            = "3.2.8"
