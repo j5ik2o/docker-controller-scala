@@ -2,7 +2,7 @@ package com.github.j5ik2o.dockerController
 
 import org.scalatest._
 
-trait DockerControllerSpecSupport extends DockerControllerSuiteBase { this: TestSuite =>
+trait DockerControllerSpecSupport extends SuiteMixin with DockerControllerHelper { this: TestSuite =>
 
   protected def createRemoveLifecycle: DockerContainerCreateRemoveLifecycle.Value =
     DockerContainerCreateRemoveLifecycle.ForEachTest
