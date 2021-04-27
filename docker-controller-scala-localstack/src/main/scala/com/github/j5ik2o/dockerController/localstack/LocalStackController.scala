@@ -3,12 +3,12 @@ package com.github.j5ik2o.dockerController.localstack
 import com.github.dockerjava.api.DockerClient
 import com.github.dockerjava.api.command.CreateContainerCmd
 import com.github.dockerjava.api.model.HostConfig.newHostConfig
-import com.github.dockerjava.api.model.{ExposedPort, Ports}
+import com.github.dockerjava.api.model.{ ExposedPort, Ports }
 import com.github.j5ik2o.dockerController.DockerControllerImpl
 import com.github.j5ik2o.dockerController.localstack.LocalStackController._
 
 import scala.collection.immutable
-import scala.concurrent.duration.{DurationInt, FiniteDuration}
+import scala.concurrent.duration.{ DurationInt, FiniteDuration }
 
 object LocalStackController {
   final val DefaultImageName              = "localstack/localstack"
