@@ -5,12 +5,11 @@ import com.github.dockerjava.core.{ DockerClientConfig, DockerClientImpl }
 import com.github.dockerjava.httpclient5.ApacheDockerHttpClient
 import com.github.dockerjava.transport.DockerHttpClient
 import com.github.j5ik2o.dockerController.WaitPredicates.WaitPredicate
-import org.scalatest.{ Suite, SuiteMixin }
 import org.slf4j.{ Logger, LoggerFactory }
 
 import scala.concurrent.duration.Duration
 
-trait DockerControllerSuiteBase extends SuiteMixin { this: Suite =>
+trait DockerControllerHelper {
 
   case class WaitPredicateSetting(awaitDuration: Duration, waitPredicate: WaitPredicate)
 
