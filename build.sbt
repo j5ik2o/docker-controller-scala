@@ -3,7 +3,8 @@ import Dependencies._
 def crossScalacOptions(scalaVersion: String): Seq[String] = CrossVersion.partialVersion(scalaVersion) match {
   case Some((3L, _)) =>
     Seq(
-      "-source:3.0-migration"
+      "-source:3.0-migration",
+      "-Xignore-scala2-macros"
     )
   case Some((2L, scalaMajor)) if scalaMajor >= 12 =>
     Seq(
@@ -28,7 +29,7 @@ lazy val baseSettings = Seq(
       url = url("https://blog.j5ik2o.me")
     )
   ),
-  scalaVersion := Versions.scala212Version,
+  scalaVersion := Versions.scala3Version,
   crossScalaVersions := Seq(Versions.scala212Version, Versions.scala213Version, Versions.scala3Version),
   scalacOptions ++= (Seq(
     "-unchecked",
@@ -78,7 +79,6 @@ val `docker-controller-scala-core` = (project in file("docker-controller-scala-c
       freemarker.freemarker,
       logback.classic % Test,
       commons.io,
-      beachape.enumeratum.cross(CrossVersion.for3Use2_13)
     ),
     libraryDependencies ++= {
       CrossVersion.partialVersion(scalaVersion.value) match {
