@@ -36,12 +36,14 @@ trait DockerControllerHelper {
   ): Unit = {
     logger.debug(s"createDockerContainer --- $testName")
     dockerController.pullImageIfNotExists()
+    beforeDockerContainerCreate(dockerController, testName)
     dockerController.createContainer()
     afterDockerContainerCreated(dockerController, testName)
   }
 
   protected def startDockerContainer(dockerController: DockerController, testName: Option[String]): Unit = {
     logger.debug(s"startDockerContainer --- $testName")
+    beforeDocketContainerStart(dockerController, testName)
     dockerController.startContainer()
     val waitPredicateOpt = waitPredicatesSettings.get(dockerController)
     waitPredicateOpt.foreach { waitPredicate =>
@@ -52,8 +54,9 @@ trait DockerControllerHelper {
 
   protected def stopDockerContainer(dockerController: DockerController, testName: Option[String]): Unit = {
     logger.debug(s"stopDockerContainer --- $testName")
-    beforeDockerContainerStopped(dockerController, testName)
+    beforeDockerContainerStop(dockerController, testName)
     dockerController.stopContainer()
+    afterDockerContainerStopped(dockerController, testName)
   }
 
   protected def removeDockerContainer(
@@ -61,24 +64,41 @@ trait DockerControllerHelper {
       testName: Option[String]
   ): Unit = {
     logger.debug(s"removeDockerContainer --- $testName")
-    beforeDockerContainerRemoved(dockerController, testName)
+    beforeDockerContainerRemove(dockerController, testName)
     dockerController.removeContainer()
+    afterDockerContainerRemoved(dockerController, testName)
+  }
+
+  protected def beforeDockerContainerCreate(dockerController: DockerController, testName: Option[String]): Unit = {
+    logger.debug(s"beforeDockerContainerCreate --- $testName")
   }
 
   protected def afterDockerContainerCreated(dockerController: DockerController, testName: Option[String]): Unit = {
     logger.debug(s"afterDockerContainerCreated --- $testName")
   }
 
-  protected def beforeDockerContainerRemoved(dockerController: DockerController, testName: Option[String]): Unit = {
-    logger.debug(s"beforeDockerContainerRemoved --- $testName")
+  protected def beforeDockerContainerRemove(dockerController: DockerController, testName: Option[String]): Unit = {
+    logger.debug(s"beforeDockerContainerRemove --- $testName")
+  }
+
+  protected def afterDockerContainerRemoved(dockerController: DockerController, testName: Option[String]): Unit = {
+    logger.debug(s"afterDockerContainerRemoved --- $testName")
+  }
+
+  protected def beforeDocketContainerStart(dockerController: DockerController, testName: Option[String]): Unit = {
+    logger.debug(s"beforeDocketContainerStart --- $testName")
   }
 
   protected def afterDocketContainerStarted(dockerController: DockerController, testName: Option[String]): Unit = {
     logger.debug(s"afterDocketContainerStarted --- $testName")
   }
 
-  protected def beforeDockerContainerStopped(dockerController: DockerController, testName: Option[String]): Unit = {
+  protected def beforeDockerContainerStop(dockerController: DockerController, testName: Option[String]): Unit = {
     logger.debug(s"beforeDockerContainerStopped --- $testName")
+  }
+
+  protected def afterDockerContainerStopped(dockerController: DockerController, testName: Option[String]): Unit = {
+    logger.debug(s"afterDockerContainerStopped --- $testName")
   }
 
 }
