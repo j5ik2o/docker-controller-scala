@@ -78,7 +78,7 @@ val `docker-controller-scala-core` = (project in file("docker-controller-scala-c
       seasar.s2util,
       freemarker.freemarker,
       logback.classic % Test,
-      commons.io,
+      commons.io
     ),
     libraryDependencies ++= {
       CrossVersion.partialVersion(scalaVersion.value) match {
