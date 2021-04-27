@@ -11,7 +11,7 @@ This library provides an easy and simple way to handle Docker Container or Docke
 
 ## Installation
 
-Add the following to your sbt build (2.12.x, 2.13.x):
+Add the following to your sbt build (2.12.x, 2.13.x, 3.0.0-RC2):
 
 ```scala
 resolvers += "Sonatype OSS Release Repository" at "https://oss.sonatype.org/content/repositories/releases/"
