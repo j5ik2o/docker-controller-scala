@@ -60,6 +60,8 @@ trait DockerControllerSpecSupport extends SuiteMixin with DockerControllerHelper
 
   protected def beforeCreateContainers(): Unit = {}
   protected def afterRemoveContainers(): Unit = {}
+  protected def afterStartContainers(): Unit = {}
+  protected def beforeStopContainers(): Unit = {}
 
   abstract override def run(testName: Option[String], args: Args): Status = {
     (createRemoveLifecycle, startStopLifecycle) match {
@@ -76,7 +78,10 @@ trait DockerControllerSpecSupport extends SuiteMixin with DockerControllerHelper
         beforeCreateContainers()
         created = createDockerContainers(DockerContainerCreateRemoveLifecycle.ForAllTest, testName)
         started = startDockerContainers(DockerContainerStartStopLifecycle.ForAllTest, testName)
-        super.run(testName, args)
+        afterStartContainers()
+        val result = super.run(testName, args)
+        beforeStopContainers()
+        result
       } finally {
         try {
           if (started)
