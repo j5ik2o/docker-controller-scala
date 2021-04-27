@@ -197,7 +197,8 @@ val `docker-controller-scala-root` = (project in file("."))
     `docker-controller-scala-minio`,
     `docker-controller-scala-zookeeper`,
     `docker-controller-scala-kafka`,
-    `docker-controller-scala-elasticsearch`
+    `docker-controller-scala-elasticsearch`,
+    `docker-controller-scala-localstack`
   )
 
 // --- Custom commands
