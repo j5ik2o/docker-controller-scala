@@ -13,8 +13,6 @@ def crossScalacOptions(scalaVersion: String): Seq[String] = CrossVersion.partial
       "-Yrangepos",
       "-Ywarn-unused"
     )
-  case Some((2L, scalaMajor)) if scalaMajor <= 11 =>
-    Seq("-Yinline-warnings")
 }
 
 lazy val baseSettings = Seq(
