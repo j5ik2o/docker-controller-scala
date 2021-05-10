@@ -47,7 +47,7 @@ object Dependencies {
   }
 
   object mysql {
-    val connectorJava = "mysql" % "mysql-connector-java" % "8.0.24"
+    val connectorJava = "mysql" % "mysql-connector-java" % "8.0.25"
   }
 
   object elasticsearch {
