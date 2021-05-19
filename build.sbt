@@ -46,7 +46,7 @@ lazy val baseSettings = Seq(
     scalatest.scalatest % Test
   ),
   ThisBuild / scalafixScalaBinaryVersion := CrossVersion.binaryScalaVersion(scalaVersion.value),
-  semanticdbEnabled := true,
+  semanticdbEnabled := false, 
   semanticdbVersion := scalafixSemanticdb.revision,
   Test / publishArtifact := false,
   Test / fork := true,
