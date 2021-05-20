@@ -46,7 +46,7 @@ lazy val baseSettings = Seq(
     scalatest.scalatest % Test
   ),
   ThisBuild / scalafixScalaBinaryVersion := CrossVersion.binaryScalaVersion(scalaVersion.value),
-  semanticdbEnabled := false,
+  semanticdbEnabled := true,
   semanticdbVersion := scalafixSemanticdb.revision,
   Test / publishArtifact := false,
   Test / fork := true,
@@ -200,6 +200,5 @@ val `docker-controller-scala-root` = (project in file("."))
   )
 
 // --- Custom commands
-// addCommandAlias("lint", ";scalafmtCheck;test:scalafmtCheck;scalafmtSbtCheck;scalafixAll --check")
-addCommandAlias("lint", ";scalafmtCheck;test:scalafmtCheck;scalafmtSbtCheck")
+addCommandAlias("lint", ";scalafmtCheck;test:scalafmtCheck;scalafmtSbtCheck;scalafixAll --check")
 addCommandAlias("fmt", ";scalafmtAll;scalafmtSbt")
