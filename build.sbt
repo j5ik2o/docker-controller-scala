@@ -161,6 +161,17 @@ val `docker-controller-scala-mysql` = (project in file("docker-controller-scala-
     )
   ).dependsOn(`docker-controller-scala-core`, `docker-controller-scala-scalatest` % Test)
 
+val `docker-controller-scala-redis` = (project in file("docker-controller-scala-redis"))
+  .settings(baseSettings)
+  .settings(
+    name := "docker-controller-scala-redis",
+    libraryDependencies ++= Seq(
+      scalatest.scalatest    % Test,
+      logback.classic        % Test,
+      (debasishg.redisClient % Test).cross(CrossVersion.for3Use2_13)
+    )
+  ).dependsOn(`docker-controller-scala-core`, `docker-controller-scala-scalatest` % Test)
+
 val `docker-controller-scala-elasticsearch` = (project in file("docker-controller-scala-elasticsearch"))
   .settings(baseSettings)
   .settings(
@@ -191,6 +202,7 @@ val `docker-controller-scala-root` = (project in file("."))
     `docker-controller-scala-core`,
     `docker-controller-scala-scalatest`,
     `docker-controller-scala-mysql`,
+    `docker-controller-scala-redis`,
     `docker-controller-scala-dynamodb-local`,
     `docker-controller-scala-minio`,
     `docker-controller-scala-zookeeper`,

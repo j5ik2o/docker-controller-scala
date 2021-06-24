@@ -98,4 +98,8 @@ object Dependencies {
 
   }
 
+  object debasishg {
+    val redisClient = "net.debasishg" %% "redisclient" % "3.30"
+  }
+
 }
