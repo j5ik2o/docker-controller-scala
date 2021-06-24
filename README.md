@@ -45,6 +45,7 @@ The `DockerController` for the corresponding preset is as follows. Please see th
 - [ZooKeeperController](docker-controller-scala-zookeeper/src/main/scala/com/github/j5ik2o/dockerController/zooKeeper/ZooKeeperController.scala) / [ZooKeeperControllerSpec](docker-controller-scala-zookeeper/src/test/scala/com/github/j5ik2o/dockerController/ZooKeeperControllerSpec.scala)
 - [ElasticsearchController](docker-controller-scala-elasticsearch/src/main/scala/com/github/j5ik2o/dockerController/elasticsearch/ElasticsearchController.scala) / [ElasticsearchControllerSpec](docker-controller-scala-elasticsearch/src/test/scala/com/github/j5ik2o/dockerController/elasticsearch/ElasticsearchControllerSpec.scala)
 - [LocalStackController](docker-controller-scala-localstack/src/main/scala/com/github/j5ik2o/dockerController/localstack/LocalStackController.scala) / [LocalStackControllerSpec](docker-controller-scala-localstack/src/test/scala/com/github/j5ik2o/dockerController/localstack/LocalStackControllerSpec.scala)
+- [RedisController](docker-controller-scala-redis/src/main/scala/com/github/j5ik2o/dockerController/redis/RedisController.scala) / [RedisControllerSpec](docker-controller-scala-redis/src/test/scala/com/github/j5ik2o/dockerController/redis/RedisControllerSpec.scala)
 
 ```scala
 class MySQLControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport {
