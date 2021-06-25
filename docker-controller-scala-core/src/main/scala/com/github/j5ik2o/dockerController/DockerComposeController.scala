@@ -4,10 +4,11 @@ import com.github.dockerjava.api.DockerClient
 import com.github.dockerjava.api.command.CreateContainerCmd
 import com.github.dockerjava.api.model.HostConfig.newHostConfig
 import com.github.dockerjava.api.model.{ AccessMode, Bind, SELContext, Volume }
+import org.apache.commons.io.FileUtils
 import org.seasar.util.io.ResourceUtil
 
 import java.io.File
-import java.nio.file.Files
+import java.nio.file.StandardCopyOption
 import scala.concurrent.duration.{ DurationInt, FiniteDuration }
 
 object DockerComposeController {
@@ -15,9 +16,15 @@ object DockerComposeController {
   def apply(dockerClient: DockerClient, outputFrameInterval: FiniteDuration = 500.millis)(
       dockerComposeWorkingDir: File,
       ymlResourceName: String,
+      environmentNames: Seq[String],
       context: Map[String, AnyRef]
   ): DockerController =
-    new DockerComposeController(dockerClient, outputFrameInterval)(dockerComposeWorkingDir, ymlResourceName, context)
+    new DockerComposeController(dockerClient, outputFrameInterval)(
+      dockerComposeWorkingDir,
+      ymlResourceName,
+      environmentNames,
+      context
+    )
 }
 
 private[dockerController] class DockerComposeController(
@@ -26,17 +33,35 @@ private[dockerController] class DockerComposeController(
 )(
     val dockerComposeWorkingDir: File,
     val ymlResourceName: String,
+    val environmentResourceNames: Seq[String],
     val context: Map[String, AnyRef]
 ) extends DockerControllerImpl(dockerClient, outputFrameInterval)("docker/compose", Some("1.24.1")) {
 
   override protected def newCreateContainerCmd(): CreateContainerCmd = {
+    val id = Base58.randomString(16)
+    if (!dockerComposeWorkingDir.exists()) dockerComposeWorkingDir.mkdir()
     val ymlFile = if (ymlResourceName.endsWith(".ftl")) {
-      if (!dockerComposeWorkingDir.exists()) dockerComposeWorkingDir.mkdir()
-      val file = Files.createTempFile(dockerComposeWorkingDir.toPath, "docker-compose-", ".yml").toFile
-      DockerComposeYmlGen.generate(ymlResourceName, context, file)
+      val file = new File(dockerComposeWorkingDir, s"docker-compose-$id.yml")
+      DockerComposeFileGen.generate(ymlResourceName, context + ("id" -> id), file)
       file
-    } else
-      ResourceUtil.getResourceAsFile(ymlResourceName)
+    } else {
+      val srcFile  = ResourceUtil.getResourceAsFile(ymlResourceName)
+      val destFile = new File(dockerComposeWorkingDir, srcFile.getName)
+      FileUtils.copyFile(srcFile, destFile, StandardCopyOption.REPLACE_EXISTING)
+      destFile
+    }
+
+    environmentResourceNames.foreach { environmentResourceName =>
+      if (environmentResourceName.endsWith(".ftl")) {
+        val Array(base, ext, _) = environmentResourceName.split("\\.")
+        val file                = new File(dockerComposeWorkingDir, s"$base-$id.$ext")
+        DockerComposeFileGen.generate(environmentResourceName, context, file)
+      } else {
+        val srcFile  = ResourceUtil.getResourceAsFile(environmentResourceName)
+        val destFile = new File(dockerComposeWorkingDir, srcFile.getName)
+        FileUtils.copyFile(srcFile, destFile, StandardCopyOption.REPLACE_EXISTING)
+      }
+    }
 
     val baseDir    = ymlFile.getParentFile
     val bind       = new Bind(baseDir.getPath, new Volume(baseDir.getPath), AccessMode.ro, SELContext.none)

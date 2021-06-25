@@ -11,10 +11,11 @@ import org.slf4j.{ Logger, LoggerFactory }
 
 import java.io.{ File, InputStream }
 import java.net.{ HttpURLConnection, URL }
+import java.time.Instant
 import scala.concurrent.duration.Duration
 import scala.jdk.CollectionConverters._
 
-class DockerComposeControllerSpec extends AnyFreeSpec with BeforeAndAfter with BeforeAndAfterAll {
+class DockerComposeController2Spec extends AnyFreeSpec with BeforeAndAfter with BeforeAndAfterAll {
   val logger: Logger = LoggerFactory.getLogger(getClass)
 
   val dockerClientConfig: DockerClientConfig = DockerClientConfigUtil.buildConfigAwareOfDockerMachine()
@@ -61,9 +62,9 @@ class DockerComposeControllerSpec extends AnyFreeSpec with BeforeAndAfter with B
     val dockerComposeWorkingDir: File = new File(buildDir, "docker-compose")
     dockerController = DockerComposeController(dockerClient)(
       dockerComposeWorkingDir,
-      "docker-compose-2.yml.ftl",
-      Seq.empty,
-      Map("nginxHostPort" -> hostPort.toString)
+      "docker-compose-3.yml.ftl",
+      Seq("settings.env.ftl"),
+      Map("hostPort" -> hostPort.toString, "message" -> Instant.now().toString)
     )
     dockerController.pullImageIfNotExists()
     dockerController.createContainer()
@@ -77,7 +78,7 @@ class DockerComposeControllerSpec extends AnyFreeSpec with BeforeAndAfter with B
   before {
     dockerController.startContainer()
     dockerController.awaitCondition(Duration.Inf)(
-      _.toString.contains("Configuration complete; ready for start up")
+      _.toString.contains("Listening on port 3000")
     )
     Thread.sleep(1000)
   }
