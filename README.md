@@ -31,6 +31,15 @@ libraryDependencies += Seq(
 )
 ```
 
+In most cases, you can just select the scalatest module and the module you need.
+
+```scala
+libraryDependencies += Seq(
+  "com.github.j5ik2o" %% "docker-controller-scala-scalatest" % version,
+  "com.github.j5ik2o" %% "docker-controller-scala-mysql" % version,
+)
+```
+
 ## Usage
 
 [DockerController](docker-controller-scala-core/src/main/scala/com/github/j5ik2o/dockerController/DockerController.scala) that the thin wrapper for [docker-java](https://github.com/docker-java/docker-java) controls Docker Image and Docker Container for testing.
