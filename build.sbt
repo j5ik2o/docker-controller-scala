@@ -172,6 +172,17 @@ val `docker-controller-scala-redis` = (project in file("docker-controller-scala-
     )
   ).dependsOn(`docker-controller-scala-core`, `docker-controller-scala-scalatest` % Test)
 
+val `docker-controller-scala-elasticmq` = (project in file("docker-controller-scala-elasticmq"))
+  .settings(baseSettings)
+  .settings(
+    name := "docker-controller-scala-elasticmq",
+    libraryDependencies ++= Seq(
+      scalatest.scalatest % Test,
+      logback.classic     % Test,
+      amazonAws.sqs       % Test
+    )
+  ).dependsOn(`docker-controller-scala-core`, `docker-controller-scala-scalatest` % Test)
+
 val `docker-controller-scala-elasticsearch` = (project in file("docker-controller-scala-elasticsearch"))
   .settings(baseSettings)
   .settings(
