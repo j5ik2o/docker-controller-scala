@@ -56,7 +56,7 @@ class RedisController(
 
   override protected def newCreateContainerCmd(): CreateContainerCmd = {
     val containerPort = ExposedPort.tcp(DefaultContainerPort)
-    val portBinding   = new Ports()
+    val portBinding   = new Ports
     portBinding.bind(containerPort, Ports.Binding.bindPort(hostPort))
     super
       .newCreateContainerCmd()
