@@ -27,6 +27,7 @@ libraryDependencies += Seq(
   "com.github.j5ik2o" %% "docker-controller-scala-elasticsearch" % version, // optional
   "com.github.j5ik2o" %% "docker-controller-scala-localstack" % version, // optional
   "com.github.j5ik2o" %% "docker-controller-scala-redis" % version, // optional
+  "com.github.j5ik2o" %% "docker-controller-scala-elasticmq" % version, // optional
 )
 ```
 
@@ -46,6 +47,8 @@ The `DockerController` for the corresponding preset is as follows. Please see th
 - [ElasticsearchController](docker-controller-scala-elasticsearch/src/main/scala/com/github/j5ik2o/dockerController/elasticsearch/ElasticsearchController.scala) / [ElasticsearchControllerSpec](docker-controller-scala-elasticsearch/src/test/scala/com/github/j5ik2o/dockerController/elasticsearch/ElasticsearchControllerSpec.scala)
 - [LocalStackController](docker-controller-scala-localstack/src/main/scala/com/github/j5ik2o/dockerController/localstack/LocalStackController.scala) / [LocalStackControllerSpec](docker-controller-scala-localstack/src/test/scala/com/github/j5ik2o/dockerController/localstack/LocalStackControllerSpec.scala)
 - [RedisController](docker-controller-scala-redis/src/main/scala/com/github/j5ik2o/dockerController/redis/RedisController.scala) / [RedisControllerSpec](docker-controller-scala-redis/src/test/scala/com/github/j5ik2o/dockerController/redis/RedisControllerSpec.scala)
+- [ElasticMQController](docker-controller-scala-elasticmq/src/main/scala/com/github/j5ik2o/dockerController/elasticmq/ElasticMQController.scala) / [ElasticMQControllerSpec](docker-controller-scala-elasticmq/src/test/scala/com/github/j5ik2o/dockerController/elasticmq/ElasticMQControllerSpec.scala)
+
 
 ```scala
 class MySQLControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport {
