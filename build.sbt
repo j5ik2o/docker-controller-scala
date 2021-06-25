@@ -213,13 +213,14 @@ val `docker-controller-scala-root` = (project in file("."))
     `docker-controller-scala-core`,
     `docker-controller-scala-scalatest`,
     `docker-controller-scala-mysql`,
-    `docker-controller-scala-redis`,
     `docker-controller-scala-dynamodb-local`,
     `docker-controller-scala-minio`,
     `docker-controller-scala-zookeeper`,
     `docker-controller-scala-kafka`,
     `docker-controller-scala-elasticsearch`,
-    `docker-controller-scala-localstack`
+    `docker-controller-scala-localstack`,
+    `docker-controller-scala-redis`,
+    `docker-controller-scala-elasticmq`
   )
 
 // --- Custom commands

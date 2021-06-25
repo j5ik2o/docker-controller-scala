@@ -7,7 +7,7 @@ import java.io.{ File, FileWriter }
 import java.util.Locale
 import scala.jdk.CollectionConverters._
 
-object DockerComposeYmlGen {
+object DockerComposeFileGen {
 
   final val FreemarkerVersion = Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS
 
