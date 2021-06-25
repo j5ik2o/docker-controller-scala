@@ -50,16 +50,17 @@ lazy val baseSettings = Seq(
   semanticdbVersion := scalafixSemanticdb.revision,
   Test / publishArtifact := false,
   Test / fork := true,
-  testForkedParallel := true,
-  concurrentRestrictions := {
-    val par = parallelExecution.value
-    val max = EvaluateTask.SystemProcessors
-    List(
-      Tags.limitAll(if (par) max else 1),
-      Tags.limit(Tags.ForkedTestGroup, 2),
-      Tags.exclusiveGroup(Tags.Clean)
-    )
-  }
+  Test / parallelExecution := false
+//  testForkedParallel := true,
+//  concurrentRestrictions := {
+//    val par = parallelExecution.value
+//    val max = EvaluateTask.SystemProcessors
+//    List(
+//      Tags.limitAll(if (par) max else 1),
+//      Tags.limit(Tags.ForkedTestGroup, 2),
+//      Tags.exclusiveGroup(Tags.Clean)
+//    )
+//  }
 )
 
 val `docker-controller-scala-core` = (project in file("docker-controller-scala-core"))
