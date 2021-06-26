@@ -162,6 +162,17 @@ val `docker-controller-scala-mysql` = (project in file("docker-controller-scala-
     )
   ).dependsOn(`docker-controller-scala-core`, `docker-controller-scala-scalatest` % Test)
 
+val `docker-controller-scala-postgresql` = (project in file("docker-controller-scala-postgresql"))
+  .settings(baseSettings)
+  .settings(
+    name := "docker-controller-scala-postgresql",
+    libraryDependencies ++= Seq(
+      scalatest.scalatest % Test,
+      logback.classic     % Test,
+      "org.postgresql"    % "postgresql" % "42.2.22" % Test
+    )
+  ).dependsOn(`docker-controller-scala-core`, `docker-controller-scala-scalatest` % Test)
+
 val `docker-controller-scala-redis` = (project in file("docker-controller-scala-redis"))
   .settings(baseSettings)
   .settings(
