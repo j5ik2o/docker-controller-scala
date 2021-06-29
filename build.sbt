@@ -141,6 +141,17 @@ val `docker-controller-scala-kafka` = (project in file("docker-controller-scala-
     `docker-controller-scala-scalatest` % Test
   )
 
+val `docker-controller-scala-flyway` = (project in file("docker-controller-scala-flyway"))
+  .settings(baseSettings)
+  .settings(
+    name := "docker-controller-scala-flyway",
+    libraryDependencies ++= Seq(
+      "org.flywaydb"      % "flyway-core" % "7.10.0",
+      scalatest.scalatest % Test,
+      logback.classic     % Test
+    )
+  ).dependsOn(`docker-controller-scala-core`, `docker-controller-scala-scalatest` % Test)
+
 val `docker-controller-scala-mysql` = (project in file("docker-controller-scala-mysql"))
   .settings(baseSettings)
   .settings(
@@ -150,7 +161,11 @@ val `docker-controller-scala-mysql` = (project in file("docker-controller-scala-
       logback.classic     % Test,
       mysql.connectorJava % Test
     )
-  ).dependsOn(`docker-controller-scala-core`, `docker-controller-scala-scalatest` % Test)
+  ).dependsOn(
+    `docker-controller-scala-core`,
+    `docker-controller-scala-scalatest` % Test,
+    `docker-controller-scala-flyway`    % Test
+  )
 
 val `docker-controller-scala-postgresql` = (project in file("docker-controller-scala-postgresql"))
   .settings(baseSettings)
@@ -161,7 +176,11 @@ val `docker-controller-scala-postgresql` = (project in file("docker-controller-s
       logback.classic       % Test,
       postgresql.postgresql % Test
     )
-  ).dependsOn(`docker-controller-scala-core`, `docker-controller-scala-scalatest` % Test)
+  ).dependsOn(
+    `docker-controller-scala-core`,
+    `docker-controller-scala-scalatest` % Test,
+    `docker-controller-scala-flyway`    % Test
+  )
 
 val `docker-controller-scala-redis` = (project in file("docker-controller-scala-redis"))
   .settings(baseSettings)
@@ -171,16 +190,6 @@ val `docker-controller-scala-redis` = (project in file("docker-controller-scala-
       scalatest.scalatest    % Test,
       logback.classic        % Test,
       (debasishg.redisClient % Test).cross(CrossVersion.for3Use2_13)
-    )
-  ).dependsOn(`docker-controller-scala-core`, `docker-controller-scala-scalatest` % Test)
-
-val `docker-controller-scala-flyway` = (project in file("docker-controller-scala-flyway"))
-  .settings(baseSettings)
-  .settings(
-    name := "docker-controller-scala-flyway",
-    libraryDependencies ++= Seq(
-      scalatest.scalatest % Test,
-      logback.classic     % Test
     )
   ).dependsOn(`docker-controller-scala-core`, `docker-controller-scala-scalatest` % Test)
 

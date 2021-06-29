@@ -29,6 +29,7 @@ libraryDependencies += Seq(
   "com.github.j5ik2o" %% "docker-controller-scala-redis" % version, // optional
   "com.github.j5ik2o" %% "docker-controller-scala-elasticmq" % version, // optional
   "com.github.j5ik2o" %% "docker-controller-scala-postgresql" % version, // optional
+  "com.github.j5ik2o" %% "docker-controller-scala-flyway" % version, // optional
 )
 ```
 
