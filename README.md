@@ -125,7 +125,7 @@ class MySQLControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport {
 
 ### Use Flyway Migrate Command on MySQL/PostgreSQL
 
-If you'd like to use `flyway` module, you can use `docker-controller-scala-flyway`. Mix-in `FlywaySpecSupport` then, put the sql files in `src/reosources/flyway`, run `flywayContext.flyway.migrate()` in `afterStartContainers` method.
+If you'd like to use `flyway` module, you can use `docker-controller-scala-flyway`. Mix-in `FlywaySpecSupport` then, put the sql files in `src/reosources/flyway`(`src/reosources/**` can be set to any string.), run `flywayContext.flyway.migrate()` in `afterStartContainers` method.
 
 ```scala
 class MySQLControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport with FlywaySpecSupport {
@@ -165,7 +165,7 @@ class MySQLControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport w
     )
   
   override protected def afterStartContainers(): Unit = {
-    // Put the sql files in `src/reosources/flyway`.
+    // Configure the sql files in `src/reosources/flyway`.
     val flywayContext = createFlywayContext(FlywayConfig(Seq("flyway")))
     // Execute flywayMigrate command
     flywayContext.flyway.migrate()
