@@ -123,7 +123,9 @@ class MySQLControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport {
 
 ```
 
-If you'd like to use `flyway` module, you can use `docker-controller-scala-flyway`.
+### Use Flyway Migrate Command
+
+If you'd like to use `flyway` module, you can use `docker-controller-scala-flyway`. Mix-in `FlywaySpecSupport` and run `flywayContext.flyway.migrate()` in `afterStartContainers` method.
 
 ```scala
 class MySQLControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport with FlywaySpecSupport {
