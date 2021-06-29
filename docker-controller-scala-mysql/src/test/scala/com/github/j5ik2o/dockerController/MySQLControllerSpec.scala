@@ -40,6 +40,11 @@ class MySQLControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport w
         )
       )
     )
+  
+  override protected def afterStartContainers(): Unit = {
+    val flywayContext = createFlywayContext(FlywayConfig(Seq("flyway")))
+    flywayContext.flyway.migrate()
+  }
 
   "MySQLController" - {
     "run" in {
@@ -71,11 +76,6 @@ class MySQLControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport w
           conn.close()
       }
     }
-  }
-
-  override protected def afterStartContainers(): Unit = {
-    val flywayContext = createFlywayContext(FlywayConfig(Seq("flyway")))
-    flywayContext.flyway.migrate()
   }
 
 }
