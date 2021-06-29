@@ -165,6 +165,7 @@ class MySQLControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport w
     )
   
   override protected def afterStartContainers(): Unit = {
+    // Put the sql files in `src/reosources/flyway`.
     val flywayContext = createFlywayContext(FlywayConfig(Seq("flyway")))
     // Execute flywayMigrate command
     flywayContext.flyway.migrate()
