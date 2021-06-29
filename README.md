@@ -19,17 +19,21 @@ val version = "..."
 libraryDependencies += Seq(
   "com.github.j5ik2o" %% "docker-controller-scala-core" % version,
   "com.github.j5ik2o" %% "docker-controller-scala-scalatest" % version, // for scalatest
+  // RDB
   "com.github.j5ik2o" %% "docker-controller-scala-mysql" % version, // optional
-  "com.github.j5ik2o" %% "docker-controller-scala-dynamodb-local" % version, // optional
-  "com.github.j5ik2o" %% "docker-controller-scala-minio" % version, // optional
-  "com.github.j5ik2o" %% "docker-controller-scala-zookeeper" % version, // optional
-  "com.github.j5ik2o" %% "docker-controller-scala-kafka" % version, // optional
-  "com.github.j5ik2o" %% "docker-controller-scala-elasticsearch" % version, // optional
-  "com.github.j5ik2o" %% "docker-controller-scala-localstack" % version, // optional
-  "com.github.j5ik2o" %% "docker-controller-scala-redis" % version, // optional
-  "com.github.j5ik2o" %% "docker-controller-scala-elasticmq" % version, // optional
   "com.github.j5ik2o" %% "docker-controller-scala-postgresql" % version, // optional
   "com.github.j5ik2o" %% "docker-controller-scala-flyway" % version, // optional
+  // NoSQL
+  "com.github.j5ik2o" %% "docker-controller-scala-redis" % version, // optional
+  "com.github.j5ik2o" %% "docker-controller-scala-elasticsearch" % version, // optional
+  // Kafka
+  "com.github.j5ik2o" %% "docker-controller-scala-zookeeper" % version, // optional
+  "com.github.j5ik2o" %% "docker-controller-scala-kafka" % version, // optional
+  // AWS Services
+  "com.github.j5ik2o" %% "docker-controller-scala-dynamodb-local" % version, // optional
+  "com.github.j5ik2o" %% "docker-controller-scala-minio" % version, // optional
+  "com.github.j5ik2o" %% "docker-controller-scala-localstack" % version, // optional
+  "com.github.j5ik2o" %% "docker-controller-scala-elasticmq" % version, // optional
 )
 ```
 
