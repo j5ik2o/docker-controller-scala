@@ -123,6 +123,86 @@ class MySQLControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport {
 
 ```
 
+If you'd like to use `flyway` module, you can use `docker-controller-scala-flyway`.
+
+```scala
+class MySQLControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport with FlywaySpecSupport {
+  val testTimeFactor: Int = sys.env.getOrElse("TEST_TIME_FACTOR", "1").toInt
+  logger.debug(s"testTimeFactor = $testTimeFactor")
+
+  val hostPort: Int        = RandomPortUtil.temporaryServerPort()
+  val dbName: String.      = "test"
+  val rootUserName: String = "root"
+  val rootPassword: String = "test"
+
+  override protected def flywayDriverClassName: String = classOf[com.mysql.cj.jdbc.Driver].getName
+  override protected def flywayDbHost: String          = dockerHost
+  override protected def flywayDbHostPort: Int         = hostPort
+  override protected def flywayDbName: String          = dbName
+  override protected def flywayDbUserName: String      = rootUserName
+  override protected def flywayDbPassword: String      = rootPassword
+
+  override protected def flywayJDBCUrl: String =
+    s"jdbc:mysql://$flywayDbHost:$flywayDbHostPort/$flywayDbName?useSSL=false&user=$flywayDbUserName&password=$flywayDbPassword"
+
+  val controller: MySQLController = MySQLController(dockerClient)(hostPort, rootPassword, databaseName = Some(dbName))
+  
+  override protected val dockerControllers: Vector[DockerController] = Vector(controller)
+
+  override protected val waitPredicatesSettings: Map[DockerController, WaitPredicateSetting] =
+    Map(
+      controller -> WaitPredicateSetting(
+        Duration.Inf,
+        WaitPredicates.forListeningHostTcpPort(
+          dockerHost,
+          hostPort,
+          (1 * testTimeFactor).seconds,
+          Some((5 * testTimeFactor).seconds)
+        )
+      )
+    )
+  
+  override protected def afterStartContainers(): Unit = {
+    val flywayContext = createFlywayContext(FlywayConfig(Seq("flyway")))
+    // Execute flywayMigrate command
+    flywayContext.flyway.migrate()
+  }
+
+  "MySQLController" - {
+    "run" in {
+      var conn: Connection     = null
+      var stmt: Statement      = null
+      var resultSet: ResultSet = null
+      try {
+        Class.forName(flywayDriverClassName)
+        conn = DriverManager.getConnection(flywayJDBCUrl)
+        stmt = conn.createStatement
+        val result = stmt.executeUpdate("INSERT INTO users VALUES(1, 'kato')")
+        assert(result == 1)
+        resultSet = stmt.executeQuery("SELECT * FROM users")
+        while (resultSet.next()) {
+          val id   = resultSet.getInt("id")
+          val name = resultSet.getString("name")
+          println(s"id = $id, name = $name")
+        }
+      } catch {
+        case NonFatal(ex) =>
+          ex.printStackTrace()
+          fail("occurred error", ex)
+      } finally {
+        if (resultSet != null)
+          resultSet.close()
+        if (stmt != null)
+          stmt.close()
+        if (conn != null)
+          conn.close()
+      }
+    }
+  }
+
+}
+```
+
 ### How to test with DockerController your customized
 
 To launch a docker container for testing
