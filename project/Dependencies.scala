@@ -51,6 +51,10 @@ object Dependencies {
     val connectorJava = "mysql" % "mysql-connector-java" % "8.0.25"
   }
 
+  object postgresql {
+    val postgresql = "org.postgresql" % "postgresql" % "42.2.22"
+  }
+
   object elasticsearch {
     val restHighLevelClient = "org.elasticsearch.client" % "elasticsearch-rest-high-level-client" % "7.13.2"
   }

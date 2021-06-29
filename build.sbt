@@ -51,16 +51,6 @@ lazy val baseSettings = Seq(
   Test / publishArtifact := false,
   Test / fork := true,
   Test / parallelExecution := false
-//  testForkedParallel := true,
-//  concurrentRestrictions := {
-//    val par = parallelExecution.value
-//    val max = EvaluateTask.SystemProcessors
-//    List(
-//      Tags.limitAll(if (par) max else 1),
-//      Tags.limit(Tags.ForkedTestGroup, 2),
-//      Tags.exclusiveGroup(Tags.Clean)
-//    )
-//  }
 )
 
 val `docker-controller-scala-core` = (project in file("docker-controller-scala-core"))
@@ -167,9 +157,9 @@ val `docker-controller-scala-postgresql` = (project in file("docker-controller-s
   .settings(
     name := "docker-controller-scala-postgresql",
     libraryDependencies ++= Seq(
-      scalatest.scalatest % Test,
-      logback.classic     % Test,
-      "org.postgresql"    % "postgresql" % "42.2.22" % Test
+      scalatest.scalatest   % Test,
+      logback.classic       % Test,
+      postgresql.postgresql % Test
     )
   ).dependsOn(`docker-controller-scala-core`, `docker-controller-scala-scalatest` % Test)
 
@@ -181,6 +171,16 @@ val `docker-controller-scala-redis` = (project in file("docker-controller-scala-
       scalatest.scalatest    % Test,
       logback.classic        % Test,
       (debasishg.redisClient % Test).cross(CrossVersion.for3Use2_13)
+    )
+  ).dependsOn(`docker-controller-scala-core`, `docker-controller-scala-scalatest` % Test)
+
+val `docker-controller-scala-flyway` = (project in file("docker-controller-scala-flyway"))
+  .settings(baseSettings)
+  .settings(
+    name := "docker-controller-scala-flyway",
+    libraryDependencies ++= Seq(
+      scalatest.scalatest % Test,
+      logback.classic     % Test
     )
   ).dependsOn(`docker-controller-scala-core`, `docker-controller-scala-scalatest` % Test)
 
@@ -224,14 +224,18 @@ val `docker-controller-scala-root` = (project in file("."))
   .aggregate(
     `docker-controller-scala-core`,
     `docker-controller-scala-scalatest`,
+    // for RDBMS
     `docker-controller-scala-mysql`,
+    `docker-controller-scala-postgresql`,
+    // for NoSQL
+    `docker-controller-scala-redis`,
+    `docker-controller-scala-elasticsearch`,
+    `docker-controller-scala-kafka`,
+    `docker-controller-scala-zookeeper`,
+    // AWS
     `docker-controller-scala-dynamodb-local`,
     `docker-controller-scala-minio`,
-    `docker-controller-scala-zookeeper`,
-    `docker-controller-scala-kafka`,
-    `docker-controller-scala-elasticsearch`,
     `docker-controller-scala-localstack`,
-    `docker-controller-scala-redis`,
     `docker-controller-scala-elasticmq`
   )
 
