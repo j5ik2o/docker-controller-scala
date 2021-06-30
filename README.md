@@ -24,7 +24,7 @@ libraryDependencies += Seq(
   "com.github.j5ik2o" %% "docker-controller-scala-postgresql" % version, // optional
   "com.github.j5ik2o" %% "docker-controller-scala-flyway" % version, // optional
   // NoSQL
-  "com.github.j5ik2o" %% "docker-controller-scala-" % version, // optional
+  "com.github.j5ik2o" %% "docker-controller-scala-memcached" % version, // optional
   "com.github.j5ik2o" %% "docker-controller-scala-redis" % version, // optional
   "com.github.j5ik2o" %% "docker-controller-scala-elasticsearch" % version, // optional
   // Kafka
