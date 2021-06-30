@@ -6,11 +6,7 @@ import com.amazonaws.regions.Regions
 import com.amazonaws.services.dynamodbv2.model._
 import com.amazonaws.services.dynamodbv2.{ AmazonDynamoDB, AmazonDynamoDBClientBuilder }
 import com.github.j5ik2o.dockerController.WaitPredicates.WaitPredicate
-import com.github.j5ik2o.dockerController.{
-  DockerController,
-  DockerControllerSpecSupport,
-  WaitPredicates
-}
+import com.github.j5ik2o.dockerController.{ DockerController, DockerControllerSpecSupport, WaitPredicates }
 import org.scalatest.freespec.AnyFreeSpec
 
 import scala.concurrent.duration._

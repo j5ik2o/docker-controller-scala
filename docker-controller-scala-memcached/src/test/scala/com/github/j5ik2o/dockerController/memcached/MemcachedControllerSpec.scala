@@ -1,10 +1,6 @@
 package com.github.j5ik2o.dockerController.memcached
 
-import com.github.j5ik2o.dockerController.{
-  DockerController,
-  DockerControllerSpecSupport,
-  WaitPredicates
-}
+import com.github.j5ik2o.dockerController.{ DockerController, DockerControllerSpecSupport, WaitPredicates }
 import com.twitter.finagle.Memcached
 import com.twitter.io.Buf
 import org.scalatest.concurrent.ScalaFutures

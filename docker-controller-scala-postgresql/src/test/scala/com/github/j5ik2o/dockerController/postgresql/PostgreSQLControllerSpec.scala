@@ -1,11 +1,7 @@
 package com.github.j5ik2o.dockerController.postgresql
 
 import com.github.j5ik2o.dockerController.flyway.{ FlywayConfig, FlywaySpecSupport }
-import com.github.j5ik2o.dockerController.{
-  DockerController,
-  DockerControllerSpecSupport,
-  WaitPredicates
-}
+import com.github.j5ik2o.dockerController.{ DockerController, DockerControllerSpecSupport, WaitPredicates }
 import org.scalatest.freespec.AnyFreeSpec
 
 import java.sql.{ Connection, DriverManager, ResultSet, Statement }
