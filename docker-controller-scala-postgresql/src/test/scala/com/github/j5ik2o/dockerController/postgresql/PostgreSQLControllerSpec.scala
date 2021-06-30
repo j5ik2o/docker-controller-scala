@@ -4,7 +4,6 @@ import com.github.j5ik2o.dockerController.flyway.{ FlywayConfig, FlywaySpecSuppo
 import com.github.j5ik2o.dockerController.{
   DockerController,
   DockerControllerSpecSupport,
-  RandomPortUtil,
   WaitPredicates
 }
 import org.scalatest.freespec.AnyFreeSpec

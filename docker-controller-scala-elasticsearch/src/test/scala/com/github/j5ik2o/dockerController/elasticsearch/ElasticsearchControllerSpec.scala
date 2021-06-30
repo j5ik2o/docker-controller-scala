@@ -3,7 +3,6 @@ package com.github.j5ik2o.dockerController.elasticsearch
 import com.github.j5ik2o.dockerController.{
   DockerController,
   DockerControllerSpecSupport,
-  RandomPortUtil,
   WaitPredicates
 }
 import org.elasticsearch.client.{ RequestOptions, RestClient, RestHighLevelClient }

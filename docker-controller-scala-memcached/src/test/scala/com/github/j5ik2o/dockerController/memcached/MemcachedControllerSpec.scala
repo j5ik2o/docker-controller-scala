@@ -3,7 +3,6 @@ package com.github.j5ik2o.dockerController.memcached
 import com.github.j5ik2o.dockerController.{
   DockerController,
   DockerControllerSpecSupport,
-  RandomPortUtil,
   WaitPredicates
 }
 import com.twitter.finagle.Memcached
