@@ -40,10 +40,14 @@ lazy val baseSettings = Seq(
   resolvers ++= Seq(
     Resolver.sonatypeRepo("snapshots"),
     Resolver.sonatypeRepo("releases"),
-    "Seasar Repository" at "https://maven.seasar.org/maven2/"
+    "Seasar Repository" at "https://maven.seasar.org/maven2/",
+    "Spy Repository" at "https://files.couchbase.com/maven2/"
   ),
   libraryDependencies ++= Seq(
     scalatest.scalatest % Test
+  ),
+  dependencyOverrides ++= Seq(
+    "com.fasterxml.jackson.core" % "jackson-databind" % "2.11.0"
   ),
   ThisBuild / scalafixScalaBinaryVersion := CrossVersion.binaryScalaVersion(scalaVersion.value),
   semanticdbEnabled := true,
@@ -193,6 +197,17 @@ val `docker-controller-scala-redis` = (project in file("docker-controller-scala-
     )
   ).dependsOn(`docker-controller-scala-core`, `docker-controller-scala-scalatest` % Test)
 
+val `docker-controller-scala-memcached` = (project in file("docker-controller-scala-memcached"))
+  .settings(baseSettings)
+  .settings(
+    name := "docker-controller-scala-memcached",
+    libraryDependencies ++= Seq(
+      scalatest.scalatest       % Test,
+      logback.classic           % Test,
+      (twitter.finagleMemcached % Test).cross(CrossVersion.for3Use2_13)
+    )
+  ).dependsOn(`docker-controller-scala-core`, `docker-controller-scala-scalatest` % Test)
+
 val `docker-controller-scala-elasticmq` = (project in file("docker-controller-scala-elasticmq"))
   .settings(baseSettings)
   .settings(
@@ -233,11 +248,13 @@ val `docker-controller-scala-root` = (project in file("."))
   .aggregate(
     `docker-controller-scala-core`,
     `docker-controller-scala-scalatest`,
+    `docker-controller-scala-flyway`,
     // for RDBMS
     `docker-controller-scala-mysql`,
     `docker-controller-scala-postgresql`,
     // for NoSQL
     `docker-controller-scala-redis`,
+    `docker-controller-scala-memcached`,
     `docker-controller-scala-elasticsearch`,
     `docker-controller-scala-kafka`,
     `docker-controller-scala-zookeeper`,

@@ -104,7 +104,7 @@ class KafkaController(
     dockerClient.removeNetworkCmd(networkId).exec()
   }
 
-  override def awaitCondition(duration: Duration)(predicate: Frame => Boolean): Unit = {
+  override def awaitCondition(duration: Duration)(predicate: Option[Frame] => Boolean): Unit = {
     zooKeeperController.awaitCondition(duration)(zooKeeperWaitPredicate)
     super.awaitCondition(duration)(predicate)
   }
