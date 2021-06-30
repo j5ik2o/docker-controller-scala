@@ -3,7 +3,6 @@ package com.github.j5ik2o.dockerController.redis
 import com.github.j5ik2o.dockerController.{
   DockerController,
   DockerControllerSpecSupport,
-  RandomPortUtil,
   WaitPredicates
 }
 import com.redis.RedisClient

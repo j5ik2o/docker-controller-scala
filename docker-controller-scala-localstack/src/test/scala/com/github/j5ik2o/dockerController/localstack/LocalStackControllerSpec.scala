@@ -21,7 +21,6 @@ import com.amazonaws.services.s3.{ AmazonS3, AmazonS3Client }
 import com.github.j5ik2o.dockerController.{
   DockerController,
   DockerControllerSpecSupport,
-  RandomPortUtil,
   WaitPredicates
 }
 import org.scalatest.freespec.AnyFreeSpec

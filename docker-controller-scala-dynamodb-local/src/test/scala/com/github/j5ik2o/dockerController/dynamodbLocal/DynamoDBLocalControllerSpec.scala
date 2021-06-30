@@ -9,7 +9,6 @@ import com.github.j5ik2o.dockerController.WaitPredicates.WaitPredicate
 import com.github.j5ik2o.dockerController.{
   DockerController,
   DockerControllerSpecSupport,
-  RandomPortUtil,
   WaitPredicates
 }
 import org.scalatest.freespec.AnyFreeSpec
