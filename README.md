@@ -24,6 +24,7 @@ libraryDependencies += Seq(
   "com.github.j5ik2o" %% "docker-controller-scala-postgresql" % version, // optional
   "com.github.j5ik2o" %% "docker-controller-scala-flyway" % version, // optional
   // NoSQL
+  "com.github.j5ik2o" %% "docker-controller-scala-" % version, // optional
   "com.github.j5ik2o" %% "docker-controller-scala-redis" % version, // optional
   "com.github.j5ik2o" %% "docker-controller-scala-elasticsearch" % version, // optional
   // Kafka
@@ -55,15 +56,15 @@ libraryDependencies += Seq(
 The `DockerController` for the corresponding preset is as follows. Please see the corresponding `**Spec` for specific usage.
 
 - [MySQLController](docker-controller-scala-mysql/src/main/scala/com/github/j5ik2o/dockerController/mysql/MySQLController.scala) / [MySQLControllerSpec](docker-controller-scala-mysql/src/test/scala/com/github/j5ik2o/dockerController/MySQLControllerSpec.scala)
+- [PostgreSQLController](docker-controller-scala-postgresql/src/main/scala/com/github/j5ik2o/dockerController/postgresql/PostgreSQLController.scala) / [PostgreSQLControllerSpec](docker-controller-scala-postgresql/src/test/scala/com/github/j5ik2o/dockerController/postgresql/PostgreSQLControllerSpec.scala)
+- [RedisController](docker-controller-scala-redis/src/main/scala/com/github/j5ik2o/dockerController/redis/RedisController.scala) / [RedisControllerSpec](docker-controller-scala-redis/src/test/scala/com/github/j5ik2o/dockerController/redis/RedisControllerSpec.scala)
+- [ElasticsearchController](docker-controller-scala-elasticsearch/src/main/scala/com/github/j5ik2o/dockerController/elasticsearch/ElasticsearchController.scala) / [ElasticsearchControllerSpec](docker-controller-scala-elasticsearch/src/test/scala/com/github/j5ik2o/dockerController/elasticsearch/ElasticsearchControllerSpec.scala)
+- [ZooKeeperController](docker-controller-scala-zookeeper/src/main/scala/com/github/j5ik2o/dockerController/zooKeeper/ZooKeeperController.scala) / [ZooKeeperControllerSpec](docker-controller-scala-zookeeper/src/test/scala/com/github/j5ik2o/dockerController/ZooKeeperControllerSpec.scala)
+- [KafkaController](docker-controller-scala-kafka/src/main/scala/com/github/j5ik2o/dockerController/kafka/KafkaController.scala) / [KafkaControllerSpec](docker-controller-scala-kafka/src/test/scala/com/github/j5ik2o/dockerController/kafka/KafkaControllerSpec.scala)
 - [DynamoDBLocalController](docker-controller-scala-dynamodb-local/src/main/scala/com/github/j5ik2o/dockerController/dynamodbLocal/DynamoDBLocalController.scala) / [DynamoDBLocalControllerSpec](docker-controller-scala-dynamodb-local/src/test/scala/com/github/j5ik2o/dockerController/dynamodbLocal/DynamoDBLocalControllerSpec.scala)
 - [MinioController](docker-controller-scala-minio/src/main/scala/com/github/j5ik2o/dockerController/minio/MinioController.scala) / [MinioControllerSpec](docker-controller-scala-minio/src/test/scala/com/github/j5ik2o/dockerController/minio/MinioControllerSpec.scala)
-- [KafkaController](docker-controller-scala-kafka/src/main/scala/com/github/j5ik2o/dockerController/kafka/KafkaController.scala) / [KafkaControllerSpec](docker-controller-scala-kafka/src/test/scala/com/github/j5ik2o/dockerController/kafka/KafkaControllerSpec.scala)
-- [ZooKeeperController](docker-controller-scala-zookeeper/src/main/scala/com/github/j5ik2o/dockerController/zooKeeper/ZooKeeperController.scala) / [ZooKeeperControllerSpec](docker-controller-scala-zookeeper/src/test/scala/com/github/j5ik2o/dockerController/ZooKeeperControllerSpec.scala)
-- [ElasticsearchController](docker-controller-scala-elasticsearch/src/main/scala/com/github/j5ik2o/dockerController/elasticsearch/ElasticsearchController.scala) / [ElasticsearchControllerSpec](docker-controller-scala-elasticsearch/src/test/scala/com/github/j5ik2o/dockerController/elasticsearch/ElasticsearchControllerSpec.scala)
 - [LocalStackController](docker-controller-scala-localstack/src/main/scala/com/github/j5ik2o/dockerController/localstack/LocalStackController.scala) / [LocalStackControllerSpec](docker-controller-scala-localstack/src/test/scala/com/github/j5ik2o/dockerController/localstack/LocalStackControllerSpec.scala)
-- [RedisController](docker-controller-scala-redis/src/main/scala/com/github/j5ik2o/dockerController/redis/RedisController.scala) / [RedisControllerSpec](docker-controller-scala-redis/src/test/scala/com/github/j5ik2o/dockerController/redis/RedisControllerSpec.scala)
 - [ElasticMQController](docker-controller-scala-elasticmq/src/main/scala/com/github/j5ik2o/dockerController/elasticmq/ElasticMQController.scala) / [ElasticMQControllerSpec](docker-controller-scala-elasticmq/src/test/scala/com/github/j5ik2o/dockerController/elasticmq/ElasticMQControllerSpec.scala)
-- [PostgreSQLController](docker-controller-scala-postgresql/src/main/scala/com/github/j5ik2o/dockerController/postgresql/PostgreSQLController.scala) / [PostgreSQLControllerSpec](docker-controller-scala-postgresql/src/test/scala/com/github/j5ik2o/dockerController/postgresql/PostgreSQLControllerSpec.scala)
 
 ```scala
 class MySQLControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport {
