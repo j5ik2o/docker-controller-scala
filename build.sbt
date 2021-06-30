@@ -40,8 +40,7 @@ lazy val baseSettings = Seq(
   resolvers ++= Seq(
     Resolver.sonatypeRepo("snapshots"),
     Resolver.sonatypeRepo("releases"),
-    "Seasar Repository" at "https://maven.seasar.org/maven2/",
-    "Spy Repository" at "https://files.couchbase.com/maven2/"
+    "Seasar Repository" at "https://maven.seasar.org/maven2/"
   ),
   libraryDependencies ++= Seq(
     scalatest.scalatest % Test
