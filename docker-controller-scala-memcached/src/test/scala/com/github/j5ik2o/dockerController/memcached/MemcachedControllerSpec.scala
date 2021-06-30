@@ -17,7 +17,7 @@ class MemcachedControllerSpec extends AnyFreeSpec with DockerControllerSpecSuppo
   val testTimeFactor: Int = sys.env.getOrElse("TEST_TIME_FACTOR", "1").toInt
   logger.debug(s"testTimeFactor = $testTimeFactor")
 
-  val hostPort: Int                   = RandomPortUtil.temporaryServerPort()
+  val hostPort: Int                   = temporaryServerPort()
   val controller: MemcachedController = MemcachedController(dockerClient)(hostPort)
 
   override protected val dockerControllers: Vector[DockerController] = Vector(controller)

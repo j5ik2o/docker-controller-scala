@@ -18,7 +18,7 @@ class MinioControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport {
   val minioAccessKeyId: String     = "AKIAIOSFODNN7EXAMPLE"
   val minioSecretAccessKey: String = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
   val minioHost: String            = DockerClientConfigUtil.dockerHost(dockerClientConfig)
-  val minioPort: Int               = RandomPortUtil.temporaryServerPort()
+  val minioPort: Int               = temporaryServerPort()
   val minioEndpoint: String        = s"http://$minioHost:$minioPort"
   val minioRegion: Regions         = Regions.AP_NORTHEAST_1
 

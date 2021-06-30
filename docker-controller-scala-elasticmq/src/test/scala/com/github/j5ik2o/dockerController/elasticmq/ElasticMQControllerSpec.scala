@@ -21,7 +21,7 @@ class ElasticMQControllerSpec extends AnyFreeSpec with DockerControllerSpecSuppo
   val testTimeFactor: Int = sys.env.getOrElse("TEST_TIME_FACTOR", "1").toInt
   logger.debug(s"testTimeFactor = $testTimeFactor")
 
-  val hostPorts: Seq[Int]             = Seq(RandomPortUtil.temporaryServerPort(), RandomPortUtil.temporaryServerPort())
+  val hostPorts: Seq[Int]             = Seq(temporaryServerPort(), RandomPortUtil.temporaryServerPort())
   val controller: ElasticMQController = ElasticMQController(dockerClient)(dockerHost, hostPorts)
 
   override protected val dockerControllers: Vector[DockerController] = Vector(controller)

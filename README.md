@@ -73,7 +73,7 @@ The `DockerController` for the corresponding preset is as follows. Please see th
 ```scala
 class MySQLControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport {
 
-  val hostPort: Int               = RandomPortUtil.temporaryServerPort()
+  val hostPort: Int               = temporaryServerPort()
   val rootPassword: String        = "test"
   val dbName                      = "test"
   
@@ -137,7 +137,7 @@ class MySQLControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport w
   val testTimeFactor: Int = sys.env.getOrElse("TEST_TIME_FACTOR", "1").toInt
   logger.debug(s"testTimeFactor = $testTimeFactor")
 
-  val hostPort: Int        = RandomPortUtil.temporaryServerPort()
+  val hostPort: Int        = temporaryServerPort()
   val dbName: String.      = "test"
   val rootUserName: String = "root"
   val rootPassword: String = "test"
@@ -233,7 +233,7 @@ class NginxSpec extends AnyFreeSpec with DockerControllerSpecSupport {
   ).configureCreateContainerCmd { cmd =>
     // if customize the container generation, please do the following.
     // In this example, a random host port is specified.
-    val hostPort: Int              = RandomPortUtil.temporaryServerPort()
+    val hostPort: Int              = temporaryServerPort()
     val containerPort: ExposedPort = ExposedPort.tcp(80)
     val portBinding: Ports         = new Ports()
     portBinding.bind(containerPort, Ports.Binding.bindPort(hostPort))
