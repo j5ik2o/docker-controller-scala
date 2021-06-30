@@ -18,11 +18,7 @@ import com.amazonaws.services.dynamodbv2.model.{
 }
 import com.amazonaws.services.dynamodbv2.{ AmazonDynamoDB, AmazonDynamoDBClientBuilder }
 import com.amazonaws.services.s3.{ AmazonS3, AmazonS3Client }
-import com.github.j5ik2o.dockerController.{
-  DockerController,
-  DockerControllerSpecSupport,
-  WaitPredicates
-}
+import com.github.j5ik2o.dockerController.{ DockerController, DockerControllerSpecSupport, WaitPredicates }
 import org.scalatest.freespec.AnyFreeSpec
 
 import scala.concurrent.duration.Duration

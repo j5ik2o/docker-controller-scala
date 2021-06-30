@@ -1,10 +1,6 @@
 package com.github.j5ik2o.dockerController.elasticsearch
 
-import com.github.j5ik2o.dockerController.{
-  DockerController,
-  DockerControllerSpecSupport,
-  WaitPredicates
-}
+import com.github.j5ik2o.dockerController.{ DockerController, DockerControllerSpecSupport, WaitPredicates }
 import org.elasticsearch.client.{ RequestOptions, RestClient, RestHighLevelClient }
 import org.scalatest.freespec.AnyFreeSpec
 import org.apache.http.HttpHost
