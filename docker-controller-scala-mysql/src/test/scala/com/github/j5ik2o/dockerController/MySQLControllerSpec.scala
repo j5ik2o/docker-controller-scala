@@ -40,7 +40,7 @@ class MySQLControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport w
         )
       )
     )
-  
+
   override protected def afterStartContainers(): Unit = {
     val flywayContext = createFlywayContext(FlywayConfig(Seq("flyway")))
     flywayContext.flyway.migrate()
