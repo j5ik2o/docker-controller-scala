@@ -13,7 +13,7 @@ class ZooKeeperControllerSpec extends AnyFreeSpec with DockerControllerSpecSuppo
   val testTimeFactor: Int = sys.env.getOrElse("TEST_TIME_FACTOR", "1").toInt
   logger.debug(s"testTimeFactor = $testTimeFactor")
 
-  lazy val hostPort: Int                            = RandomPortUtil.temporaryServerPort()
+  lazy val hostPort: Int                            = temporaryServerPort()
   lazy val zooKeeperController: ZooKeeperController = ZooKeeperController(dockerClient)(1, hostPort)
 
   override protected val dockerControllers: Vector[DockerController] = Vector(zooKeeperController)

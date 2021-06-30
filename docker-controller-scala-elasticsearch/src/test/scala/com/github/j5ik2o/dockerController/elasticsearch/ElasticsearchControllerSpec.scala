@@ -17,8 +17,8 @@ class ElasticsearchControllerSpec extends AnyFreeSpec with DockerControllerSpecS
   val testTimeFactor: Int = sys.env.getOrElse("TEST_TIME_FACTOR", "1").toInt
   logger.debug(s"testTimeFactor = $testTimeFactor")
 
-  val hostPort1: Int                      = RandomPortUtil.temporaryServerPort()
-  val hostPort2: Int                      = RandomPortUtil.temporaryServerPort()
+  val hostPort1: Int                      = temporaryServerPort()
+  val hostPort2: Int                      = temporaryServerPort()
   val controller: ElasticsearchController = ElasticsearchController(dockerClient)(hostPort1, hostPort2)
 
   override protected val dockerControllers: Vector[DockerController] = Vector(controller)

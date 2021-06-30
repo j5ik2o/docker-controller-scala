@@ -16,7 +16,7 @@ abstract class DockerControllerSpecBase extends AnyFreeSpec with DockerControlle
     imageName = "nginx",
     tag = Some("latest")
   ).configureCreateContainerCmd { cmd =>
-    val hostPort: Int              = RandomPortUtil.temporaryServerPort()
+    val hostPort: Int              = temporaryServerPort()
     val containerPort: ExposedPort = ExposedPort.tcp(80)
     val portBinding: Ports         = new Ports()
     portBinding.bind(containerPort, Ports.Binding.bindPort(hostPort))

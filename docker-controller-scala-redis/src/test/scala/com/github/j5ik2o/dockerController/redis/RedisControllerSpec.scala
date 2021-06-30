@@ -10,13 +10,15 @@ import com.redis.RedisClient
 import org.scalatest.freespec.AnyFreeSpec
 
 import scala.concurrent.duration._
+import scala.util.control.NonFatal
 
 class RedisControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport {
   val testTimeFactor: Int = sys.env.getOrElse("TEST_TIME_FACTOR", "1").toInt
   logger.debug(s"testTimeFactor = $testTimeFactor")
 
-  val hostPort: Int                                                  = RandomPortUtil.temporaryServerPort()
-  val controller: RedisController                                    = RedisController(dockerClient)(hostPort)
+  val hostPort: Int               = temporaryServerPort()
+  val controller: RedisController = RedisController(dockerClient)(hostPort)
+
   override protected val dockerControllers: Vector[DockerController] = Vector(controller)
 
   override protected val waitPredicatesSettings: Map[DockerController, WaitPredicateSetting] =
@@ -34,10 +36,18 @@ class RedisControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport {
 
   "RedisController" - {
     "run" in {
-      val r = new RedisClient(dockerHost, hostPort)
-      r.set("1", "2")
-      assert(r.get("1").get == "2")
-      r.close()
+      var redisClient: RedisClient = null
+      try {
+        redisClient = new RedisClient(dockerHost, hostPort)
+        redisClient.set("1", "2")
+        assert(redisClient.get("1").get == "2")
+      } catch {
+        case NonFatal(ex) =>
+          fail(ex)
+      } finally {
+        if (redisClient != null)
+          redisClient.close()
+      }
     }
   }
 }

@@ -17,7 +17,7 @@ class PostgreSQLControllerSpec extends AnyFreeSpec with DockerControllerSpecSupp
   val testTimeFactor: Int = sys.env.getOrElse("TEST_TIME_FACTOR", "1").toInt
   logger.debug(s"testTimeFactor = $testTimeFactor")
 
-  val hostPort: Int                = RandomPortUtil.temporaryServerPort()
+  val hostPort: Int                = temporaryServerPort()
   val dbName                       = "test"
   val rootUserName: String         = "postgres"
   val rootPassword: Option[String] = Some("test")

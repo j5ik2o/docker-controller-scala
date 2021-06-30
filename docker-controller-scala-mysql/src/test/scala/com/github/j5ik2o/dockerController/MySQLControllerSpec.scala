@@ -12,7 +12,7 @@ class MySQLControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport w
   val testTimeFactor: Int = sys.env.getOrElse("TEST_TIME_FACTOR", "1").toInt
   logger.debug(s"testTimeFactor = $testTimeFactor")
 
-  val hostPort: Int        = RandomPortUtil.temporaryServerPort()
+  val hostPort: Int        = temporaryServerPort()
   val rootPassword: String = "test"
 
   override protected def flywayDriverClassName: String = classOf[com.mysql.cj.jdbc.Driver].getName

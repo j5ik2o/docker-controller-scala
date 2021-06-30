@@ -19,7 +19,7 @@ class KafkaControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport {
 
   val topicName = "mytopic"
 
-  val kafkaExternalHostPort: Int = RandomPortUtil.temporaryServerPort()
+  val kafkaExternalHostPort: Int = temporaryServerPort()
 
   val kafkaController = new KafkaController(dockerClient)(
     kafkaExternalHostName = dockerHost,
