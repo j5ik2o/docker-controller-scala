@@ -12,7 +12,6 @@ import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.freespec.AnyFreeSpec
 
 import scala.concurrent.duration._
-import scala.jdk.FutureConverters.CompletionStageOps
 
 class MemcachedControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport with ScalaFutures {
   val testTimeFactor: Int = sys.env.getOrElse("TEST_TIME_FACTOR", "1").toInt
@@ -40,11 +39,12 @@ class MemcachedControllerSpec extends AnyFreeSpec with DockerControllerSpecSuppo
       val client = Memcached.client.newRichClient(s"$dockerHost:$hostPort")
       val str    = "a"
       val buf    = Buf.Utf8(str)
-      val result = for {
+      val resultFuture = for {
         _ <- client.set("1", buf)
         r <- client.get("1")
       } yield r
-      assert(result.toCompletableFuture.asScala.futureValue.get == buf)
+      val result = resultFuture.toCompletableFuture.get().get
+      assert(result == buf)
     }
   }
 }
