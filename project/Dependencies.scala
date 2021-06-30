@@ -107,4 +107,8 @@ object Dependencies {
     val redisClient = "net.debasishg" %% "redisclient" % "3.30"
   }
 
+  object twitter {
+    val finagleMemcached = "com.twitter" %% "finagle-memcached" % "21.6.0"
+  }
+
 }

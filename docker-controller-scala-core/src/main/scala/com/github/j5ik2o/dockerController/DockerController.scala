@@ -58,7 +58,7 @@ trait DockerController {
   def existsImage(p: Image => Boolean): Boolean
   def pullImageIfNotExists(f: PullImageCmd => PullImageCmd = identity): Unit
   def pullImage(f: PullImageCmd => PullImageCmd = identity): Unit
-  def awaitCondition(duration: Duration)(predicate: Frame => Boolean): Unit
+  def awaitCondition(duration: Duration)(predicate: Option[Frame] => Boolean): Unit
 }
 
 object DockerController {
@@ -247,7 +247,7 @@ private[dockerController] class DockerControllerImpl(
     logger.debug("stopContainer --- finish")
   }
 
-  override def awaitCondition(duration: Duration)(predicate: Frame => Boolean): Unit = {
+  override def awaitCondition(duration: Duration)(predicate: Option[Frame] => Boolean): Unit = {
     logger.debug("awaitCompletion --- start")
     val frameQueue: LinkedBlockingQueue[Frame] = new LinkedBlockingQueue[Frame]()
 
@@ -266,11 +266,11 @@ private[dockerController] class DockerControllerImpl(
         def loop(): Unit = {
           if (
             !terminate && {
-              val frame = frameQueue.poll(outputFrameInterval.toMillis, TimeUnit.MILLISECONDS)
-              if (frame != null) {
+              val frameOpt = Option(frameQueue.poll(outputFrameInterval.toMillis, TimeUnit.MILLISECONDS))
+              frameOpt.foreach { frame =>
                 logger.debug(frame.toString)
-                !predicate(frame)
-              } else true
+              }
+              !predicate(frameOpt)
             }
           ) {
             loop()

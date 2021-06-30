@@ -10,47 +10,64 @@ import scala.util.matching.Regex
 
 object WaitPredicates {
 
-  type WaitPredicate = Frame => Boolean
+  type WaitPredicate = Option[Frame] => Boolean
 
   protected val logger: Logger = LoggerFactory.getLogger(getClass)
+
+  def forDebug(
+      awaitDurationOpt: Option[FiniteDuration] = Some(500.milliseconds)
+  ): WaitPredicate = { frameOpt =>
+    frameOpt.exists { frame =>
+      val line = new String(frame.getPayload).stripLineEnd
+      logger.debug(s"forDebug: line = $line")
+      awaitDurationOpt.foreach { awaitDuration => Thread.sleep(awaitDuration.toMillis) }
+      false
+    }
+  }
 
   def forLogMessageExactly(
       text: String,
       awaitDurationOpt: Option[FiniteDuration] = Some(500.milliseconds)
-  ): WaitPredicate = { frame =>
-    val line   = new String(frame.getPayload).stripLineEnd
-    val result = line == text
-    if (result) {
-      logger.debug(s"forLogMessageExactly: result = $result, line = $line")
-      awaitDurationOpt.foreach { awaitDuration => Thread.sleep(awaitDuration.toMillis) }
+  ): WaitPredicate = { frameOpt =>
+    frameOpt.exists { frame =>
+      val line   = new String(frame.getPayload).stripLineEnd
+      val result = line == text
+      if (result) {
+        logger.debug(s"forLogMessageExactly: result = $result, line = $line")
+        awaitDurationOpt.foreach { awaitDuration => Thread.sleep(awaitDuration.toMillis) }
+      }
+      result
     }
-    result
   }
 
   def forLogMessageContained(
       text: String,
       awaitDurationOpt: Option[FiniteDuration] = Some(500.milliseconds)
-  ): WaitPredicate = { frame =>
-    val line   = new String(frame.getPayload).stripLineEnd
-    val result = line.contains(text)
-    if (result) {
-      logger.debug(s"forLogMessageContained: result = $result, line = $line")
-      awaitDurationOpt.foreach { awaitDuration => Thread.sleep(awaitDuration.toMillis) }
+  ): WaitPredicate = { frameOpt =>
+    frameOpt.exists { frame =>
+      val line   = new String(frame.getPayload).stripLineEnd
+      val result = line.contains(text)
+      if (result) {
+        logger.debug(s"forLogMessageContained: result = $result, line = $line")
+        awaitDurationOpt.foreach { awaitDuration => Thread.sleep(awaitDuration.toMillis) }
+      }
+      result
     }
-    result
   }
 
   def forLogMessageByRegex(
       regex: Regex,
       awaitDurationOpt: Option[FiniteDuration] = Some(500.milliseconds)
-  ): WaitPredicate = { frame =>
-    val line   = new String(frame.getPayload).stripLineEnd
-    val result = regex.findFirstIn(line).isDefined
-    if (result) {
-      logger.debug(s"forLogMessageByRegex: result = $result, line = $line")
-      awaitDurationOpt.foreach { awaitDuration => Thread.sleep(awaitDuration.toMillis) }
+  ): WaitPredicate = { frameOpt =>
+    frameOpt.exists { frame =>
+      val line   = new String(frame.getPayload).stripLineEnd
+      val result = regex.findFirstIn(line).isDefined
+      if (result) {
+        logger.debug(s"forLogMessageByRegex: result = $result, line = $line")
+        awaitDurationOpt.foreach { awaitDuration => Thread.sleep(awaitDuration.toMillis) }
+      }
+      result
     }
-    result
   }
 
   def forListeningHostTcpPort(
@@ -58,8 +75,8 @@ object WaitPredicates {
       hostPort: Int,
       connectionTimeout: FiniteDuration = 500.milliseconds,
       awaitDurationOpt: Option[FiniteDuration] = Some(500.milliseconds)
-  ): WaitPredicate = { f: Frame =>
-    val line      = new String(f.getPayload)
+  ): WaitPredicate = { frameOpt =>
+    val line      = frameOpt.map(frame => new String(frame.getPayload)).getOrElse("")
     val s: Socket = new Socket()
     try {
       s.connect(new InetSocketAddress(host, hostPort), connectionTimeout.toMillis.toInt)
@@ -82,13 +99,13 @@ object WaitPredicates {
       host: String,
       hostPort: Int,
       awaitDurationOpt: Option[FiniteDuration] = Some(500.milliseconds)
-  ): WaitPredicate = { _: Frame => forListeningHttp(host, hostPort, awaitDurationOpt).isDefined }
+  ): WaitPredicate = { _ => forListeningHttp(host, hostPort, awaitDurationOpt).isDefined }
 
   def forListeningHttpPortWithPredicate(
       host: String,
       hostPort: Int,
       awaitDurationOpt: Option[FiniteDuration] = Some(500.milliseconds)
-  )(p: HttpURLConnection => Boolean): WaitPredicate = { _: Frame =>
+  )(p: HttpURLConnection => Boolean): WaitPredicate = { _ =>
     forListeningHttp(host, hostPort, awaitDurationOpt).exists(p)
   }
 
