@@ -1,7 +1,7 @@
 package com.github.j5ik2o.dockerController.mysql
 
 import com.github.dockerjava.api.DockerClient
-import com.github.dockerjava.api.command.CreateContainerCmd
+import com.github.dockerjava.api.command.{ CreateContainerCmd, RemoveContainerCmd }
 import com.github.dockerjava.api.model.HostConfig.newHostConfig
 import com.github.dockerjava.api.model.{ ExposedPort, Ports }
 import com.github.j5ik2o.dockerController.DockerControllerImpl
@@ -67,4 +67,10 @@ class MySQLController(
       .withExposedPorts(containerPort)
       .withHostConfig(newHostConfig().withPortBindings(portBinding))
   }
+
+  override protected def newRemoveContainerCmd(): RemoveContainerCmd = {
+    require(containerId.isDefined)
+    dockerClient.removeContainerCmd(containerId.get).withForce(true)
+  }
+
 }
