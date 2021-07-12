@@ -48,12 +48,24 @@ lazy val baseSettings = Seq(
   dependencyOverrides ++= Seq(
     "com.fasterxml.jackson.core" % "jackson-databind" % "2.11.0"
   ),
-  ThisBuild / scalafixScalaBinaryVersion := CrossVersion.binaryScalaVersion(scalaVersion.value),
-  semanticdbEnabled := true,
-  semanticdbVersion := scalafixSemanticdb.revision,
   Test / publishArtifact := false,
   Test / fork := true,
-  Test / parallelExecution := false
+  Test / parallelExecution := false,
+  Compile / doc / sources := {
+    val old = (Compile / doc / sources).value
+    if (scalaVersion.value == Versions.scala3Version) {
+      Nil
+    } else {
+      old
+    }
+  },
+  semanticdbEnabled := true,
+  semanticdbVersion := scalafixSemanticdb.revision,
+  // Remove me when scalafix is stable and feature-complete on Scala 3
+  ThisBuild / scalafixScalaBinaryVersion := (CrossVersion.partialVersion(scalaVersion.value) match {
+    case Some((2, _)) => CrossVersion.binaryScalaVersion(scalaVersion.value)
+    case _            => CrossVersion.binaryScalaVersion(Versions.scala212Version)
+  })
 )
 
 val `docker-controller-scala-core` = (project in file("docker-controller-scala-core"))
@@ -266,4 +278,4 @@ val `docker-controller-scala-root` = (project in file("."))
 
 // --- Custom commands
 addCommandAlias("lint", ";scalafmtCheck;test:scalafmtCheck;scalafmtSbtCheck;scalafixAll --check")
-addCommandAlias("fmt", ";scalafmtAll;scalafmtSbt")
+addCommandAlias("fmt", ";scalafmtAll;scalafmtSbt;scalafix RemoveUnused")
