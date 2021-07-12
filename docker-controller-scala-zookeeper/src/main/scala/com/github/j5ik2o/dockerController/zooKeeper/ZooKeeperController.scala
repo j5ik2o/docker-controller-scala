@@ -61,7 +61,7 @@ class ZooKeeperController(
     val portBinding = new Ports()
     portBinding.bind(zooPort, Ports.Binding.bindPort(hostPort))
     val defaultHostConfig = newHostConfig.withPortBindings(portBinding)
-    val hostConfig        = networkAlias.fold(defaultHostConfig) { n => defaultHostConfig.withNetworkMode(n.network.id) }
+    val hostConfig = networkAlias.fold(defaultHostConfig) { n => defaultHostConfig.withNetworkMode(n.network.id) }
     val result = super
       .newCreateContainerCmd()
       .withEnv(environmentVariables(myId).map { case (k, v) => s"$k=$v" }.toArray: _*)

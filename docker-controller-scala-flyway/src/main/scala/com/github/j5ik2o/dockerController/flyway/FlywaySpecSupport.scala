@@ -58,6 +58,7 @@ trait FlywaySpecSupport {
     flywayDbUserName,
     flywayDbPassword
   )
+
   // s"jdbc:mysql://$flywayDbHost:$flywayDbHostPort/$flywayDbName?useSSL=false&user=$flywayDbUserName&password=$flywayDbPassword",
 
   protected def createFlywayContext(flywayConfig: FlywayConfig): FlywayContext = createFlywayContext(
