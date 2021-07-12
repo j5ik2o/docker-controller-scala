@@ -70,15 +70,15 @@ class KafkaController(
   private val zooKeeperContainerPort = zooKeeperController.containerPort
 
   private val environmentVariables = Map(
-    "KAFKA_AUTO_CREATE_TOPICS_ENABLE"        -> (if (createTopics.isEmpty) "false" else "true"),
-    "KAFKA_CREATE_TOPICS"                    -> createTopics.mkString(","),
-    "KAFKA_BROKER_ID"                        -> "1",
-    "KAFKA_ADVERTISED_LISTENERS"             -> s"LISTENER_DOCKER_INTERNAL://$kafkaContainerName:19092,LISTENER_DOCKER_EXTERNAL://$kafkaExternalHostName:$kafkaExternalHostPort",
-    "KAFKA_LISTENERS"                        -> s"LISTENER_DOCKER_INTERNAL://:19092,LISTENER_DOCKER_EXTERNAL://:$kafkaExternalHostPort",
-    "KAFKA_LISTENER_SECURITY_PROTOCOL_MAP"   -> "LISTENER_DOCKER_INTERNAL:PLAINTEXT,LISTENER_DOCKER_EXTERNAL:PLAINTEXT",
-    "KAFKA_INTER_BROKER_LISTENER_NAME"       -> "LISTENER_DOCKER_INTERNAL",
-    "KAFKA_ZOOKEEPER_CONNECT"                -> s"$zooKeeperContainerName:$zooKeeperContainerPort",
-    "KAFKA_LOG4J_LOGGERS"                    -> "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO",
+    "KAFKA_AUTO_CREATE_TOPICS_ENABLE" -> (if (createTopics.isEmpty) "false" else "true"),
+    "KAFKA_CREATE_TOPICS"             -> createTopics.mkString(","),
+    "KAFKA_BROKER_ID"                 -> "1",
+    "KAFKA_ADVERTISED_LISTENERS" -> s"LISTENER_DOCKER_INTERNAL://$kafkaContainerName:19092,LISTENER_DOCKER_EXTERNAL://$kafkaExternalHostName:$kafkaExternalHostPort",
+    "KAFKA_LISTENERS" -> s"LISTENER_DOCKER_INTERNAL://:19092,LISTENER_DOCKER_EXTERNAL://:$kafkaExternalHostPort",
+    "KAFKA_LISTENER_SECURITY_PROTOCOL_MAP" -> "LISTENER_DOCKER_INTERNAL:PLAINTEXT,LISTENER_DOCKER_EXTERNAL:PLAINTEXT",
+    "KAFKA_INTER_BROKER_LISTENER_NAME"     -> "LISTENER_DOCKER_INTERNAL",
+    "KAFKA_ZOOKEEPER_CONNECT"              -> s"$zooKeeperContainerName:$zooKeeperContainerPort",
+    "KAFKA_LOG4J_LOGGERS" -> "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO",
     "KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR" -> "1"
   ) ++ envVars
 
