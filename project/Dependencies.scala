@@ -48,7 +48,7 @@ object Dependencies {
   }
 
   object mysql {
-    val connectorJava = "mysql" % "mysql-connector-java" % "8.0.25"
+    val connectorJava = "mysql" % "mysql-connector-java" % "8.0.26"
   }
 
   object postgresql {
