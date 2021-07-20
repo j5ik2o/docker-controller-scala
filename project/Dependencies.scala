@@ -26,7 +26,7 @@ object Dependencies {
   }
 
   object slf4j {
-    val api = "org.slf4j" % "slf4j-api" % "1.7.31"
+    val api = "org.slf4j" % "slf4j-api" % "1.7.32"
 
   }
 
