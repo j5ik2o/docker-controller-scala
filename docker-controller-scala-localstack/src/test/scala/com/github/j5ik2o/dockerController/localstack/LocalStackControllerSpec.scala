@@ -27,7 +27,7 @@ import scala.jdk.CollectionConverters._
 class LocalStackControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport {
   val accessKeyId: String         = "AKIAIOSFODNN7EXAMPLE"
   val secretAccessKey: String     = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
-  val hostPort: Int          = temporaryServerPort()
+  val hostPort: Int               = temporaryServerPort()
   val endpointForS3: String       = s"http://$dockerHost:$hostPort"
   val endpointForDynamoDB: String = s"http://$dockerHost:$hostPort"
   val region: Regions             = Regions.AP_NORTHEAST_1

@@ -1,32 +1,32 @@
 package com.github.j5ik2o.dockerController.localstack
 
 import com.github.dockerjava.api.DockerClient
-import com.github.dockerjava.api.command.{CreateContainerCmd, RemoveContainerCmd}
+import com.github.dockerjava.api.command.CreateContainerCmd
 import com.github.dockerjava.api.model.HostConfig.newHostConfig
-import com.github.dockerjava.api.model.{ExposedPort, Ports}
+import com.github.dockerjava.api.model.{ ExposedPort, Ports }
 import com.github.j5ik2o.dockerController.DockerControllerImpl
 import com.github.j5ik2o.dockerController.localstack.LocalStackController._
 
-import scala.concurrent.duration.{DurationInt, FiniteDuration}
+import scala.concurrent.duration.{ DurationInt, FiniteDuration }
 
 object LocalStackController {
-  final val DefaultImageName = "localstack/localstack"
+  final val DefaultImageName              = "localstack/localstack"
   final val DefaultImageTag: Some[String] = Some("latest")
 
   def apply(
-             dockerClient: DockerClient,
-             outputFrameInterval: FiniteDuration = 500.millis,
-             imageName: String = DefaultImageName,
-             imageTag: Option[String] = DefaultImageTag,
-             envVars: Map[String, String] = Map.empty
-           )(
-             services: Set[Service],
-             edgeHostPort: Int,
-             hostPorts: Map[Service, Int] = Map.empty,
-             hostName: Option[String] = None,
-             hostNameExternal: Option[String] = None,
-             defaultRegion: Option[String] = None
-           ): LocalStackController =
+      dockerClient: DockerClient,
+      outputFrameInterval: FiniteDuration = 500.millis,
+      imageName: String = DefaultImageName,
+      imageTag: Option[String] = DefaultImageTag,
+      envVars: Map[String, String] = Map.empty
+  )(
+      services: Set[Service],
+      edgeHostPort: Int,
+      hostPorts: Map[Service, Int] = Map.empty,
+      hostName: Option[String] = None,
+      hostNameExternal: Option[String] = None,
+      defaultRegion: Option[String] = None
+  ): LocalStackController =
     new LocalStackController(dockerClient, outputFrameInterval, imageName, imageTag, envVars)(
       services,
       edgeHostPort,
@@ -94,23 +94,23 @@ object Service {
 }
 
 class LocalStackController(
-                            dockerClient: DockerClient,
-                            outputFrameInterval: FiniteDuration = 500.millis,
-                            imageName: String = DefaultImageName,
-                            imageTag: Option[String] = DefaultImageTag,
-                            envVars: Map[String, String] = Map.empty
-                          )(
-                            services: Set[Service],
-                            edgeHostPort: Int,
-                            hostPorts: Map[Service, Int],
-                            edgeBindHost: Option[String] = None,
-                            hostName: Option[String] = None,
-                            hostNameExternal: Option[String] = None,
-                            defaultRegion: Option[String] = None
-                          ) extends DockerControllerImpl(dockerClient, outputFrameInterval)(imageName, imageTag) {
+    dockerClient: DockerClient,
+    outputFrameInterval: FiniteDuration = 500.millis,
+    imageName: String = DefaultImageName,
+    imageTag: Option[String] = DefaultImageTag,
+    envVars: Map[String, String] = Map.empty
+)(
+    services: Set[Service],
+    edgeHostPort: Int,
+    hostPorts: Map[Service, Int],
+    edgeBindHost: Option[String] = None,
+    hostName: Option[String] = None,
+    hostNameExternal: Option[String] = None,
+    defaultRegion: Option[String] = None
+) extends DockerControllerImpl(dockerClient, outputFrameInterval)(imageName, imageTag) {
 
   private val environmentVariables: Map[String, String] = Map(
-    "SERVICES" -> services.map(_.entryName).mkString(","),
+    "SERVICES" -> services.map(_.entryName).mkString(",")
   ) ++
     edgeBindHost.fold(Map.empty[String, String]) { e => Map("EDGE_BIND_HOST" -> e) } ++
     hostName.fold(Map.empty[String, String]) { h => Map("HOSTNAME" -> h) } ++
