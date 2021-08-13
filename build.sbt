@@ -17,8 +17,8 @@ def crossScalacOptions(scalaVersion: String): Seq[String] = CrossVersion.partial
 
 lazy val baseSettings = Seq(
   organization := "com.github.j5ik2o",
-  homepage := Some(url("https://github.com/j5ik2o/docker-controller-scala")),
-  licenses := List("The MIT License" -> url("http://opensource.org/licenses/MIT")),
+  homepage     := Some(url("https://github.com/j5ik2o/docker-controller-scala")),
+  licenses     := List("The MIT License" -> url("http://opensource.org/licenses/MIT")),
   developers := List(
     Developer(
       id = "j5ik2o",
@@ -27,7 +27,7 @@ lazy val baseSettings = Seq(
       url = url("https://blog.j5ik2o.me")
     )
   ),
-  scalaVersion := Versions.scala213Version,
+  scalaVersion       := Versions.scala213Version,
   crossScalaVersions := Seq(Versions.scala212Version, Versions.scala213Version, Versions.scala3Version),
   scalacOptions ++= (Seq(
     "-unchecked",
@@ -48,8 +48,8 @@ lazy val baseSettings = Seq(
   dependencyOverrides ++= Seq(
     "com.fasterxml.jackson.core" % "jackson-databind" % "2.11.0"
   ),
-  Test / publishArtifact := false,
-  Test / fork := true,
+  Test / publishArtifact   := false,
+  Test / fork              := true,
   Test / parallelExecution := false,
   Compile / doc / sources := {
     val old = (Compile / doc / sources).value

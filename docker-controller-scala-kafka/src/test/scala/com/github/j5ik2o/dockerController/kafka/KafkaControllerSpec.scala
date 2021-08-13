@@ -8,7 +8,7 @@ import org.apache.kafka.common.TopicPartition
 import org.apache.kafka.common.serialization.{ StringDeserializer, StringSerializer }
 import org.scalatest.freespec.AnyFreeSpec
 
-import java.time.{ LocalDateTime, Duration => JavaDuration }
+import java.time.{ Duration => JavaDuration, LocalDateTime }
 import java.util.{ Collections, Properties }
 import scala.concurrent.duration._
 import scala.util.control.Breaks
