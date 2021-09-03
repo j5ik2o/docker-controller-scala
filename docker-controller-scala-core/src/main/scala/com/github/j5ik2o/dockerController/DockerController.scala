@@ -74,8 +74,10 @@ private[dockerController] class DockerControllerImpl(
     outputFrameInterval: FiniteDuration = 500.millis
 )(
     val imageName: String,
-    val tag: Option[String] = None
+    _tag: Option[String] = None
 ) extends DockerController {
+
+  val tag: Option[String] = _tag.orElse(Some("latest"))
 
   protected val logger: Logger = LoggerFactory.getLogger(getClass)
 
@@ -188,7 +190,7 @@ private[dockerController] class DockerControllerImpl(
 
   override def pullImageIfNotExists(f: PullImageCmd => PullImageCmd): Unit = {
     logger.debug("pullImageIfNotExists --- start")
-    if (!existsImage(p => p.getRepoTags.contains(repoTag))) {
+    if (!existsImage(p => Option(p.getRepoTags).exists(_.contains(repoTag)))) {
       pullImage(f)
     }
     logger.debug("pullImageIfNotExists --- finish")
