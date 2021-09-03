@@ -17,7 +17,7 @@ class DynamoDBLocalControllerSpec extends AnyFreeSpec with DockerControllerSpecS
   logger.debug(s"testTimeFactor = $testTimeFactor")
 
   val hostPort: Int                       = temporaryServerPort()
-  val controller: DynamoDBLocalController = new DynamoDBLocalController(dockerClient)(hostPort)
+  val controller: DynamoDBLocalController = new DynamoDBLocalController(dockerClient, imageTag = None)(hostPort)
 
   // val waitPredicate: WaitPredicate = WaitPredicates.forListeningHostTcpPort(dockerHost, hostPort)
   val waitPredicate: WaitPredicate = WaitPredicates.forLogMessageByRegex(
