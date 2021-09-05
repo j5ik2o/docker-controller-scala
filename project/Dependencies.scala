@@ -104,7 +104,7 @@ object Dependencies {
   }
 
   object debasishg {
-    val redisClient = "net.debasishg" %% "redisclient" % "3.30"
+    val redisClient = "net.debasishg" %% "redisclient" % "3.40"
   }
 
   object twitter {
