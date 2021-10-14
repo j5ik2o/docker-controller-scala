@@ -31,9 +31,9 @@ object Dependencies {
   }
 
   object amazonAws {
-    val dynamodb = "com.amazonaws" % "aws-java-sdk-dynamodb" % "1.12.86"
-    val s3       = "com.amazonaws" % "aws-java-sdk-s3"       % "1.12.86"
-    val sqs      = "com.amazonaws" % "aws-java-sdk-sqs"      % "1.12.86"
+    val dynamodb = "com.amazonaws" % "aws-java-sdk-dynamodb" % "1.12.87"
+    val s3       = "com.amazonaws" % "aws-java-sdk-s3"       % "1.12.87"
+    val sqs      = "com.amazonaws" % "aws-java-sdk-sqs"      % "1.12.87"
   }
 
   object apache {
@@ -56,7 +56,7 @@ object Dependencies {
   }
 
   object elasticsearch {
-    val restHighLevelClient = "org.elasticsearch.client" % "elasticsearch-rest-high-level-client" % "7.15.0"
+    val restHighLevelClient = "org.elasticsearch.client" % "elasticsearch-rest-high-level-client" % "7.15.1"
   }
 
   object dockerJava {
