@@ -31,9 +31,9 @@ object Dependencies {
   }
 
   object amazonAws {
-    val dynamodb = "com.amazonaws" % "aws-java-sdk-dynamodb" % "1.12.90"
-    val s3       = "com.amazonaws" % "aws-java-sdk-s3"       % "1.12.90"
-    val sqs      = "com.amazonaws" % "aws-java-sdk-sqs"      % "1.12.90"
+    val dynamodb = "com.amazonaws" % "aws-java-sdk-dynamodb" % "1.12.91"
+    val s3       = "com.amazonaws" % "aws-java-sdk-s3"       % "1.12.91"
+    val sqs      = "com.amazonaws" % "aws-java-sdk-sqs"      % "1.12.91"
   }
 
   object apache {
