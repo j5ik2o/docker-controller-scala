@@ -108,7 +108,7 @@ object Dependencies {
   }
 
   object twitter {
-    val finagleMemcached = "com.twitter" %% "finagle-memcached" % "22.1.0"
+    val finagleMemcached = "com.twitter" %% "finagle-memcached" % "22.2.0"
   }
 
 }
