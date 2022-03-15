@@ -47,15 +47,16 @@ class KafkaController(
     kafkaExternalHostPort: Int,
     createTopics: Seq[String]
 ) extends DockerControllerImpl(dockerClient, outputFrameInterval)(imageName, imageTag) {
-  val networkId: String = dockerClient.createNetworkCmd().withName("kafka-" + UUID.randomUUID().toString).exec().getId
+  lazy val networkId: String =
+    dockerClient.createNetworkCmd().withName("kafka-" + UUID.randomUUID().toString).exec().getId
 
-  val kafkaNetwork: Network    = Network(networkId)
-  val zkAlias: NetworkAlias    = NetworkAlias(kafkaNetwork, "zk1-" + UUID.randomUUID().toString)
-  val kafkaAlias: NetworkAlias = NetworkAlias(kafkaNetwork, "kafka1-" + UUID.randomUUID().toString)
+  lazy val kafkaNetwork: Network    = Network(networkId)
+  lazy val zkAlias: NetworkAlias    = NetworkAlias(kafkaNetwork, "zk1-" + UUID.randomUUID().toString)
+  lazy val kafkaAlias: NetworkAlias = NetworkAlias(kafkaNetwork, "kafka1-" + UUID.randomUUID().toString)
 
-  val zooKeeperHostPort: Int = RandomPortUtil.temporaryServerPort()
+  lazy val zooKeeperHostPort: Int = RandomPortUtil.temporaryServerPort()
 
-  val zooKeeperController: ZooKeeperController = ZooKeeperController(dockerClient)(
+  lazy val zooKeeperController: ZooKeeperController = ZooKeeperController(dockerClient)(
     myId = 1,
     hostPort = zooKeeperHostPort,
     containerPort = zooKeeperHostPort, // ZooKeeperController.DefaultZooPort,
@@ -65,11 +66,11 @@ class KafkaController(
   protected val zooKeeperWaitPredicate: WaitPredicate =
     WaitPredicates.forLogMessageByRegex(ZooKeeperController.RegexForWaitPredicate)
 
-  private val kafkaContainerName     = kafkaAlias.name
-  private val zooKeeperContainerName = zkAlias.name
-  private val zooKeeperContainerPort = zooKeeperController.containerPort
+  private lazy val kafkaContainerName     = kafkaAlias.name
+  private lazy val zooKeeperContainerName = zkAlias.name
+  private lazy val zooKeeperContainerPort = zooKeeperController.containerPort
 
-  private val environmentVariables = Map(
+  private lazy val environmentVariables = Map(
     "KAFKA_AUTO_CREATE_TOPICS_ENABLE" -> (if (createTopics.isEmpty) "false" else "true"),
     "KAFKA_CREATE_TOPICS"             -> createTopics.mkString(","),
     "KAFKA_BROKER_ID"                 -> "1",
