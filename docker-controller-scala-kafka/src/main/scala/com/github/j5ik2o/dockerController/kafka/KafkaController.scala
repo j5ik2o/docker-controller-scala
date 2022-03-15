@@ -50,8 +50,8 @@ class KafkaController(
   val networkId: String = dockerClient.createNetworkCmd().withName("kafka-" + UUID.randomUUID().toString).exec().getId
 
   val kafkaNetwork: Network    = Network(networkId)
-  val zkAlias: NetworkAlias    = NetworkAlias(kafkaNetwork, "zk1")
-  val kafkaAlias: NetworkAlias = NetworkAlias(kafkaNetwork, "kafka1")
+  val zkAlias: NetworkAlias    = NetworkAlias(kafkaNetwork, "zk1-" + UUID.randomUUID().toString)
+  val kafkaAlias: NetworkAlias = NetworkAlias(kafkaNetwork, "kafka1-" + UUID.randomUUID().toString)
 
   val zooKeeperHostPort: Int = RandomPortUtil.temporaryServerPort()
 
@@ -98,10 +98,21 @@ class KafkaController(
     zooKeeperController.stopContainer()
   }
 
+  override protected def newRemoveContainerCmd(): RemoveContainerCmd = {
+    require(containerId.isDefined)
+    dockerClient.removeContainerCmd(containerId.get).withForce(true)
+  }
+
   override def removeContainer(f: RemoveContainerCmd => RemoveContainerCmd): Unit = {
-    super.removeContainer(f)
-    zooKeeperController.removeContainer()
-    dockerClient.removeNetworkCmd(networkId).exec()
+    try {
+      super.removeContainer(f)
+    } finally {
+      try {
+        zooKeeperController.removeContainer()
+      } finally {
+        dockerClient.removeNetworkCmd(networkId).exec()
+      }
+    }
   }
 
   override def awaitCondition(duration: Duration)(predicate: Option[Frame] => Boolean): Unit = {
