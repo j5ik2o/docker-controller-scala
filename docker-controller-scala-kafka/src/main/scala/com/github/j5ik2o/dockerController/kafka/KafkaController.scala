@@ -51,8 +51,8 @@ class KafkaController(
     dockerClient.createNetworkCmd().withName("kafka-" + UUID.randomUUID().toString).exec().getId
 
   lazy val kafkaNetwork: Network    = Network(networkId)
-  lazy val zkAlias: NetworkAlias    = NetworkAlias(kafkaNetwork, "zk1-" + UUID.randomUUID().toString)
-  lazy val kafkaAlias: NetworkAlias = NetworkAlias(kafkaNetwork, "kafka1-" + UUID.randomUUID().toString)
+  lazy val zkAlias: NetworkAlias    = NetworkAlias(kafkaNetwork, "zk1")
+  lazy val kafkaAlias: NetworkAlias = NetworkAlias(kafkaNetwork, "kafka1")
 
   lazy val zooKeeperHostPort: Int = RandomPortUtil.temporaryServerPort()
 
