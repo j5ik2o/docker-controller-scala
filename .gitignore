@@ -30,3 +30,6 @@ dump.rdb
 dumps/
 .bsp/
 .bloop/
+
+.metals/
+.vscode/
