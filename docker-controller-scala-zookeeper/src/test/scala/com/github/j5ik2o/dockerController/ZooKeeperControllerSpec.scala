@@ -44,8 +44,9 @@ class ZooKeeperControllerSpec extends AnyFreeSpec with DockerControllerSpecSuppo
           }
         )
         connectionLatch.await(10, TimeUnit.SECONDS)
-      } finally if (zk != null)
-        zk.close()
+      } finally
+        if (zk != null)
+          zk.close()
     }
   }
 
