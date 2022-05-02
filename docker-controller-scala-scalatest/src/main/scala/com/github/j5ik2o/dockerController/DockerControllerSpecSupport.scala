@@ -68,13 +68,13 @@ trait DockerControllerSpecSupport extends SuiteMixin with DockerControllerHelper
   }
 
   protected def beforeCreateContainers(): Unit = {}
-  protected def afterCreateContainers(): Unit = {}
-  protected def beforeStartContainers(): Unit = {}
-  protected def afterStartContainers(): Unit = {}
-  protected def beforeStopContainers(): Unit = {}
-  protected def afterStopContainers(): Unit = {}
+  protected def afterCreateContainers(): Unit  = {}
+  protected def beforeStartContainers(): Unit  = {}
+  protected def afterStartContainers(): Unit   = {}
+  protected def beforeStopContainers(): Unit   = {}
+  protected def afterStopContainers(): Unit    = {}
   protected def beforeRemoveContainers(): Unit = {}
-  protected def afterRemoveContainers(): Unit = {}
+  protected def afterRemoveContainers(): Unit  = {}
 
   abstract override def run(testName: Option[String], args: Args): Status = {
     (createRemoveLifecycle, startStopLifecycle) match {
