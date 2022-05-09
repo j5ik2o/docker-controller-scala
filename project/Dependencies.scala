@@ -31,9 +31,9 @@ object Dependencies {
   }
 
   object amazonAws {
-    val dynamodb = "com.amazonaws" % "aws-java-sdk-dynamodb" % "1.12.216"
-    val s3       = "com.amazonaws" % "aws-java-sdk-s3"       % "1.12.212"
-    val sqs      = "com.amazonaws" % "aws-java-sdk-sqs"      % "1.12.216"
+    val dynamodb = "com.amazonaws" % "aws-java-sdk-dynamodb" % "1.12.215"
+    val s3       = "com.amazonaws" % "aws-java-sdk-s3"       % "1.12.216"
+    val sqs      = "com.amazonaws" % "aws-java-sdk-sqs"      % "1.12.215"
   }
 
   object apache {
@@ -43,7 +43,7 @@ object Dependencies {
     }
 
     object kafka {
-      val kafkaClients = "org.apache.kafka" % "kafka-clients" % "3.1.0"
+      val kafkaClients = "org.apache.kafka" % "kafka-clients" % "3.2.0"
     }
   }
 
