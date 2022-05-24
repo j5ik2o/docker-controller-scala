@@ -52,7 +52,7 @@ object Dependencies {
   }
 
   object postgresql {
-    val postgresql = "org.postgresql" % "postgresql" % "42.3.5"
+    val postgresql = "org.postgresql" % "postgresql" % "42.3.6"
   }
 
   object elasticsearch {
