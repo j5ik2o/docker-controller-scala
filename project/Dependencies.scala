@@ -3,12 +3,12 @@ import sbt._
 object Dependencies {
 
   object Versions {
-    val scala212Version              = "2.12.13"
+    val scala212Version              = "2.12.16"
     val scala213Version              = "2.13.6"
-    val scala3Version                = "3.0.2"
-    val scalaTestVersion             = "3.2.12"
+    val scala3Version                = "3.1.2"
+    val scalaTestVersion             = "3.2.9"
     val logbackVersion               = "1.2.11"
-    val scalaCollectionCompatVersion = "2.5.0"
+    val scalaCollectionCompatVersion = "2.7.0"
     val dockerJavaVersion            = "3.2.13"
     val progressBarVersion           = "0.9.3"
     val enumeratumVersion            = "1.6.1"
