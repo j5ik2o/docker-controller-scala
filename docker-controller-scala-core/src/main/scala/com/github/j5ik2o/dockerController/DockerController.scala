@@ -101,8 +101,15 @@ private[dockerController] class DockerControllerImpl(
     this
   }
 
+  protected def isPlatformLinuxAmd64AtM1Mac: Boolean = false
+
   protected def newCreateContainerCmd(): CreateContainerCmd = {
-    dockerClient.createContainerCmd(repoTag)
+    var cmd    = dockerClient.createContainerCmd(repoTag)
+    val osArch = sys.props("os.arch")
+    if (isPlatformLinuxAmd64AtM1Mac && osArch == "aarch64") {
+      cmd = cmd.withPlatform("linux/amd64")
+    }
+    cmd
   }
 
   protected def newRemoveContainerCmd(): RemoveContainerCmd = {

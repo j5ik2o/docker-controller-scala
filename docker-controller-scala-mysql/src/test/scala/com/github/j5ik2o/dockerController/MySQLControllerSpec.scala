@@ -26,6 +26,7 @@ class MySQLControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport w
     s"jdbc:mysql://$flywayDbHost:$flywayDbHostPort/$flywayDbName?useSSL=false&user=$flywayDbUserName&password=$flywayDbPassword"
 
   val controller: MySQLController = MySQLController(dockerClient)(hostPort, rootPassword, databaseName = Some("test"))
+
   override protected val dockerControllers: Vector[DockerController] = Vector(controller)
 
   override protected val waitPredicatesSettings: Map[DockerController, WaitPredicateSetting] =
@@ -36,7 +37,7 @@ class MySQLControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport w
           dockerHost,
           hostPort,
           (1 * testTimeFactor).seconds,
-          Some((8 * testTimeFactor).seconds)
+          Some((15 * testTimeFactor).seconds)
         )
       )
     )
