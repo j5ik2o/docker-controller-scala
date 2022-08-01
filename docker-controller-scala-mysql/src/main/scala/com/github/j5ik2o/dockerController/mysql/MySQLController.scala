@@ -47,6 +47,8 @@ class MySQLController(
     databaseName: Option[String] = None
 ) extends DockerControllerImpl(dockerClient, outputFrameInterval)(imageName, imageTag) {
 
+  override protected def isPlatformLinuxAmd64AtM1Mac: Boolean = true
+
   private val environmentVariables: Map[String, String] = {
     val env1 = Map[String, String](
       "MYSQL_ROOT_PASSWORD" -> rootPassword
@@ -61,11 +63,12 @@ class MySQLController(
     val containerPort = ExposedPort.tcp(DefaultContainerPort)
     val portBinding   = new Ports()
     portBinding.bind(containerPort, Ports.Binding.bindPort(hostPort))
-    super
+    val cmd = super
       .newCreateContainerCmd()
       .withEnv(environmentVariables.map { case (k, v) => s"$k=$v" }.toArray: _*)
       .withExposedPorts(containerPort)
       .withHostConfig(newHostConfig().withPortBindings(portBinding))
+    cmd
   }
 
   override protected def newRemoveContainerCmd(): RemoveContainerCmd = {
