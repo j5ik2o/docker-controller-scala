@@ -11,7 +11,7 @@ import scala.concurrent.duration.{ DurationInt, FiniteDuration }
 
 object MySQLController {
   final val DefaultImageName: String        = "mysql"
-  final val DefaultImageTag: Option[String] = Some("5.7")
+  final val DefaultImageTag: Option[String] = Some("8.0")
   final val DefaultContainerPort: Int       = 3306
 
   def apply(
@@ -46,8 +46,6 @@ class MySQLController(
     userNameAndPassword: Option[MySQLUserNameAndPassword] = None,
     databaseName: Option[String] = None
 ) extends DockerControllerImpl(dockerClient, outputFrameInterval)(imageName, imageTag) {
-
-  override protected def isPlatformLinuxAmd64AtM1Mac: Boolean = true
 
   private val environmentVariables: Map[String, String] = {
     val env1 = Map[String, String](
