@@ -12,9 +12,9 @@ import scala.util.matching.Regex
 
 object ZooKeeperController {
   final val DefaultImageName              = "zookeeper"
-  final val DefaultImageTag: Some[String] = Some("3.4.9")
+  final val DefaultImageTag: Some[String] = Some("3.5")
   final val DefaultZooPort                = 2181
-  final val RegexForWaitPredicate: Regex  = """binding to port 0.0.0.0/0.0.0.0:.*""".r
+  final val RegexForWaitPredicate: Regex  = """binding to port /0.0.0.0:.*""".r
 
   def apply(
       dockerClient: DockerClient,
@@ -49,12 +49,17 @@ class ZooKeeperController(
     networkAlias: Option[NetworkAlias] = None
 ) extends DockerControllerImpl(dockerClient, outputFrameInterval)(imageName, imageTag) {
 
-  private def environmentVariables(myId: Int) =
+  private def environmentVariables(myId: Int) = {
+    val defaultEnvVarsExcludeAarch64 = if (sys.props("os.arch") == "aarch64") {
+      Map.empty
+    } else {
+      Map("ZOO_SERVERS" -> s"server.$myId=0.0.0.0:2888:3888")
+    }
     Map(
-      "ZOO_MY_ID"   -> myId.toString,
-      "ZOO_PORT"    -> containerPort.toString,
-      "ZOO_SERVERS" -> s"server.$myId=0.0.0.0:2888:3888"
-    ) ++ envVars
+      "ZOO_MY_ID" -> myId.toString,
+      "ZOO_PORT"  -> containerPort.toString
+    ) ++ defaultEnvVarsExcludeAarch64 ++ envVars
+  }
 
   override protected def newCreateContainerCmd(): CreateContainerCmd = {
     val zooPort     = ExposedPort.tcp(containerPort)

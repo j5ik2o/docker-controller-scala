@@ -59,7 +59,7 @@ class KafkaController(
   lazy val zooKeeperController: ZooKeeperController = ZooKeeperController(dockerClient)(
     myId = 1,
     hostPort = zooKeeperHostPort,
-    containerPort = zooKeeperHostPort, // ZooKeeperController.DefaultZooPort,
+    containerPort = ZooKeeperController.DefaultZooPort,
     networkAlias = Some(zkAlias)
   )
 
