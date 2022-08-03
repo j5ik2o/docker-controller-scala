@@ -50,15 +50,15 @@ class ZooKeeperController(
 ) extends DockerControllerImpl(dockerClient, outputFrameInterval)(imageName, imageTag) {
 
   private def environmentVariables(myId: Int) = {
-    val defaultEnvVarsExcludeAarch64 = if (sys.props("os.arch") == "aarch64") {
-      Map.empty
-    } else {
-      Map("ZOO_SERVERS" -> s"server.$myId=0.0.0.0:2888:3888")
-    }
+//    val defaultEnvVarsExcludeAarch64 = if (sys.props("os.arch") == "aarch64") {
+//      Map.empty
+//    } else {
+//      Map("ZOO_SERVERS" -> s"server.$myId=0.0.0.0:2888:3888")
+//    }
     Map(
       "ZOO_MY_ID" -> myId.toString,
       "ZOO_PORT"  -> containerPort.toString
-    ) ++ defaultEnvVarsExcludeAarch64 ++ envVars
+    ) ++ envVars
   }
 
   override protected def newCreateContainerCmd(): CreateContainerCmd = {
