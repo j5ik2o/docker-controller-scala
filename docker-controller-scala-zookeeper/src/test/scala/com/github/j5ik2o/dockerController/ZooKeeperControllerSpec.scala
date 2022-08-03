@@ -18,7 +18,6 @@ class ZooKeeperControllerSpec extends AnyFreeSpec with DockerControllerSpecSuppo
 
   override protected val dockerControllers: Vector[DockerController] = Vector(zooKeeperController)
 
-  // val waitPredicate: WaitPredicate = WaitPredicates.forListeningHostTcpPort(dockerHost, minioPort)
   val waitPredicate: WaitPredicate =
     WaitPredicates.forLogMessageByRegex(ZooKeeperController.RegexForWaitPredicate, Some((1 * testTimeFactor).seconds))
 
