@@ -3,7 +3,7 @@ package com.github.j5ik2o.dockerController
 import com.github.dockerjava.api.DockerClient
 import com.github.dockerjava.api.async.ResultCallback
 import com.github.dockerjava.api.command._
-import com.github.dockerjava.api.model.{ Frame, Image, PullResponseItem }
+import com.github.dockerjava.api.model.{ Container, Frame, Image, PullResponseItem }
 import me.tongfei.progressbar.{ DelegatingProgressBarConsumer, ProgressBar, ProgressBarBuilder, ProgressBarStyle }
 import org.slf4j.{ Logger, LoggerFactory }
 
@@ -20,6 +20,7 @@ case class CmdConfigures(
     removeContainerCmdConfigure: RemoveContainerCmd => RemoveContainerCmd = identity,
     startContainerCmdConfigure: StartContainerCmd => StartContainerCmd = identity,
     stopContainerCmdConfigure: StopContainerCmd => StopContainerCmd = identity,
+    listContainersCmdConfigure: ListContainersCmd => ListContainersCmd = identity,
     inspectContainerCmdConfigure: InspectContainerCmd => InspectContainerCmd = identity,
     listImageCmdConfigure: ListImagesCmd => ListImagesCmd = identity,
     pullImageCmdConfigure: PullImageCmd => PullImageCmd = identity
@@ -54,6 +55,8 @@ trait DockerController {
   def startContainer(f: StartContainerCmd => StartContainerCmd = identity): Unit
   def stopContainer(f: StopContainerCmd => StopContainerCmd = identity): Unit
   def inspectContainer(f: InspectContainerCmd => InspectContainerCmd = identity): InspectContainerResponse
+  def listContainers(f: ListContainersCmd => ListContainersCmd = identity): Vector[Container]
+
   def listImages(f: ListImagesCmd => ListImagesCmd = identity): Vector[Image]
   def existsImage(p: Image => Boolean): Boolean
   def pullImageIfNotExists(f: PullImageCmd => PullImageCmd = identity): Unit
@@ -122,6 +125,10 @@ private[dockerController] class DockerControllerImpl(
     dockerClient.inspectContainerCmd(containerId.get)
   }
 
+  protected def newListContainersCmd(): ListContainersCmd = {
+    dockerClient.listContainersCmd()
+  }
+
   protected def newListImagesCmd(): ListImagesCmd = {
     dockerClient.listImagesCmd()
   }
@@ -176,6 +183,15 @@ private[dockerController] class DockerControllerImpl(
       cmdConfigures.map(_.inspectContainerCmdConfigure).getOrElse(identity)
     val result = f(configureFunction(newInspectContainerCmd())).exec()
     logger.debug("inspectContainer --- finish")
+    result
+  }
+
+  override def listContainers(f: ListContainersCmd => ListContainersCmd): Vector[Container] = {
+    logger.debug("listContainers --- start")
+    val configureFunction: ListContainersCmd => ListContainersCmd =
+      cmdConfigures.map(_.listContainersCmdConfigure).getOrElse(identity)
+    val result = f(configureFunction(newListContainersCmd())).exec().asScala.toVector
+    logger.debug("listContainers --- finish")
     result
   }
 
@@ -326,4 +342,5 @@ private[dockerController] class DockerControllerImpl(
   override def removeNetwork(id: String, f: RemoveNetworkCmd => RemoveNetworkCmd): Unit = {
     f(dockerClient.removeNetworkCmd(id)).exec()
   }
+
 }

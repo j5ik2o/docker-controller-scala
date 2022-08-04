@@ -39,6 +39,7 @@ class DockerControllerSpec extends AnyFreeSpec with BeforeAndAfter with BeforeAn
   logger.debug(s"hostPort = $hostPort")
 
   var dockerController: DockerController = _
+  var containerId: String                = _
 
   override protected def beforeAll(): Unit = {
     dockerController = DockerController(dockerClient)(
@@ -53,12 +54,18 @@ class DockerControllerSpec extends AnyFreeSpec with BeforeAndAfter with BeforeAn
         .withHostConfig(newHostConfig().withPortBindings(portBinding))
     }
     dockerController.pullImageIfNotExists()
-    dockerController.createContainer()
+    containerId = dockerController.createContainer().getId
+  }
+
+  private def dispose(): Unit = synchronized {
+    if (dockerController.listContainers().exists(_.getId == containerId)) {
+      dockerController.removeContainer()
+      dockerClient.close()
+    }
   }
 
   override protected def afterAll(): Unit = {
-    dockerController.removeContainer()
-    dockerClient.close()
+    dispose()
   }
 
   before {

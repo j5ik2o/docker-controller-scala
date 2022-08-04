@@ -56,6 +56,7 @@ class DockerComposeController2Spec extends AnyFreeSpec with BeforeAndAfter with 
   }
 
   var dockerController: DockerController = _
+  var containerId: String                = _
 
   override protected def beforeAll(): Unit = {
     val buildDir: File                = ResourceUtil.getBuildDir(getClass)
@@ -67,12 +68,22 @@ class DockerComposeController2Spec extends AnyFreeSpec with BeforeAndAfter with 
       Map("hostPort" -> hostPort.toString, "message" -> Instant.now().toString)
     )
     dockerController.pullImageIfNotExists()
-    dockerController.createContainer()
+    containerId = dockerController.createContainer().getId
+  }
+
+  sys.addShutdownHook {
+    dispose()
+  }
+
+  private def dispose(): Unit = synchronized {
+    if (dockerController.listContainers().exists(_.getId == containerId)) {
+      dockerController.removeContainer()
+      dockerClient.close()
+    }
   }
 
   override protected def afterAll(): Unit = {
-    dockerController.removeContainer()
-    dockerClient.close()
+    dispose()
   }
 
   before {

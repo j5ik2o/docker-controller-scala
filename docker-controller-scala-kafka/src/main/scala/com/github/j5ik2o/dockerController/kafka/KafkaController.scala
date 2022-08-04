@@ -11,6 +11,7 @@ import com.github.j5ik2o.dockerController._
 
 import java.util.UUID
 import scala.concurrent.duration.{ Duration, DurationInt, FiniteDuration }
+import scala.jdk.CollectionConverters.CollectionHasAsScala
 import scala.util.matching.Regex
 
 object KafkaController {
@@ -49,6 +50,10 @@ class KafkaController(
 ) extends DockerControllerImpl(dockerClient, outputFrameInterval)(imageName, imageTag) {
   lazy val networkId: String =
     dockerClient.createNetworkCmd().withName("kafka-" + UUID.randomUUID().toString).exec().getId
+
+  sys.addShutdownHook {
+    removeNetwork()
+  }
 
   lazy val kafkaNetwork: Network    = Network(networkId)
   lazy val zkAlias: NetworkAlias    = NetworkAlias(kafkaNetwork, "zk1")
@@ -104,6 +109,12 @@ class KafkaController(
     dockerClient.removeContainerCmd(containerId.get).withForce(true)
   }
 
+  private def removeNetwork(): Unit = synchronized {
+    if (dockerClient.listNetworksCmd().exec().asScala.exists(_.getId == networkId)) {
+      dockerClient.removeNetworkCmd(networkId)
+    }
+  }
+
   override def removeContainer(f: RemoveContainerCmd => RemoveContainerCmd): Unit = {
     try {
       super.removeContainer(f)
@@ -111,7 +122,7 @@ class KafkaController(
       try {
         zooKeeperController.removeContainer()
       } finally {
-        dockerClient.removeNetworkCmd(networkId).exec()
+        removeNetwork()
       }
     }
   }

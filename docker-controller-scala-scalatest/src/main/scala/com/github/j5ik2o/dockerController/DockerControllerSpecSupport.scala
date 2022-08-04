@@ -76,6 +76,19 @@ trait DockerControllerSpecSupport extends SuiteMixin with DockerControllerHelper
   protected def beforeRemoveContainers(): Unit = {}
   protected def afterRemoveContainers(): Unit  = {}
 
+  private def disposeContainer(dockerController: DockerController): Unit = synchronized {
+    if (dockerController.listContainers().exists(_.getId == dockerController.containerId.get)) {
+      dockerController.removeContainer()
+      dockerClient.close()
+    }
+  }
+
+  sys.addShutdownHook {
+    for (dockerController <- dockerControllers) {
+      disposeContainer(dockerController)
+    }
+  }
+
   abstract override def run(testName: Option[String], args: Args): Status = {
     (createRemoveLifecycle, startStopLifecycle) match {
       case (DockerContainerCreateRemoveLifecycle.ForEachTest, DockerContainerStartStopLifecycle.ForAllTest) =>
