@@ -12,7 +12,7 @@ import scala.util.matching.Regex
 
 object DynamoDBLocalController {
   final val DefaultImageName: String        = "amazon/dynamodb-local"
-  final val DefaultImageTag: Option[String] = Some("1.13.2")
+  final val DefaultImageTag: Option[String] = Some("1.18.0")
   final val DefaultContainerPort: Int       = 8000
   final val RegexOfWaitPredicate: Regex     = s"""Port.*$DefaultContainerPort.*""".r
 
