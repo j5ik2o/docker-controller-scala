@@ -3,6 +3,7 @@ package com.github.j5ik2o.dockerController.minio
 import com.amazonaws.auth.{ AWSStaticCredentialsProvider, BasicAWSCredentials }
 import com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration
 import com.amazonaws.regions.Regions
+import com.amazonaws.services.s3.model.CreateBucketRequest
 import com.amazonaws.services.s3.{ AmazonS3, AmazonS3Client }
 import com.github.j5ik2o.dockerController.WaitPredicates.WaitPredicate
 import com.github.j5ik2o.dockerController._
@@ -51,7 +52,8 @@ class MinioControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport {
 
   protected def createBucket(): Unit = {
     if (!s3Client.listBuckets().asScala.exists(_.getName == bucketName)) {
-      s3Client.createBucket(bucketName)
+      val request = new CreateBucketRequest(bucketName, minioRegion.getName)
+      s3Client.createBucket(request)
       logger.info(s"bucket created: $bucketName")
     }
     while (!s3Client.listBuckets().asScala.exists(_.getName == bucketName)) {
