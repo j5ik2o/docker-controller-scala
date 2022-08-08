@@ -17,6 +17,7 @@ import com.amazonaws.services.dynamodbv2.model.{
   StreamViewType
 }
 import com.amazonaws.services.dynamodbv2.{ AmazonDynamoDB, AmazonDynamoDBClientBuilder }
+import com.amazonaws.services.s3.model.CreateBucketRequest
 import com.amazonaws.services.s3.{ AmazonS3, AmazonS3Client }
 import com.github.j5ik2o.dockerController.{ DockerController, DockerControllerSpecSupport, WaitPredicates }
 import org.scalatest.freespec.AnyFreeSpec
@@ -63,7 +64,8 @@ class LocalStackControllerSpec extends AnyFreeSpec with DockerControllerSpecSupp
 
   protected def createBucket(): Unit = {
     if (!s3Client.listBuckets().asScala.exists(_.getName == bucketName)) {
-      s3Client.createBucket(bucketName)
+      val request = new CreateBucketRequest(bucketName, region.getName)
+      s3Client.createBucket(request)
       logger.info(s"bucket created: $bucketName")
     }
     while (!s3Client.listBuckets().asScala.exists(_.getName == bucketName)) {
