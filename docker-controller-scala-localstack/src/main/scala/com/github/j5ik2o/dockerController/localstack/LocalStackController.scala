@@ -11,7 +11,7 @@ import scala.concurrent.duration.{ DurationInt, FiniteDuration }
 
 object LocalStackController {
   final val DefaultImageName              = "localstack/localstack"
-  final val DefaultImageTag: Some[String] = Some("0.12.16")
+  final val DefaultImageTag: Some[String] = Some("1.0.3")
 
   def apply(
       dockerClient: DockerClient,
@@ -110,7 +110,8 @@ class LocalStackController(
 ) extends DockerControllerImpl(dockerClient, outputFrameInterval)(imageName, imageTag) {
 
   private val environmentVariables: Map[String, String] = Map(
-    "SERVICES" -> services.map(_.entryName).mkString(",")
+    "EAGER_SERVICE_LOADING" -> "1",
+    "SERVICES"              -> services.map(_.entryName).mkString(",")
   ) ++
     edgeBindHost.fold(Map.empty[String, String]) { e => Map("EDGE_BIND_HOST" -> e) } ++
     hostName.fold(Map.empty[String, String]) { h => Map("HOSTNAME" -> h) } ++
