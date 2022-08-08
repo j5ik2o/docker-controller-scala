@@ -81,7 +81,7 @@ libraryDependencies += Seq(
 )
 ```
 
-Mix-in `FlywaySpecSupport` then, put the sql files in `src/reosources/flyway`(`src/reosources/**` can be set to any string.), run `flywayContext.flyway.migrate()` in `afterStartContainers` method.
+Mix-in `FlywaySpecSupport` then, put the sql files in `src/reosources/flyway`(`src/resources/**` can be set to any string.), run `flywayContext.flyway.migrate()` in `afterStartContainers` method.
 
 ```scala
 class MySQLControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport with FlywaySpecSupport {
