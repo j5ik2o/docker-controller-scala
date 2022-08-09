@@ -8,6 +8,8 @@
 
 This library provides an easy and simple way to handle Docker Container or Docker Compose on ScalaTest, based on [docker-java](https://github.com/docker-java/docker-java). The implementation of this library is thin, and if you know [docker-java](https://github.com/docker-java/docker-java), your learning cost will be negligible.
 
+M1 Macs also be supported.
+
 ## Installation
 
 Add the following to your sbt build (2.12.x, 2.13.x, 3.0.x):
