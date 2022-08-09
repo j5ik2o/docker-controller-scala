@@ -16,6 +16,7 @@ object MySQLController {
 
   def apply(
       dockerClient: DockerClient,
+      isDockerClientAutoClose: Boolean = false,
       outputFrameInterval: FiniteDuration = 500.millis,
       imageName: String = DefaultImageName,
       imageTag: Option[String] = DefaultImageTag,
@@ -26,7 +27,7 @@ object MySQLController {
       userNameAndPassword: Option[MySQLUserNameAndPassword] = None,
       databaseName: Option[String] = None
   ): MySQLController =
-    new MySQLController(dockerClient, outputFrameInterval, imageName, imageTag, envVars)(
+    new MySQLController(dockerClient, isDockerClientAutoClose, outputFrameInterval, imageName, imageTag, envVars)(
       hostPort,
       rootPassword,
       userNameAndPassword,
@@ -36,6 +37,7 @@ object MySQLController {
 
 class MySQLController(
     dockerClient: DockerClient,
+    isDockerClientAutoClose: Boolean = false,
     outputFrameInterval: FiniteDuration = 500.millis,
     imageName: String = DefaultImageName,
     imageTag: Option[String] = DefaultImageTag,
@@ -45,7 +47,7 @@ class MySQLController(
     rootPassword: String,
     userNameAndPassword: Option[MySQLUserNameAndPassword] = None,
     databaseName: Option[String] = None
-) extends DockerControllerImpl(dockerClient, outputFrameInterval)(imageName, imageTag) {
+) extends DockerControllerImpl(dockerClient, isDockerClientAutoClose, outputFrameInterval)(imageName, imageTag) {
 
   private val environmentVariables: Map[String, String] = {
     val env1 = Map[String, String](

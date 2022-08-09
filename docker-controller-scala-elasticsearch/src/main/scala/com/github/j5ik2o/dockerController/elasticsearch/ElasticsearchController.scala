@@ -16,6 +16,7 @@ object ElasticsearchController {
 
   def apply(
       dockerClient: DockerClient,
+      isDockerClientAutoClose: Boolean = false,
       outputFrameInterval: FiniteDuration = 500.millis,
       imageName: String = DefaultImageName,
       imageTag: Option[String] = DefaultImageTag,
@@ -24,11 +25,19 @@ object ElasticsearchController {
       hostPort1: Int,
       hostPort2: Int
   ): ElasticsearchController =
-    new ElasticsearchController(dockerClient, outputFrameInterval, imageName, imageTag, envVars)(hostPort1, hostPort2)
+    new ElasticsearchController(
+      dockerClient,
+      isDockerClientAutoClose,
+      outputFrameInterval,
+      imageName,
+      imageTag,
+      envVars
+    )(hostPort1, hostPort2)
 }
 
 class ElasticsearchController(
     dockerClient: DockerClient,
+    isDockerClientAutoClose: Boolean = false,
     outputFrameInterval: FiniteDuration = 500.millis,
     imageName: String = DefaultImageName,
     imageTag: Option[String] = DefaultImageTag,
@@ -36,7 +45,7 @@ class ElasticsearchController(
 )(
     hostPort1: Int,
     hostPort2: Int
-) extends DockerControllerImpl(dockerClient, outputFrameInterval)(imageName, imageTag) {
+) extends DockerControllerImpl(dockerClient, isDockerClientAutoClose, outputFrameInterval)(imageName, imageTag) {
 
   private val environmentVariables = Map(
     "discovery.type" -> "single-node"

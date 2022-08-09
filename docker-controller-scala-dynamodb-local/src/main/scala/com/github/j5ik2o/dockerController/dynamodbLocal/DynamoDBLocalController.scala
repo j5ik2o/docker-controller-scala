@@ -18,6 +18,7 @@ object DynamoDBLocalController {
 
   def apply(
       dockerClient: DockerClient,
+      isDockerClientAutoClose: Boolean = false,
       outputFrameInterval: FiniteDuration = 500.millis,
       imageName: String = DefaultImageName,
       imageTag: Option[String] = DefaultImageTag,
@@ -25,18 +26,26 @@ object DynamoDBLocalController {
   )(
       hostPort: Int
   ): DynamoDBLocalController =
-    new DynamoDBLocalController(dockerClient, outputFrameInterval, imageName, imageTag, envVars)(hostPort)
+    new DynamoDBLocalController(
+      dockerClient,
+      isDockerClientAutoClose,
+      outputFrameInterval,
+      imageName,
+      imageTag,
+      envVars
+    )(hostPort)
 }
 
 class DynamoDBLocalController(
     dockerClient: DockerClient,
+    isDockerClientAutoClose: Boolean = false,
     outputFrameInterval: FiniteDuration = 500.millis,
     imageName: String = DefaultImageName,
     imageTag: Option[String] = DefaultImageTag,
     envVars: Map[String, String] = Map.empty
 )(
     hostPort: Int
-) extends DockerControllerImpl(dockerClient, outputFrameInterval)(imageName, imageTag) {
+) extends DockerControllerImpl(dockerClient, isDockerClientAutoClose, outputFrameInterval)(imageName, imageTag) {
 
   override protected def newCreateContainerCmd(): CreateContainerCmd = {
     val containerPort = ExposedPort.tcp(DefaultContainerPort)

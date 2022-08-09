@@ -41,7 +41,7 @@ class DockerControllerSpec extends AnyFreeSpec with BeforeAndAfter with BeforeAn
   var dockerController: DockerController = _
 
   override protected def beforeAll(): Unit = {
-    dockerController = DockerController(dockerClient)(
+    dockerController = DockerController(dockerClient, isDockerClientAutoClose = true)(
       imageName = "nginx",
       tag = Some("latest")
     ).configureCreateContainerCmd { cmd =>
@@ -57,8 +57,7 @@ class DockerControllerSpec extends AnyFreeSpec with BeforeAndAfter with BeforeAn
   }
 
   override protected def afterAll(): Unit = {
-    dockerController.removeContainer()
-    dockerClient.close()
+    dockerController.dispose()
   }
 
   before {

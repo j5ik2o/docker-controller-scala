@@ -76,6 +76,12 @@ trait DockerControllerSpecSupport extends SuiteMixin with DockerControllerHelper
   protected def beforeRemoveContainers(): Unit = {}
   protected def afterRemoveContainers(): Unit  = {}
 
+  protected def disposeResources(): Unit = {
+    dockerControllers.foreach(_.dispose())
+    logger.debug("dockerClient#close")
+    dockerClient.close()
+  }
+
   abstract override def run(testName: Option[String], args: Args): Status = {
     (createRemoveLifecycle, startStopLifecycle) match {
       case (DockerContainerCreateRemoveLifecycle.ForEachTest, DockerContainerStartStopLifecycle.ForAllTest) =>
@@ -101,7 +107,7 @@ trait DockerControllerSpecSupport extends SuiteMixin with DockerControllerHelper
               removeDockerContainers(DockerContainerCreateRemoveLifecycle.ForAllTest, testName)
           } finally {
             afterRemoveContainers()
-            dockerClient.close()
+            disposeResources()
           }
         }
       }

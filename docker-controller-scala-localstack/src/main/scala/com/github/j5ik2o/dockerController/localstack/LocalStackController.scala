@@ -15,6 +15,7 @@ object LocalStackController {
 
   def apply(
       dockerClient: DockerClient,
+      isDockerClientAutoClose: Boolean = false,
       outputFrameInterval: FiniteDuration = 500.millis,
       imageName: String = DefaultImageName,
       imageTag: Option[String] = DefaultImageTag,
@@ -27,7 +28,7 @@ object LocalStackController {
       hostNameExternal: Option[String] = None,
       defaultRegion: Option[String] = None
   ): LocalStackController =
-    new LocalStackController(dockerClient, outputFrameInterval, imageName, imageTag, envVars)(
+    new LocalStackController(dockerClient, isDockerClientAutoClose, outputFrameInterval, imageName, imageTag, envVars)(
       services,
       edgeHostPort,
       hostPorts,
@@ -95,6 +96,7 @@ object Service {
 
 class LocalStackController(
     dockerClient: DockerClient,
+    isDockerClientAutoClose: Boolean = false,
     outputFrameInterval: FiniteDuration = 500.millis,
     imageName: String = DefaultImageName,
     imageTag: Option[String] = DefaultImageTag,
@@ -107,7 +109,7 @@ class LocalStackController(
     hostName: Option[String] = None,
     hostNameExternal: Option[String] = None,
     defaultRegion: Option[String] = None
-) extends DockerControllerImpl(dockerClient, outputFrameInterval)(imageName, imageTag) {
+) extends DockerControllerImpl(dockerClient, isDockerClientAutoClose, outputFrameInterval)(imageName, imageTag) {
 
   private val environmentVariables: Map[String, String] = Map(
     "EAGER_SERVICE_LOADING" -> "1",

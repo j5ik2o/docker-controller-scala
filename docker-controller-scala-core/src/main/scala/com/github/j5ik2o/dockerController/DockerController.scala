@@ -30,6 +30,9 @@ trait DockerController {
 
   def dockerClient: DockerClient
 
+  def isDockerClientAutoClose: Boolean
+
+  def dispose(): Unit
   def imageName: String
   def tag: Option[String]
 
@@ -63,14 +66,20 @@ trait DockerController {
 
 object DockerController {
 
-  def apply(dockerClient: DockerClient, outputFrameInterval: FiniteDuration = 500.millis)(
+  def apply(
+      dockerClient: DockerClient,
+      isDockerClientAutoClose: Boolean = false,
+      outputFrameInterval: FiniteDuration = 500.millis
+  )(
       imageName: String,
       tag: Option[String] = None
-  ): DockerController = new DockerControllerImpl(dockerClient, outputFrameInterval)(imageName, tag)
+  ): DockerController =
+    new DockerControllerImpl(dockerClient, isDockerClientAutoClose, outputFrameInterval)(imageName, tag)
 }
 
 private[dockerController] class DockerControllerImpl(
     val dockerClient: DockerClient,
+    val isDockerClientAutoClose: Boolean = false,
     outputFrameInterval: FiniteDuration = 500.millis
 )(
     val imageName: String,
@@ -152,21 +161,27 @@ private[dockerController] class DockerControllerImpl(
     dockerClient.stopContainerCmd(containerId.get)
   }
 
-  override def createContainer(f: CreateContainerCmd => CreateContainerCmd): CreateContainerResponse = {
+  override def createContainer(f: CreateContainerCmd => CreateContainerCmd): CreateContainerResponse = synchronized {
     logger.debug("createContainer --- start")
     val configureFunction: CreateContainerCmd => CreateContainerCmd =
       cmdConfigures.map(_.createContainerCmdConfigure).getOrElse(identity)
     val result = f(configureFunction(newCreateContainerCmd())).exec()
     _containerId = Some(result.getId)
+    sys.addShutdownHook {
+      logger.debug("shutdownHook: start")
+      dispose()
+      logger.debug("shutdownHook: finish")
+    }
     logger.debug("createContainer --- finish")
     result
   }
 
-  override def removeContainer(f: RemoveContainerCmd => RemoveContainerCmd): Unit = {
+  override def removeContainer(f: RemoveContainerCmd => RemoveContainerCmd): Unit = synchronized {
     logger.debug("removeContainer --- start")
     val configureFunction: RemoveContainerCmd => RemoveContainerCmd =
       cmdConfigures.map(_.removeContainerCmdConfigure).getOrElse(identity)
     f(configureFunction(newRemoveContainerCmd())).exec()
+    _containerId = None
     logger.debug("removeContainer --- finish")
   }
 
@@ -326,4 +341,15 @@ private[dockerController] class DockerControllerImpl(
   override def removeNetwork(id: String, f: RemoveNetworkCmd => RemoveNetworkCmd): Unit = {
     f(dockerClient.removeNetworkCmd(id)).exec()
   }
+
+  override def dispose(): Unit = synchronized {
+    logger.debug("dispose: start")
+    if (containerId.isDefined) {
+      removeContainer()
+      if (isDockerClientAutoClose)
+        dockerClient.close()
+    }
+    logger.debug("dispose: finish")
+  }
+
 }

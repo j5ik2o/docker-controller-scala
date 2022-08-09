@@ -13,13 +13,17 @@ import scala.concurrent.duration.{ DurationInt, FiniteDuration }
 
 object DockerComposeController {
 
-  def apply(dockerClient: DockerClient, outputFrameInterval: FiniteDuration = 500.millis)(
+  def apply(
+      dockerClient: DockerClient,
+      isDockerClientAutoClose: Boolean = false,
+      outputFrameInterval: FiniteDuration = 500.millis
+  )(
       dockerComposeWorkingDir: File,
       ymlResourceName: String,
       environmentNames: Seq[String],
       context: Map[String, AnyRef]
   ): DockerController =
-    new DockerComposeController(dockerClient, outputFrameInterval)(
+    new DockerComposeController(dockerClient, isDockerClientAutoClose, outputFrameInterval)(
       dockerComposeWorkingDir,
       ymlResourceName,
       environmentNames,
@@ -29,13 +33,17 @@ object DockerComposeController {
 
 private[dockerController] class DockerComposeController(
     dockerClient: DockerClient,
+    isDockerClientAutoClose: Boolean,
     outputFrameInterval: FiniteDuration = 500.millis
 )(
     val dockerComposeWorkingDir: File,
     val ymlResourceName: String,
     val environmentResourceNames: Seq[String],
     val context: Map[String, AnyRef]
-) extends DockerControllerImpl(dockerClient, outputFrameInterval)("docker/compose", Some("1.24.1")) {
+) extends DockerControllerImpl(dockerClient, isDockerClientAutoClose, outputFrameInterval)(
+      "docker/compose",
+      Some("1.24.1")
+    ) {
 
   override protected def newCreateContainerCmd(): CreateContainerCmd = {
     val id = Base58.randomString(16)

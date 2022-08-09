@@ -18,6 +18,7 @@ object ZooKeeperController {
 
   def apply(
       dockerClient: DockerClient,
+      isDockerClientAutoClose: Boolean = false,
       outputFrameInterval: FiniteDuration = 500.millis,
       imageName: String = DefaultImageName,
       imageTag: Option[String] = DefaultImageTag,
@@ -28,7 +29,7 @@ object ZooKeeperController {
       containerPort: Int = DefaultZooPort,
       networkAlias: Option[NetworkAlias] = None
   ): ZooKeeperController =
-    new ZooKeeperController(dockerClient, outputFrameInterval, imageName, imageTag, envVars)(
+    new ZooKeeperController(dockerClient, isDockerClientAutoClose, outputFrameInterval, imageName, imageTag, envVars)(
       myId,
       hostPort,
       containerPort,
@@ -38,6 +39,7 @@ object ZooKeeperController {
 
 class ZooKeeperController(
     dockerClient: DockerClient,
+    isDockerClientAutoClose: Boolean = false,
     outputFrameInterval: FiniteDuration = 500.millis,
     imageName: String = DefaultImageName,
     imageTag: Option[String] = DefaultImageTag,
@@ -47,7 +49,7 @@ class ZooKeeperController(
     hostPort: Int,
     val containerPort: Int,
     networkAlias: Option[NetworkAlias] = None
-) extends DockerControllerImpl(dockerClient, outputFrameInterval)(imageName, imageTag) {
+) extends DockerControllerImpl(dockerClient, isDockerClientAutoClose, outputFrameInterval)(imageName, imageTag) {
 
   private def environmentVariables(myId: Int): Map[String, String] = {
     Map(

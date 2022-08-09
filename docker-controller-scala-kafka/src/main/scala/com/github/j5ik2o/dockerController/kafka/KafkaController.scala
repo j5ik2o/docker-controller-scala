@@ -20,6 +20,7 @@ object KafkaController {
 
   def apply(
       dockerClient: DockerClient,
+      isDockerClientAutoClose: Boolean = false,
       outputFrameInterval: FiniteDuration = 500.millis,
       imageName: String = DefaultImageName,
       imageTag: Option[String] = DefaultImageTag,
@@ -29,7 +30,7 @@ object KafkaController {
       kafkaExternalHostPort: Int,
       createTopics: Seq[String] = Seq.empty
   ): KafkaController =
-    new KafkaController(dockerClient, outputFrameInterval, imageName, imageTag, envVars)(
+    new KafkaController(dockerClient, isDockerClientAutoClose, outputFrameInterval, imageName, imageTag, envVars)(
       kafkaExternalHostName,
       kafkaExternalHostPort,
       createTopics
@@ -38,6 +39,7 @@ object KafkaController {
 
 class KafkaController(
     dockerClient: DockerClient,
+    isDockerClientAutoClose: Boolean = false,
     outputFrameInterval: FiniteDuration = 500.millis,
     imageName: String = DefaultImageName,
     imageTag: Option[String] = DefaultImageTag,
@@ -46,7 +48,7 @@ class KafkaController(
     kafkaExternalHostName: String,
     kafkaExternalHostPort: Int,
     createTopics: Seq[String]
-) extends DockerControllerImpl(dockerClient, outputFrameInterval)(imageName, imageTag) {
+) extends DockerControllerImpl(dockerClient, isDockerClientAutoClose, outputFrameInterval)(imageName, imageTag) {
   lazy val networkId: String =
     dockerClient.createNetworkCmd().withName("kafka-" + UUID.randomUUID().toString).exec().getId
 

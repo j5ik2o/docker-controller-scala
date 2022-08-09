@@ -60,7 +60,7 @@ class DockerComposeController2Spec extends AnyFreeSpec with BeforeAndAfter with 
   override protected def beforeAll(): Unit = {
     val buildDir: File                = ResourceUtil.getBuildDir(getClass)
     val dockerComposeWorkingDir: File = new File(buildDir, "docker-compose")
-    dockerController = DockerComposeController(dockerClient)(
+    dockerController = DockerComposeController(dockerClient, isDockerClientAutoClose = true)(
       dockerComposeWorkingDir,
       "docker-compose-3.yml.ftl",
       Seq("settings.env.ftl"),
@@ -71,8 +71,7 @@ class DockerComposeController2Spec extends AnyFreeSpec with BeforeAndAfter with 
   }
 
   override protected def afterAll(): Unit = {
-    dockerController.removeContainer()
-    dockerClient.close()
+    dockerController.dispose()
   }
 
   before {
