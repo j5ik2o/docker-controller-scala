@@ -16,6 +16,7 @@ object RedisController {
 
   def apply(
       dockerClient: DockerClient,
+      isDockerClientAutoClose: Boolean = false,
       outputFrameInterval: FiniteDuration = 500.millis,
       imageName: String = DefaultImageName,
       imageTag: Option[String] = DefaultImageTag,
@@ -26,7 +27,7 @@ object RedisController {
       redisPassword: Option[String] = None,
       redisAofEnabled: Boolean = false
   ): RedisController =
-    new RedisController(dockerClient, outputFrameInterval, imageName, imageTag, envVars)(
+    new RedisController(dockerClient, isDockerClientAutoClose, outputFrameInterval, imageName, imageTag, envVars)(
       hostPort,
       allowEmptyPassword,
       redisPassword,
@@ -36,6 +37,7 @@ object RedisController {
 
 class RedisController(
     dockerClient: DockerClient,
+    isDockerClientAutoClose: Boolean = false,
     outputFrameInterval: FiniteDuration = 500.millis,
     imageName: String = DefaultImageName,
     imageTag: Option[String] = DefaultImageTag,
@@ -45,7 +47,7 @@ class RedisController(
     allowEmptyPassword: Boolean = true,
     redisPassword: Option[String] = None,
     redisAofEnabled: Boolean = false
-) extends DockerControllerImpl(dockerClient, outputFrameInterval)(imageName, imageTag) {
+) extends DockerControllerImpl(dockerClient, isDockerClientAutoClose, outputFrameInterval)(imageName, imageTag) {
 
   private val environmentVariables = Map(
     "ALLOW_EMPTY_PASSWORD" -> { if (allowEmptyPassword) "yes" else "no" },

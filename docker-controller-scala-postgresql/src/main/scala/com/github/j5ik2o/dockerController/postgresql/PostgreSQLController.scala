@@ -20,6 +20,7 @@ object PostgreSQLController {
 
   def apply(
       dockerClient: DockerClient,
+      isDockerClientAutoClose: Boolean = false,
       outputFrameInterval: FiniteDuration = 500.millis,
       imageName: String = DefaultImageName,
       imageTag: Option[String] = DefaultImageTag,
@@ -34,7 +35,7 @@ object PostgreSQLController {
       hostAuthMethod: Option[String] = None,
       pgData: Option[String] = None
   ): PostgreSQLController =
-    new PostgreSQLController(dockerClient, outputFrameInterval, imageName, imageTag, envVars)(
+    new PostgreSQLController(dockerClient, isDockerClientAutoClose, outputFrameInterval, imageName, imageTag, envVars)(
       hostPort,
       userName,
       password,
@@ -48,6 +49,7 @@ object PostgreSQLController {
 
 class PostgreSQLController(
     dockerClient: DockerClient,
+    isDockerClientAutoClose: Boolean = false,
     outputFrameInterval: FiniteDuration = 500.millis,
     imageName: String = DefaultImageName,
     imageTag: Option[String] = DefaultImageTag,
@@ -61,7 +63,7 @@ class PostgreSQLController(
     initDbWalDir: Option[String] = None,
     hostAuthMethod: Option[String] = None,
     pgData: Option[String] = None
-) extends DockerControllerImpl(dockerClient, outputFrameInterval)(imageName, imageTag) {
+) extends DockerControllerImpl(dockerClient, isDockerClientAutoClose, outputFrameInterval)(imageName, imageTag) {
 
   private val environmentVariables: Map[String, String] = {
     envVars ++

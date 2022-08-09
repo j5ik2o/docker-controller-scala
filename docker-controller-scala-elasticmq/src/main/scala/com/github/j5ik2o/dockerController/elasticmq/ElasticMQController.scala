@@ -21,12 +21,13 @@ object ElasticMQController {
 
   def apply(
       dockerClient: DockerClient,
+      isDockerClientAutoClose: Boolean = false,
       outputFrameInterval: FiniteDuration = 500.millis,
       imageName: String = DefaultImageName,
       imageTag: Option[String] = DefaultImageTag,
       envVars: Map[String, String] = Map.empty
   )(dockerHost: String, hostPorts: Seq[Int]): ElasticMQController =
-    new ElasticMQController(dockerClient, outputFrameInterval, imageName, imageTag, envVars)(
+    new ElasticMQController(dockerClient, isDockerClientAutoClose, outputFrameInterval, imageName, imageTag, envVars)(
       dockerHost,
       hostPorts
     )
@@ -34,12 +35,13 @@ object ElasticMQController {
 
 class ElasticMQController(
     dockerClient: DockerClient,
+    isDockerClientAutoClose: Boolean = false,
     outputFrameInterval: FiniteDuration = 500.millis,
     imageName: String = DefaultImageName,
     imageTag: Option[String] = DefaultImageTag,
     envVars: Map[String, String] = Map.empty
 )(dockerHost: String, hostPorts: Seq[Int])
-    extends DockerControllerImpl(dockerClient, outputFrameInterval)(imageName, imageTag) {
+    extends DockerControllerImpl(dockerClient, isDockerClientAutoClose, outputFrameInterval)(imageName, imageTag) {
 
   private val environmentVariables = Map(
     "JAVA_OPTS"                             -> "-Dconfig.override_with_env_vars=true",

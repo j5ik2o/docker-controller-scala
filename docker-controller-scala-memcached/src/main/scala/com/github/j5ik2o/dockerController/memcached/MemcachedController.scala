@@ -16,6 +16,7 @@ object MemcachedController {
 
   def apply(
       dockerClient: DockerClient,
+      isDockerClientAutoClose: Boolean = false,
       outputFrameInterval: FiniteDuration = 500.millis,
       imageName: String = DefaultImageName,
       imageTag: Option[String] = DefaultImageTag,
@@ -23,14 +24,16 @@ object MemcachedController {
   )(
       hostPort: Int,
       prometheusEnabled: Boolean = false
-  ): MemcachedController = new MemcachedController(dockerClient, outputFrameInterval, imageName, imageTag, envVars)(
-    hostPort,
-    prometheusEnabled
-  )
+  ): MemcachedController =
+    new MemcachedController(dockerClient, isDockerClientAutoClose, outputFrameInterval, imageName, imageTag, envVars)(
+      hostPort,
+      prometheusEnabled
+    )
 }
 
 class MemcachedController(
     dockerClient: DockerClient,
+    isDockerClientAutoClose: Boolean = false,
     outputFrameInterval: FiniteDuration = 500.millis,
     imageName: String = DefaultImageName,
     imageTag: Option[String] = DefaultImageTag,
@@ -38,7 +41,7 @@ class MemcachedController(
 )(
     hostPort: Int,
     prometheusEnabled: Boolean = false
-) extends DockerControllerImpl(dockerClient, outputFrameInterval)(imageName, imageTag) {
+) extends DockerControllerImpl(dockerClient, isDockerClientAutoClose, outputFrameInterval)(imageName, imageTag) {
 
   private val environmentVariables = Map(
     "MEMCACHED_PROMETHEUS_ENABLED" -> prometheusEnabled.toString

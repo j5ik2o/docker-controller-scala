@@ -21,6 +21,7 @@ object MinioController {
 
   def apply(
       dockerClient: DockerClient,
+      isDockerClientAutoClose: Boolean = false,
       outputFrameInterval: FiniteDuration = 500.millis,
       imageName: String = DefaultImageName,
       imageTag: Option[String] = DefaultImageTag,
@@ -30,7 +31,7 @@ object MinioController {
       minioAccessKeyId: String = DefaultMinioAccessKeyId,
       minioSecretAccessKey: String = DefaultMinioSecretAccessKey
   ): MinioController =
-    new MinioController(dockerClient, outputFrameInterval, imageName, imageTag, envVars)(
+    new MinioController(dockerClient, isDockerClientAutoClose, outputFrameInterval, imageName, imageTag, envVars)(
       hostPort,
       minioAccessKeyId,
       minioSecretAccessKey
@@ -39,6 +40,7 @@ object MinioController {
 
 class MinioController(
     dockerClient: DockerClient,
+    isDockerClientAutoClose: Boolean = false,
     outputFrameInterval: FiniteDuration = 500.millis,
     imageName: String = DefaultImageName,
     imageTag: Option[String] = DefaultImageTag,
@@ -47,7 +49,7 @@ class MinioController(
     hostPort: Int,
     minioAccessKeyId: String = DefaultMinioAccessKeyId,
     minioSecretAccessKey: String = DefaultMinioSecretAccessKey
-) extends DockerControllerImpl(dockerClient, outputFrameInterval)(imageName, imageTag) {
+) extends DockerControllerImpl(dockerClient, isDockerClientAutoClose, outputFrameInterval)(imageName, imageTag) {
 
   private val environmentVariables = Map(
     "MINIO_ROOT_USER"     -> minioAccessKeyId,
