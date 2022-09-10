@@ -10,7 +10,7 @@ object Dependencies {
     val logbackVersion               = "1.2.11"
     val scalaCollectionCompatVersion = "2.8.1"
     val dockerJavaVersion            = "3.2.13"
-    val progressBarVersion           = "0.9.3"
+    val progressBarVersion           = "0.9.4"
     val enumeratumVersion            = "1.6.1"
   }
 
