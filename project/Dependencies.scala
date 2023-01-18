@@ -43,7 +43,7 @@ object Dependencies {
     }
 
     object kafka {
-      val kafkaClients = "org.apache.kafka" % "kafka-clients" % "3.3.1"
+      val kafkaClients = "org.apache.kafka" % "kafka-clients" % "3.3.2"
     }
   }
 
