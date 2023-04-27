@@ -8,7 +8,7 @@ object Dependencies {
     val scala3Version                = "3.1.3"
     val scalaTestVersion             = "3.2.12"
     val logbackVersion               = "1.2.12"
-    val scalaCollectionCompatVersion = "2.9.0"
+    val scalaCollectionCompatVersion = "2.10.0"
     val dockerJavaVersion            = "3.3.0"
     val progressBarVersion           = "0.9.5"
     val enumeratumVersion            = "1.6.1"
@@ -32,7 +32,7 @@ object Dependencies {
 
   object amazonAws {
     val dynamodb = "com.amazonaws" % "aws-java-sdk-dynamodb" % "1.12.453"
-    val s3       = "com.amazonaws" % "aws-java-sdk-s3"       % "1.12.456"
+    val s3       = "com.amazonaws" % "aws-java-sdk-s3"       % "1.12.457"
     val sqs      = "com.amazonaws" % "aws-java-sdk-sqs"      % "1.12.453"
   }
 
