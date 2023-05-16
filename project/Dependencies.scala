@@ -95,7 +95,7 @@ object Dependencies {
   }
 
   object commons {
-    val io = "commons-io" % "commons-io" % "2.11.0"
+    val io = "commons-io" % "commons-io" % "2.12.0"
   }
 
   object beachape {
