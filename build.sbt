@@ -10,8 +10,8 @@ def crossScalacOptions(scalaVersion: String): Seq[String] = CrossVersion.partial
     Seq(
       "-Ydelambdafy:method",
       "-target:jvm-1.8",
-      "-Yrangepos",
-      "-Ywarn-unused"
+      "-Yrangepos"
+      // "-Ywarn-unused"
     )
 }
 
@@ -27,8 +27,8 @@ lazy val baseSettings = Seq(
       url = url("https://blog.j5ik2o.me")
     )
   ),
-  scalaVersion := Versions.scala213Version,
-  crossScalaVersions := Seq(Versions.scala212Version, Versions.scala213Version),
+  scalaVersion := Versions.scala3Version,
+  crossScalaVersions := Seq(Versions.scala212Version, Versions.scala213Version, Versions.scala3Version),
   scalacOptions ++= (Seq(
     "-unchecked",
     "-feature",
@@ -37,11 +37,9 @@ lazy val baseSettings = Seq(
     "UTF-8",
     "-language:_"
   ) ++ crossScalacOptions(scalaVersion.value)),
-  resolvers ++= Seq(
-    Resolver.sonatypeRepo("snapshots"),
-    Resolver.sonatypeRepo("releases"),
-    "Seasar Repository" at "https://maven.seasar.org/maven2/"
-  ),
+  resolvers ++= Resolver.sonatypeOssRepos("snapshots"),
+  resolvers ++= Resolver.sonatypeOssRepos("releases"),
+  resolvers += "Seasar Repository" at "https://maven.seasar.org/maven2/",
   libraryDependencies ++= Seq(
     scalatest.scalatest % Test
   ),
@@ -279,4 +277,4 @@ val `docker-controller-scala-root` = (project in file("."))
 
 // --- Custom commands
 addCommandAlias("lint", ";scalafmtCheck;test:scalafmtCheck;scalafmtSbtCheck;scalafixAll --check")
-addCommandAlias("fmt", ";scalafmtAll;scalafmtSbt;scalafix RemoveUnused")
+addCommandAlias("fmt", ";scalafmtAll;scalafmtSbt")
