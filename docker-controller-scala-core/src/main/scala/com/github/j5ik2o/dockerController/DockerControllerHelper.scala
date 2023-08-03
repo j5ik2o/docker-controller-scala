@@ -26,9 +26,9 @@ trait DockerControllerHelper {
 
   protected val dockerClient: DockerClient = DockerClientImpl.getInstance(dockerClientConfig, dockerHttpClient)
 
-  protected val dockerControllers: Vector[DockerController]
+  protected def dockerControllers: Vector[DockerController]
 
-  protected val waitPredicatesSettings: Map[DockerController, WaitPredicateSetting]
+  protected def waitPredicatesSettings: Map[DockerController, WaitPredicateSetting]
 
   protected def createDockerContainer(
       dockerController: DockerController,
