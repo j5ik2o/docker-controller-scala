@@ -44,7 +44,7 @@ lazy val baseSettings = Seq(
     scalatest.scalatest % Test
   ),
   dependencyOverrides ++= Seq(
-    "com.fasterxml.jackson.core" % "jackson-databind" % "2.11.0"
+    "com.fasterxml.jackson.core" % "jackson-databind" % "2.15.2"
   ),
   Test / publishArtifact := false,
   Test / fork := true,
