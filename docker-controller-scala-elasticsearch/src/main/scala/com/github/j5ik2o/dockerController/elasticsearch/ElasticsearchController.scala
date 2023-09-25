@@ -48,9 +48,8 @@ class ElasticsearchController(
 ) extends DockerControllerImpl(dockerClient, isDockerClientAutoClose, outputFrameInterval)(imageName, imageTag) {
 
   private val environmentVariables = Map(
-    "discovery.type" -> "single-node",
+    "discovery.type"         -> "single-node",
     "xpack.security.enabled" -> "false"
-//    "network.host" -> "0.0.0.0"
   ) ++ envVars
 
   override protected def newCreateContainerCmd(): CreateContainerCmd = {
