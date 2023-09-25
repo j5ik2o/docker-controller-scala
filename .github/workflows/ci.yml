@@ -45,7 +45,7 @@ jobs:
       fail-fast: false
       matrix:
         jdk: [ 11, 17, 19 ]
-        scala: [ 2.13.12, 3.3.1 ]
+        scala: [ 2.12.17, 2.13.12, 3.3.1 ]
     runs-on: ubuntu-latest
     needs: lint
     env:
