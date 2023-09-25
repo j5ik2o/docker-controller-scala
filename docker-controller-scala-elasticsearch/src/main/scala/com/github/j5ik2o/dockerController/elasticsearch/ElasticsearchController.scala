@@ -11,7 +11,7 @@ import scala.concurrent.duration._
 
 object ElasticsearchController {
   final val DefaultImageName: String        = "docker.elastic.co/elasticsearch/elasticsearch"
-  final val DefaultImageTag: Option[String] = Some("7.12.0")
+  final val DefaultImageTag: Option[String] = Some("8.10.2")
   final val DefaultContainerPorts: Seq[Int] = Seq(9200, 9300)
 
   def apply(
@@ -48,7 +48,9 @@ class ElasticsearchController(
 ) extends DockerControllerImpl(dockerClient, isDockerClientAutoClose, outputFrameInterval)(imageName, imageTag) {
 
   private val environmentVariables = Map(
-    "discovery.type" -> "single-node"
+    "discovery.type" -> "single-node",
+    "xpack.security.enabled" -> "false"
+//    "network.host" -> "0.0.0.0"
   ) ++ envVars
 
   override protected def newCreateContainerCmd(): CreateContainerCmd = {

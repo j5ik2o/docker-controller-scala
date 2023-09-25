@@ -111,4 +111,7 @@ object Dependencies {
     val finagleMemcached = "com.twitter" %% "finagle-memcached" % "22.12.0"
   }
 
+  object fasterxml {
+    val jacksonModuleScala = "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.15.2"
+  }
 }

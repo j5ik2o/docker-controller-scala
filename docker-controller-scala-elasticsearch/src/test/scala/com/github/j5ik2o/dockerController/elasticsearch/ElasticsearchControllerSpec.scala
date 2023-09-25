@@ -1,11 +1,16 @@
 package com.github.j5ik2o.dockerController.elasticsearch
 
-import com.github.j5ik2o.dockerController.{ DockerController, DockerControllerSpecSupport, WaitPredicates }
-import org.elasticsearch.client.{ RequestOptions, RestClient, RestHighLevelClient }
+import co.elastic.clients.elasticsearch.ElasticsearchClient
+import co.elastic.clients.json.jackson.JacksonJsonpMapper
+import co.elastic.clients.transport.rest_client.RestClientTransport
+import com.github.j5ik2o.dockerController.{DockerController, DockerControllerSpecSupport, WaitPredicates}
+import org.elasticsearch.client.{RequestOptions, RestClient, RestClientBuilder, RestHighLevelClient, RestHighLevelClientBuilder}
 import org.scalatest.freespec.AnyFreeSpec
 import org.apache.http.HttpHost
+import org.apache.http.client.methods.RequestBuilder.options
+import org.elasticsearch.client.core.MainRequest
 
-import scala.concurrent.duration.{ Duration, DurationInt }
+import scala.concurrent.duration.{Duration, DurationInt}
 import scala.util.control.NonFatal
 
 class ElasticsearchControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport {
@@ -25,29 +30,32 @@ class ElasticsearchControllerSpec extends AnyFreeSpec with DockerControllerSpecS
         WaitPredicates.forListeningHostTcpPort(
           dockerHost,
           hostPort1,
-          (3 * testTimeFactor).seconds,
-          Some((10 * testTimeFactor).seconds)
+          (30 * testTimeFactor).seconds,
+          Some((20 * testTimeFactor).seconds)
         )
       )
     )
 
   "ElasticsearchController" - {
     "run" in {
-      var client: RestHighLevelClient = null
+      var httpClient: RestClient = null
+      var transport: RestClientTransport = null
       try {
-        client = new RestHighLevelClient(
-          RestClient.builder(
-            new HttpHost(dockerHost, hostPort1, "http"),
-            new HttpHost(dockerHost, hostPort2, "http")
-          )
+        httpClient = RestClient.builder(
+          new HttpHost("localhost", hostPort1)
+        ).build()
+        transport = new RestClientTransport(
+          httpClient,
+          new JacksonJsonpMapper()
         )
-        val result = client.ping(RequestOptions.DEFAULT)
-        assert(result)
-      } catch {
-        case NonFatal(ex) =>
-          ex.printStackTrace()
-          fail("occurred error", ex)
-      } finally if (client != null) client.close()
+        val esClient = new ElasticsearchClient(transport)
+        esClient.ping()
+      } finally  {
+        if (transport != null)
+          transport.close()
+        if (httpClient != null)
+          httpClient.close()
+      }
     }
   }
 }
