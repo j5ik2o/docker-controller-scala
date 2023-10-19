@@ -11,6 +11,11 @@
     {
       "matchDepTypes": ["devDependencies"],
       "automerge": true
+    },
+    {
+      "managers": ["sbt"],
+      "packageNames": ["sbt-ci-release"],
+      "enabled": false
     }
   ],
   "prHourlyLimit": 0,
