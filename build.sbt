@@ -240,7 +240,7 @@ val `docker-controller-scala-elasticsearch` = (project in file("docker-controlle
       "co.elastic.clients"              % "elasticsearch-java" % "7.17.18" % Test,
       "com.fasterxml.jackson.core"      % "jackson-databind"   % "2.17.0"  % Test,
       "org.apache.logging.log4j"        % "log4j-api"          % "2.23.1"  % Test,
-      "org.apache.logging.log4j"        % "log4j-core"         % "2.23.0"  % Test
+      "org.apache.logging.log4j"        % "log4j-core"         % "2.23.1"  % Test
     )
   ).dependsOn(`docker-controller-scala-core`, `docker-controller-scala-scalatest` % Test)
 
