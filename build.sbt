@@ -238,7 +238,7 @@ val `docker-controller-scala-elasticsearch` = (project in file("docker-controlle
       logback.classic                   % Test,
       elasticsearch.restHighLevelClient % Test,
       "co.elastic.clients"              % "elasticsearch-java" % "7.17.21" % Test,
-      "com.fasterxml.jackson.core"      % "jackson-databind"   % "2.17.0"  % Test,
+      "com.fasterxml.jackson.core"      % "jackson-databind"   % "2.17.1"  % Test,
       "org.apache.logging.log4j"        % "log4j-api"          % "2.23.1"  % Test,
       "org.apache.logging.log4j"        % "log4j-core"         % "2.23.1"  % Test
     )
