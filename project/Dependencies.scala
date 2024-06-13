@@ -56,7 +56,7 @@ object Dependencies {
   }
 
   object elasticsearch {
-    val restHighLevelClient = "org.elasticsearch.client" % "elasticsearch-rest-high-level-client" % "7.17.21"
+    val restHighLevelClient = "org.elasticsearch.client" % "elasticsearch-rest-high-level-client" % "7.17.22"
   }
 
   object dockerJava {
