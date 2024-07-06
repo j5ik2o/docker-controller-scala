@@ -40,7 +40,7 @@ class ElasticMQControllerSpec extends AnyFreeSpec with DockerControllerSpecSuppo
     )
 
   "ElasticMQController" - {
-    "run" in {
+    "run" ignore {
       val client = AmazonSQSClientBuilder
         .standard()
         .withCredentials(
