@@ -108,7 +108,7 @@ object Dependencies {
   }
 
   object twitter {
-    val finagleMemcached = "com.twitter" %% "finagle-memcached" % "22.12.0"
+    val finagleMemcached = "com.twitter" %% "finagle-memcached" % "24.2.0"
   }
 
   object fasterxml {
