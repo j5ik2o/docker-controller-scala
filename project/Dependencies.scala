@@ -31,32 +31,32 @@ object Dependencies {
   }
 
   object amazonAws {
-    val dynamodb = "com.amazonaws" % "aws-java-sdk-dynamodb" % "1.12.584"
-    val s3       = "com.amazonaws" % "aws-java-sdk-s3"       % "1.12.584"
-    val sqs      = "com.amazonaws" % "aws-java-sdk-sqs"      % "1.12.584"
+    val dynamodb = "com.amazonaws" % "aws-java-sdk-dynamodb" % "1.12.757"
+    val s3       = "com.amazonaws" % "aws-java-sdk-s3"       % "1.12.757"
+    val sqs      = "com.amazonaws" % "aws-java-sdk-sqs"      % "1.12.757"
   }
 
   object apache {
 
     object zooKeeper {
-      val zooKeeper = "org.apache.zookeeper" % "zookeeper" % "3.9.1"
+      val zooKeeper = "org.apache.zookeeper" % "zookeeper" % "3.9.2"
     }
 
     object kafka {
-      val kafkaClients = "org.apache.kafka" % "kafka-clients" % "3.6.0"
+      val kafkaClients = "org.apache.kafka" % "kafka-clients" % "3.7.1"
     }
   }
 
   object mysql {
-    val connectorJava = "com.mysql" % "mysql-connector-j" % "8.2.0"
+    val connectorJava = "com.mysql" % "mysql-connector-j" % "8.4.0"
   }
 
   object postgresql {
-    val postgresql = "org.postgresql" % "postgresql" % "42.7.0"
+    val postgresql = "org.postgresql" % "postgresql" % "42.7.3"
   }
 
   object elasticsearch {
-    val restHighLevelClient = "org.elasticsearch.client" % "elasticsearch-rest-high-level-client" % "7.17.15"
+    val restHighLevelClient = "org.elasticsearch.client" % "elasticsearch-rest-high-level-client" % "7.17.22"
   }
 
   object dockerJava {
@@ -85,7 +85,7 @@ object Dependencies {
   }
 
   object freemarker {
-    val freemarker = "org.freemarker" % "freemarker" % "2.3.32"
+    val freemarker = "org.freemarker" % "freemarker" % "2.3.33"
 
   }
 
@@ -95,7 +95,7 @@ object Dependencies {
   }
 
   object commons {
-    val io = "commons-io" % "commons-io" % "2.15.0"
+    val io = "commons-io" % "commons-io" % "2.16.1"
   }
 
   object beachape {
@@ -112,6 +112,6 @@ object Dependencies {
   }
 
   object fasterxml {
-    val jacksonModuleScala = "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.16.0"
+    val jacksonModuleScala = "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.17.2"
   }
 }
