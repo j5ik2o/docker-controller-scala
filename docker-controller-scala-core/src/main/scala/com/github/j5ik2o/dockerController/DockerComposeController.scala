@@ -8,7 +8,6 @@ import org.apache.commons.io.FileUtils
 import org.seasar.util.io.ResourceUtil
 
 import java.io.File
-import java.nio.file.StandardCopyOption
 import scala.concurrent.duration.{ DurationInt, FiniteDuration }
 
 object DockerComposeController {
@@ -55,7 +54,7 @@ private[dockerController] class DockerComposeController(
     } else {
       val srcFile  = ResourceUtil.getResourceAsFile(ymlResourceName)
       val destFile = new File(dockerComposeWorkingDir, srcFile.getName)
-      FileUtils.copyFile(srcFile, destFile, StandardCopyOption.REPLACE_EXISTING)
+      FileUtils.copyFile(srcFile, destFile)
       destFile
     }
 
@@ -67,7 +66,7 @@ private[dockerController] class DockerComposeController(
       } else {
         val srcFile  = ResourceUtil.getResourceAsFile(environmentResourceName)
         val destFile = new File(dockerComposeWorkingDir, srcFile.getName)
-        FileUtils.copyFile(srcFile, destFile, StandardCopyOption.REPLACE_EXISTING)
+        FileUtils.copyFile(srcFile, destFile)
       }
     }
 

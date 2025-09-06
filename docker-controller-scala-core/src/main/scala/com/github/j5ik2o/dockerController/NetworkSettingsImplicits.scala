@@ -3,6 +3,7 @@ package com.github.j5ik2o.dockerController
 import com.github.dockerjava.api.model.{ ExposedPort, NetworkSettings, Ports }
 
 import scala.jdk.CollectionConverters._
+import scala.language.implicitConversions
 
 final class NetworkSettingsOps(val networkSettings: NetworkSettings) extends AnyVal {
 
@@ -11,7 +12,7 @@ final class NetworkSettingsOps(val networkSettings: NetworkSettings) extends Any
   }
 
   def portBindings: Map[ExposedPort, Vector[Ports.Binding]] = {
-    ports.getBindings.asScala.mapValues(_.toVector).toMap
+    ports.getBindings.asScala.view.mapValues(_.toVector).toMap
   }
 
   def portBinding(exposedPort: ExposedPort): Option[Vector[Ports.Binding]] = {

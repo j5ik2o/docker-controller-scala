@@ -74,8 +74,9 @@ class KafkaControllerSpec extends AnyFreeSpec with DockerControllerSpecSupport {
                   logger.debug("consumer:key: " + record.key)
                   logger.debug("consumer:value: " + record.value)
                   logger.debug("consumer:offset: " + record.offset)
-                  val topicPartition    = new TopicPartition(record.topic, record.partition)
-                  val offsetAndMetadata = consumer.committed(topicPartition)
+                  val topicPartition       = new TopicPartition(record.topic, record.partition)
+                  val offsetAndMetadataMap = consumer.committed(java.util.Collections.singleton(topicPartition))
+                  val offsetAndMetadata    = offsetAndMetadataMap.get(topicPartition)
                   if (offsetAndMetadata != null)
                     logger.debug("partition offset: " + offsetAndMetadata.offset)
                 }
