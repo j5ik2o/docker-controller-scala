@@ -90,7 +90,7 @@ private[dockerController] class DockerControllerImpl(
 
   protected val logger: Logger = LoggerFactory.getLogger(getClass)
 
-  private var _containerId: Option[String] = _
+  private var _containerId: Option[String] = None
 
   private def repoTag: String = tag.fold(imageName)(t => s"$imageName:$t")
 
