@@ -9,8 +9,9 @@ def crossScalacOptions(scalaVersion: String): Seq[String] = CrossVersion.partial
   case Some((2L, scalaMajor)) if scalaMajor >= 12 =>
     Seq(
       "-Ydelambdafy:method",
-      "-target:jvm-1.8",
-      "-Yrangepos"
+      "-target:jvm-17",
+      "-Yrangepos",
+      "-release:17"
       // "-Ywarn-unused"
     )
 }
@@ -29,6 +30,7 @@ lazy val baseSettings = Seq(
   ),
   scalaVersion := Versions.scala3Version,
   crossScalaVersions := Seq(Versions.scala212Version, Versions.scala213Version, Versions.scala3Version),
+  javacOptions ++= Seq("-source", "17", "-target", "17"),
   scalacOptions ++= (Seq(
     "-unchecked",
     "-feature",
