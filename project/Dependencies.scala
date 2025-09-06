@@ -39,7 +39,7 @@ object Dependencies {
   object apache {
 
     object zooKeeper {
-      val zooKeeper = "org.apache.zookeeper" % "zookeeper" % "3.9.2"
+      val zooKeeper = "org.apache.zookeeper" % "zookeeper" % "3.9.4"
     }
 
     object kafka {
