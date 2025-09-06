@@ -85,7 +85,7 @@ object Dependencies {
   }
 
   object freemarker {
-    val freemarker = "org.freemarker" % "freemarker" % "2.3.33"
+    val freemarker = "org.freemarker" % "freemarker" % "2.3.34"
 
   }
 
