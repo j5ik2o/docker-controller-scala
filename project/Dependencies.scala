@@ -43,12 +43,12 @@ object Dependencies {
     }
 
     object kafka {
-      val kafkaClients = "org.apache.kafka" % "kafka-clients" % "3.9.1"
+      val kafkaClients = "org.apache.kafka" % "kafka-clients" % "4.1.0"
     }
   }
 
   object mysql {
-    val connectorJava = "com.mysql" % "mysql-connector-j" % "8.4.0"
+    val connectorJava = "com.mysql" % "mysql-connector-j" % "9.4.0"
   }
 
   object postgresql {
@@ -108,10 +108,10 @@ object Dependencies {
   }
 
   object twitter {
-    val finagleMemcached = "com.twitter" %% "finagle-memcached" % "22.12.0"
+    val finagleMemcached = "com.twitter" %% "finagle-memcached" % "24.2.0"
   }
 
   object fasterxml {
-    val jacksonModuleScala = "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.17.2"
+    val jacksonModuleScala = "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.20.0"
   }
 }
