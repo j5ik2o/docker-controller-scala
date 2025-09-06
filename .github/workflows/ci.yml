@@ -36,6 +36,7 @@ jobs:
           distribution: 'temurin'
           java-version: '11'
           cache: 'sbt'
+      - uses: sbt/setup-sbt@v1
       - run: sbt -v lint
   test:
     strategy:
