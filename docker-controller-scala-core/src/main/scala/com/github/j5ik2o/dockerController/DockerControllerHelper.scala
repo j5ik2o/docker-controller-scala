@@ -19,6 +19,12 @@ trait DockerControllerHelper {
 
   protected val dockerHost: String = DockerClientConfigUtil.dockerHost(dockerClientConfig)
 
+  logger.debug(s"DockerControllerHelper: Using Docker host: ${dockerClientConfig.getDockerHost}")
+  logger.debug(s"DockerControllerHelper: Docker host URI: ${dockerClientConfig.getDockerHost.toString}")
+  logger.debug(s"DockerControllerHelper: Docker host scheme: ${dockerClientConfig.getDockerHost.getScheme}")
+  logger.debug(s"DockerControllerHelper: Docker host host: ${dockerClientConfig.getDockerHost.getHost}")
+  logger.debug(s"DockerControllerHelper: Docker host port: ${dockerClientConfig.getDockerHost.getPort}")
+
   protected val dockerHttpClient: DockerHttpClient = new ApacheDockerHttpClient.Builder()
     .dockerHost(dockerClientConfig.getDockerHost)
     .sslConfig(dockerClientConfig.getSSLConfig)
