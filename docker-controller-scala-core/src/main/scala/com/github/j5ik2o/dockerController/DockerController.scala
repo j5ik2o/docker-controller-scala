@@ -180,7 +180,16 @@ private[dockerController] class DockerControllerImpl(
     logger.debug("removeContainer --- start")
     val configureFunction: RemoveContainerCmd => RemoveContainerCmd =
       cmdConfigures.map(_.removeContainerCmdConfigure).getOrElse(identity)
-    f(configureFunction(newRemoveContainerCmd())).exec()
+    try {
+      f(configureFunction(newRemoveContainerCmd())).exec()
+    } catch {
+      case e: com.github.dockerjava.api.exception.NotFoundException =>
+        logger.debug("Container not found (NotFoundException: Status 404)")
+      case e: com.github.dockerjava.api.exception.NotModifiedException =>
+        logger.debug("Container already removed (NotModifiedException: Status 304)")
+      case e: Throwable =>
+        throw e
+    }
     _containerId = None
     logger.debug("removeContainer --- finish")
   }
@@ -196,6 +205,7 @@ private[dockerController] class DockerControllerImpl(
 
   override def listImages(f: ListImagesCmd => ListImagesCmd): Vector[Image] = {
     logger.debug("listImages --- start")
+    logger.debug(s"dockerClient: $dockerClient")
     val configureFunction: ListImagesCmd => ListImagesCmd =
       cmdConfigures.map(_.listImageCmdConfigure).getOrElse(identity)
     val result = f(configureFunction(newListImagesCmd())).exec().asScala.toVector
@@ -267,7 +277,14 @@ private[dockerController] class DockerControllerImpl(
     logger.debug("stopContainer --- start")
     val configureFunction: StopContainerCmd => StopContainerCmd =
       cmdConfigures.map(_.stopContainerCmdConfigure).getOrElse(identity)
-    f(configureFunction(newStopContainerCmd())).exec()
+    try {
+      f(configureFunction(newStopContainerCmd())).exec()
+    } catch {
+      case e: com.github.dockerjava.api.exception.NotModifiedException =>
+        logger.debug("Container is already stopped (NotModifiedException: Status 304)")
+      case e: Throwable =>
+        throw e
+    }
     logger.debug("stopContainer --- finish")
   }
 
