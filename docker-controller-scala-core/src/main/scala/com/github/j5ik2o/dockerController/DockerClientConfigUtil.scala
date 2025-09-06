@@ -33,9 +33,13 @@ object DockerClientConfigUtil {
             s"Failed to load `docker-machine env $profileName`, so it was fallback to the default configuration.",
             ex
           )
+          // Let docker-java handle the default configuration
           configBuilder.build()
       }
-    } else
+    } else {
+      // Let docker-java handle the default configuration
+      logger.debug("Using docker-java default configuration")
       configBuilder.build()
+    }
   }
 }
