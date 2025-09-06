@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(sbt:*)",
+      "Bash(java:*)",
+      "Bash(gh run view:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

@@ -12,7 +12,7 @@ final class NetworkSettingsOps(val networkSettings: NetworkSettings) extends Any
   }
 
   def portBindings: Map[ExposedPort, Vector[Ports.Binding]] = {
-    ports.getBindings.asScala.view.mapValues(_.toVector).toMap
+    ports.getBindings.asScala.map { case (k, v) => k -> v.toVector }.toMap
   }
 
   def portBinding(exposedPort: ExposedPort): Option[Vector[Ports.Binding]] = {
