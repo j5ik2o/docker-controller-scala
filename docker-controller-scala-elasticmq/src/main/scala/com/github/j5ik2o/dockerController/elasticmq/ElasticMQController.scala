@@ -16,7 +16,7 @@ import scala.jdk.CollectionConverters._
 
 object ElasticMQController {
   final val DefaultImageName: String        = "softwaremill/elasticmq"
-  final val DefaultImageTag: Option[String] = Some("1.3.9")
+  final val DefaultImageTag: Option[String] = Some("1.6.14")
   final val DefaultContainerPorts: Seq[Int] = Seq(9324, 9325)
 
   def apply(

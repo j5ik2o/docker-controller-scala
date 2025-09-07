@@ -15,7 +15,7 @@ import scala.concurrent.duration._
 
 object PostgreSQLController {
   final val DefaultImageName: String        = "postgres"
-  final val DefaultImageTag: Option[String] = Some("13")
+  final val DefaultImageTag: Option[String] = Some("17.6")
   final val DefaultContainerPort: Int       = 5432
 
   def apply(

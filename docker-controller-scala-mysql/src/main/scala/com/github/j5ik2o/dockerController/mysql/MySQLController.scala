@@ -11,7 +11,7 @@ import scala.concurrent.duration.{ DurationInt, FiniteDuration }
 
 object MySQLController {
   final val DefaultImageName: String        = "mysql"
-  final val DefaultImageTag: Option[String] = Some("8.0")
+  final val DefaultImageTag: Option[String] = Some("9.4.0")
   final val DefaultContainerPort: Int       = 3306
 
   def apply(

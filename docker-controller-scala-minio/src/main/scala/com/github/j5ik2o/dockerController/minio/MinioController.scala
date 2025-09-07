@@ -12,9 +12,9 @@ import scala.util.matching.Regex
 
 object MinioController {
   final val DefaultImageName              = "minio/minio"
-  final val DefaultImageTag: Some[String] = Some("RELEASE.2022-08-05T23-27-09Z")
+  final val DefaultImageTag: Some[String] = Some("RELEASE.2025-07-23T15-54-02Z-cpuv1")
   final val DefaultContainerPort          = 9000
-  final val RegexForWaitPredicate: Regex  = """^Documentation: https://docs\.min\.io$""".r
+  final val RegexForWaitPredicate: Regex  = """^Docs: https://docs\.min\.io$""".r
 
   final val DefaultMinioAccessKeyId: String     = "AKIAIOSFODNN7EXAMPLE"
   final val DefaultMinioSecretAccessKey: String = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
