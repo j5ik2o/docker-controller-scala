@@ -212,7 +212,8 @@ val `docker-controller-scala-memcached` = (project in file("docker-controller-sc
     libraryDependencies ++= Seq(
       scalatest.scalatest       % Test,
       logback.classic           % Test,
-      (twitter.finagleMemcached % Test).cross(CrossVersion.for3Use2_13).exclude("com.fasterxml.jackson.module", "jackson-module-scala_2.13"),
+      (twitter.finagleMemcached % Test)
+        .cross(CrossVersion.for3Use2_13).exclude("com.fasterxml.jackson.module", "jackson-module-scala_2.13"),
       fasterxml.jacksonModuleScala % Test
     )
   ).dependsOn(`docker-controller-scala-core`, `docker-controller-scala-scalatest` % Test)
