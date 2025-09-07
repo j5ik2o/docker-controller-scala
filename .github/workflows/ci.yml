@@ -9,16 +9,11 @@ on:
       - '**.java'
       - '**.sbt'
       - '.scalafmt.conf'
-      - '.github/workflows/ci.yml'
+      - '.github/workflows/**'
+      - 'project/**'
   pull_request:
     branches:
       - main
-    paths:
-      - '**.scala'
-      - '**.java'
-      - '**.sbt'
-      - '.scalafmt.conf'
-      - '.github/workflows/ci.yml'
   schedule:
     - cron: '0 * * * *'
 jobs:
