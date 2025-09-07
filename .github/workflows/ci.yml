@@ -14,13 +14,6 @@ on:
   pull_request:
     branches:
       - main
-    paths:
-      - '**.scala'
-      - '**.java'
-      - '**.sbt'
-      - '.scalafmt.conf'
-      - '.github/workflows/**'
-      - 'project/**'
   schedule:
     - cron: '0 * * * *'
 jobs:
