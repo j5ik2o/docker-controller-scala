@@ -9,7 +9,8 @@ on:
       - '**.java'
       - '**.sbt'
       - '.scalafmt.conf'
-      - '.github/workflows/ci.yml'
+      - '.github/workflows/**'
+      - 'project/**'
   pull_request:
     branches:
       - main
@@ -18,7 +19,8 @@ on:
       - '**.java'
       - '**.sbt'
       - '.scalafmt.conf'
-      - '.github/workflows/ci.yml'
+      - '.github/workflows/**'
+      - 'project/**'
   schedule:
     - cron: '0 * * * *'
 jobs:
