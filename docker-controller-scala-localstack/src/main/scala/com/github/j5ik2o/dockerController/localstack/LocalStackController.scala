@@ -11,7 +11,7 @@ import scala.concurrent.duration.{ DurationInt, FiniteDuration }
 
 object LocalStackController {
   final val DefaultImageName              = "localstack/localstack"
-  final val DefaultImageTag: Some[String] = Some("1.0.3")
+  final val DefaultImageTag: Some[String] = Some("4.7")
 
   def apply(
       dockerClient: DockerClient,

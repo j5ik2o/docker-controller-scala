@@ -11,7 +11,7 @@ import scala.concurrent.duration.{ DurationInt, FiniteDuration }
 
 object RedisController {
   final val DefaultImageName: String        = "redis"
-  final val DefaultImageTag: Option[String] = Some("6.2.4")
+  final val DefaultImageTag: Option[String] = Some("bookworm")
   final val DefaultContainerPort: Int       = 6379
 
   def apply(

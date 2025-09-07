@@ -11,7 +11,7 @@ import scala.concurrent.duration._
 
 object MemcachedController {
   final val DefaultImageName: String        = "memcached"
-  final val DefaultImageTag: Option[String] = Some("1.6")
+  final val DefaultImageTag: Option[String] = Some("trixie")
   final val DefaultContainerPort: Int       = 11211
 
   def apply(
