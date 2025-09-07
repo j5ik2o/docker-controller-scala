@@ -234,13 +234,13 @@ val `docker-controller-scala-elasticsearch` = (project in file("docker-controlle
   .settings(
     name := "docker-controller-scala-elasticsearch",
     libraryDependencies ++= Seq(
-      scalatest.scalatest           % Test,
-      logback.classic               % Test,
-      "co.elastic.clients"          % "elasticsearch-java" % "9.1.4"  % Test,
-      "org.elasticsearch.client"    % "elasticsearch-rest-client" % "8.17.2" % Test,
-      "com.fasterxml.jackson.core"  % "jackson-databind"   % "2.20.0" % Test,
-      "org.apache.logging.log4j"    % "log4j-api"          % "2.25.1" % Test,
-      "org.apache.logging.log4j"    % "log4j-core"         % "2.25.1" % Test
+      scalatest.scalatest          % Test,
+      logback.classic              % Test,
+      "co.elastic.clients"         % "elasticsearch-java"        % "9.1.4"  % Test,
+      "org.elasticsearch.client"   % "elasticsearch-rest-client" % "8.17.2" % Test,
+      "com.fasterxml.jackson.core" % "jackson-databind"          % "2.20.0" % Test,
+      "org.apache.logging.log4j"   % "log4j-api"                 % "2.25.1" % Test,
+      "org.apache.logging.log4j"   % "log4j-core"                % "2.25.1" % Test
     )
   ).dependsOn(`docker-controller-scala-core`, `docker-controller-scala-scalatest` % Test)
 
