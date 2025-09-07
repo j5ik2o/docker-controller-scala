@@ -36,8 +36,8 @@ class ElasticsearchControllerSpec extends AnyFreeSpec with DockerControllerSpecS
         WaitPredicates.forListeningHostTcpPort(
           dockerHost,
           hostPort1,
-          (30 * testTimeFactor).seconds,
-          Some((20 * testTimeFactor).seconds)
+          (60 * testTimeFactor).seconds,
+          Some((30 * testTimeFactor).seconds)
         )
       )
     )
