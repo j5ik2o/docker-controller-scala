@@ -11,7 +11,7 @@ import scala.concurrent.duration._
 
 object ElasticsearchController {
   final val DefaultImageName: String        = "docker.elastic.co/elasticsearch/elasticsearch"
-  final val DefaultImageTag: Option[String] = Some("8.10.2")
+  final val DefaultImageTag: Option[String] = Some("9.1.3")
   final val DefaultContainerPorts: Seq[Int] = Seq(9200, 9300)
 
   def apply(
