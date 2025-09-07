@@ -1,7 +1,7 @@
 # docker-controller-scala
 
 [![Actions Status: CI](https://github.com/j5ik2o/docker-controller-scala/workflows/CI/badge.svg)](https://github.com/j5ik2o/docker-controller-scala/actions?query=workflow%3A"CI")
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.j5ik2o/docker-controller-scala-core_2.13/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.j5ik2o/docker-controller-scala-core_2.13)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.j5ik2o/docker-controller-scala-core_2.13/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.j5ik2o/docker-controller-scala-core_2.13)
 [![Renovate](https://img.shields.io/badge/renovate-enabled-brightgreen.svg)](https://renovatebot.com)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Tokei](https://tokei.rs/b1/github/j5ik2o/event-store-adapter-scala)](https://github.com/XAMPPRocky/tokei)
@@ -19,24 +19,24 @@ Add the following to your sbt build (2.12.x, 2.13.x, 3.0.x):
 val version = "..."
 
 libraryDependencies += Seq(
-  "com.github.j5ik2o" %% "docker-controller-scala-core" % version,
-  "com.github.j5ik2o" %% "docker-controller-scala-scalatest" % version, // for scalatest
+  "io.github.j5ik2o" %% "docker-controller-scala-core" % version,
+  "io.github.j5ik2o" %% "docker-controller-scala-scalatest" % version, // for scalatest
   // RDB
-  "com.github.j5ik2o" %% "docker-controller-scala-mysql" % version, // optional
-  "com.github.j5ik2o" %% "docker-controller-scala-postgresql" % version, // optional
-  "com.github.j5ik2o" %% "docker-controller-scala-flyway" % version, // optional
+  "io.github.j5ik2o" %% "docker-controller-scala-mysql" % version, // optional
+  "io.github.j5ik2o" %% "docker-controller-scala-postgresql" % version, // optional
+  "io.github.j5ik2o" %% "docker-controller-scala-flyway" % version, // optional
   // NoSQL
-  "com.github.j5ik2o" %% "docker-controller-scala-memcached" % version, // optional
-  "com.github.j5ik2o" %% "docker-controller-scala-redis" % version, // optional
-  "com.github.j5ik2o" %% "docker-controller-scala-elasticsearch" % version, // optional
+  "io.github.j5ik2o" %% "docker-controller-scala-memcached" % version, // optional
+  "io.github.j5ik2o" %% "docker-controller-scala-redis" % version, // optional
+  "io.github.j5ik2o" %% "docker-controller-scala-elasticsearch" % version, // optional
   // Kafka
-  "com.github.j5ik2o" %% "docker-controller-scala-zookeeper" % version, // optional
-  "com.github.j5ik2o" %% "docker-controller-scala-kafka" % version, // optional
+  "io.github.j5ik2o" %% "docker-controller-scala-zookeeper" % version, // optional
+  "io.github.j5ik2o" %% "docker-controller-scala-kafka" % version, // optional
   // AWS Services
-  "com.github.j5ik2o" %% "docker-controller-scala-dynamodb-local" % version, // optional
-  "com.github.j5ik2o" %% "docker-controller-scala-minio" % version, // optional
-  "com.github.j5ik2o" %% "docker-controller-scala-localstack" % version, // optional
-  "com.github.j5ik2o" %% "docker-controller-scala-elasticmq" % version, // optional
+  "io.github.j5ik2o" %% "docker-controller-scala-dynamodb-local" % version, // optional
+  "io.github.j5ik2o" %% "docker-controller-scala-minio" % version, // optional
+  "io.github.j5ik2o" %% "docker-controller-scala-localstack" % version, // optional
+  "io.github.j5ik2o" %% "docker-controller-scala-elasticmq" % version, // optional
 )
 ```
 
@@ -44,8 +44,8 @@ In most cases, you can just select the scalatest module and the module you need.
 
 ```scala
 libraryDependencies += Seq(
-  "com.github.j5ik2o" %% "docker-controller-scala-scalatest" % version,
-  "com.github.j5ik2o" %% "docker-controller-scala-mysql" % version,
+  "io.github.j5ik2o" %% "docker-controller-scala-scalatest" % version,
+  "io.github.j5ik2o" %% "docker-controller-scala-mysql" % version,
 )
 ```
 
@@ -78,9 +78,9 @@ If you'd like to use `flyway` module, you can use `docker-controller-scala-flywa
 
 ```scala
 libraryDependencies += Seq(
-  "com.github.j5ik2o" %% "docker-controller-scala-scalatest" % version,
-  "com.github.j5ik2o" %% "docker-controller-scala-mysql" % version,
-  "com.github.j5ik2o" %% "docker-controller-scala-flyway" % version, // for flyway
+  "io.github.j5ik2o" %% "docker-controller-scala-scalatest" % version,
+  "io.github.j5ik2o" %% "docker-controller-scala-mysql" % version,
+  "io.github.j5ik2o" %% "docker-controller-scala-flyway" % version, // for flyway
 )
 ```
 
