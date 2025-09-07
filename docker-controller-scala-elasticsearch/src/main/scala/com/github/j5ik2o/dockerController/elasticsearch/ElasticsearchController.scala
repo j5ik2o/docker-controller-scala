@@ -14,13 +14,20 @@ object ElasticsearchController {
   final val DefaultImageTag: Option[String] = Some("9.1.3")
   final val DefaultContainerPorts: Seq[Int] = Seq(9200, 9300)
 
+  final val DefaultEnvVars: Map[String, String] = Map(
+    "discovery.type"                  -> "single-node",
+    "xpack.security.enabled"          -> "false",
+    "xpack.security.http.ssl.enabled" -> "false",
+    "ES_JAVA_OPTS"                    -> "-Xms512m -Xmx512m"
+  )
+
   def apply(
       dockerClient: DockerClient,
       isDockerClientAutoClose: Boolean = false,
       outputFrameInterval: FiniteDuration = 500.millis,
       imageName: String = DefaultImageName,
       imageTag: Option[String] = DefaultImageTag,
-      envVars: Map[String, String] = Map.empty
+      envVars: Map[String, String] = DefaultEnvVars
   )(
       hostPort1: Int,
       hostPort2: Int
