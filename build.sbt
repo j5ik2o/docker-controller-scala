@@ -1,5 +1,30 @@
 import Dependencies._
 
+// ThisBuild settings for publishing
+ThisBuild / organization := "io.github.j5ik2o"
+ThisBuild / organizationName := "io.github.j5ik2o"
+ThisBuild / homepage := Some(url("https://github.com/j5ik2o/docker-controller-scala"))
+ThisBuild / licenses := List("The MIT License" -> url("http://opensource.org/licenses/MIT"))
+ThisBuild / developers := List(
+  Developer(
+    id = "j5ik2o",
+    name = "Junichi Kato",
+    email = "j5ik2o@gmail.com",
+    url = url("https://blog.j5ik2o.me")
+  )
+)
+ThisBuild / scmInfo := Some(
+  ScmInfo(
+    url("https://github.com/j5ik2o/docker-controller-scala"),
+    "scm:git@github.com:j5ik2o/docker-controller-scala.git"
+  )
+)
+ThisBuild / dynverSonatypeSnapshots := true
+ThisBuild / dynverSeparator := "-"
+ThisBuild / publishMavenStyle := true
+ThisBuild / pomIncludeRepository := (_ => false)
+ThisBuild / credentials += Credentials(Path.userHome / ".sbt" / "1.0" / "sonatype_credentials")
+
 def crossScalacOptions(scalaVersion: String): Seq[String] = CrossVersion.partialVersion(scalaVersion) match {
   case Some((3L, _)) =>
     Seq(
@@ -17,17 +42,6 @@ def crossScalacOptions(scalaVersion: String): Seq[String] = CrossVersion.partial
 }
 
 lazy val baseSettings = Seq(
-  organization := "com.github.j5ik2o",
-  homepage := Some(url("https://github.com/j5ik2o/docker-controller-scala")),
-  licenses := List("The MIT License" -> url("http://opensource.org/licenses/MIT")),
-  developers := List(
-    Developer(
-      id = "j5ik2o",
-      name = "Junichi Kato",
-      email = "j5ik2o@gmail.com",
-      url = url("https://blog.j5ik2o.me")
-    )
-  ),
   scalaVersion := Versions.scala213Version,
   crossScalaVersions := Seq(Versions.scala212Version, Versions.scala213Version, Versions.scala3Version),
   javacOptions ++= Seq("-source", "17", "-target", "17"),
@@ -258,7 +272,10 @@ val `docker-controller-scala-localstack` = (project in file("docker-controller-s
 
 val `docker-controller-scala-root` = (project in file("."))
   .settings(baseSettings)
-  .settings(name := "docker-controller-scala-root")
+  .settings(
+    name := "docker-controller-scala-root",
+    publish / skip := true
+  )
   .aggregate(
     `docker-controller-scala-core`,
     `docker-controller-scala-scalatest`,
