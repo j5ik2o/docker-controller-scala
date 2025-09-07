@@ -15,9 +15,17 @@ class ElasticsearchControllerSpec extends AnyFreeSpec with DockerControllerSpecS
   val testTimeFactor: Int = sys.env.getOrElse("TEST_TIME_FACTOR", "1").toInt
   logger.debug(s"testTimeFactor = $testTimeFactor")
 
-  val hostPort1: Int                      = temporaryServerPort()
-  val hostPort2: Int                      = temporaryServerPort()
-  val controller: ElasticsearchController = ElasticsearchController(dockerClient)(hostPort1, hostPort2)
+  val hostPort1: Int = temporaryServerPort()
+  val hostPort2: Int = temporaryServerPort()
+  val controller: ElasticsearchController = ElasticsearchController(
+    dockerClient,
+    envVars = Map(
+      "discovery.type"                  -> "single-node",
+      "xpack.security.enabled"          -> "false",
+      "xpack.security.http.ssl.enabled" -> "false",
+      "ES_JAVA_OPTS"                    -> "-Xms512m -Xmx512m"
+    )
+  )(hostPort1, hostPort2)
 
   override protected val dockerControllers: Vector[DockerController] = Vector(controller)
 
@@ -48,7 +56,9 @@ class ElasticsearchControllerSpec extends AnyFreeSpec with DockerControllerSpecS
           new JacksonJsonpMapper()
         )
         val esClient = new ElasticsearchClient(transport)
-        esClient.ping()
+        // Use info() instead of ping() for compatibility
+        val info = esClient.info()
+        assert(info.clusterName() != null)
       } finally {
         if (transport != null)
           transport.close()
