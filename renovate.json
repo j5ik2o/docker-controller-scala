@@ -16,6 +16,11 @@
       "managers": ["sbt"],
       "packageNames": ["sbt-ci-release"],
       "enabled": false
+    },
+    {
+      "matchManagers": ["mise"],
+      "matchPackageNames": ["java"],
+      "allowedVersions": "17"
     }
   ],
   "prHourlyLimit": 0,
