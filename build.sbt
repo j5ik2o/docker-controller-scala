@@ -172,7 +172,7 @@ val `docker-controller-scala-flyway` = (project in file("docker-controller-scala
     libraryDependencies ++= Seq(
       "org.flywaydb"      % "flyway-core"                % "11.14.0",
       "org.flywaydb"      % "flyway-mysql"               % "11.13.2",
-      "org.flywaydb"      % "flyway-database-postgresql" % "11.13.2",
+      "org.flywaydb"      % "flyway-database-postgresql" % "11.14.0",
       scalatest.scalatest % Test,
       logback.classic     % Test
     )
