@@ -290,12 +290,17 @@ private[dockerController] class DockerControllerImpl(
 
   override def awaitCondition(duration: Duration)(predicate: Option[Frame] => Boolean): Unit = {
     logger.debug("awaitCompletion --- start")
-    val frameQueue: LinkedBlockingQueue[Frame] = new LinkedBlockingQueue[Frame]()
+    val frameQueue = new LinkedBlockingQueue[Either[Throwable, Frame]]()
 
     newLogContainerCmd().exec(new ResultCallback.Adapter[Frame] {
 
       override def onNext(frame: Frame): Unit = {
-        frameQueue.add(frame)
+        frameQueue.add(Right(frame))
+      }
+
+      override def onError(error: Throwable): Unit = {
+        frameQueue.add(Left(error))
+        super.onError(error)
       }
 
     })
@@ -306,16 +311,15 @@ private[dockerController] class DockerControllerImpl(
       override def run(): Unit = {
         @tailrec
         def loop(): Unit = {
-          if (
-            !terminate && {
-              val frameOpt = Option(frameQueue.poll(outputFrameInterval.toMillis, TimeUnit.MILLISECONDS))
-              frameOpt.foreach { frame =>
-                logger.debug(frame.toString)
-              }
-              !predicate(frameOpt)
+          if (!terminate) {
+            Option(frameQueue.poll(outputFrameInterval.toMillis, TimeUnit.MILLISECONDS)) match {
+              case Some(Left(error)) =>
+                failure = Some(error)
+              case event =>
+                val frameOpt = event.collect { case Right(frame) => frame }
+                frameOpt.foreach(frame => logger.debug(frame.toString))
+                if (!predicate(frameOpt)) loop()
             }
-          ) {
-            loop()
           }
         }
         try {
