@@ -19,7 +19,17 @@ import scala.concurrent.duration._
 import scala.jdk.CollectionConverters._
 
 class AwaitConditionSpec extends AnyFreeSpec {
-  Seq("deadline", "ready", "polling", "zero").foreach { scenario =>
+  Seq(
+    "deadline",
+    "ready",
+    "polling",
+    "polling-finite",
+    "zero",
+    "interrupted",
+    "failure-frame",
+    "failure-none",
+    "failure-inf"
+  ).foreach { scenario =>
     s"awaitCondition preserves $scenario behavior and releases its threads" in {
       val output = Files.createTempFile("await-condition-", ".log")
       val process = new ProcessBuilder(
@@ -59,14 +69,16 @@ object AwaitConditionProbe {
     )
 
   def main(args: Array[String]): Unit = {
-    println(s"probe java.version=${System.getProperty("java.version")}, scenario=${args(0)}")
+    println(s"probe java.version=${System.getProperty("java.version")}, java.home=${System
+        .getProperty("java.home")}, scenario=${args(0)}")
     val scenario     = args(0)
     val timersBefore = Thread.getAllStackTraces.keySet().asScala.filter(_.getName.startsWith("Timer-")).toSet
     lazy val log: LogContainerCmd = proxy(classOf[LogContainerCmd]) { (method, arguments) =>
       method.getName match {
         case "exec" =>
           val callback = arguments(0).asInstanceOf[ResultCallback[Frame]]
-          if (scenario == "ready") callback.onNext(new Frame(StreamType.STDOUT, "ready".getBytes(UTF_8)))
+          if (scenario == "ready" || scenario == "failure-frame")
+            callback.onNext(new Frame(StreamType.STDOUT, "ready".getBytes(UTF_8)))
           callback
         case name if name.startsWith("with") => log
         case name                            => throw new UnsupportedOperationException(name)
@@ -91,23 +103,41 @@ object AwaitConditionProbe {
       }
     }
     val controller = DockerController(client, outputFrameInterval = 10.millis)("fake")
-    controller.createContainer()
+    assert(controller.createContainer().getId == "fake-container")
     @volatile var worker: Thread = null
     @volatile var polls          = 0
     @volatile var ready          = false
+    val cause                    = new IllegalStateException("predicate cause")
+    val sentinel                 = new IllegalArgumentException("predicate failure", cause)
+    val fails                    = scenario.startsWith("failure-")
     val duration = scenario match {
-      case "ready"   => 1.hour
-      case "polling" => Duration.Inf
-      case "zero"    => Duration.Zero
-      case _         => 250.millis
+      case "ready" | "polling-finite" | "failure-frame" | "failure-none" => 1.hour
+      case "polling" | "failure-inf"                                     => Duration.Inf
+      case "zero"                                                        => Duration.Zero
+      case _                                                             => 250.millis
     }
-    val start = System.nanoTime()
-    controller.awaitCondition(duration) { frame =>
-      worker = Thread.currentThread()
-      if (frame.isEmpty) polls += 1
-      ready = frame.exists(f => new String(f.getPayload, UTF_8) == "ready")
-      ready || (scenario == "polling" && polls >= 3)
+    val start                     = System.nanoTime()
+    var caught: Option[Throwable] = None
+    try {
+      controller.awaitCondition(duration) { frame =>
+        worker = Thread.currentThread()
+        if (frame.isEmpty) polls += 1
+        ready = frame.exists(f => new String(f.getPayload, UTF_8) == "ready")
+        if (fails) {
+          assert(frame.isDefined == (scenario == "failure-frame"), "unexpected predicate input")
+          throw sentinel
+        }
+        if (scenario == "interrupted") throw new InterruptedException("predicate stopped")
+        ready || ((scenario == "polling" || scenario == "polling-finite") && polls >= 3)
+      }
+    } catch {
+      case ex: Throwable => caught = Some(ex)
     }
+    if (fails) {
+      println(s"callerSame=${caught.exists(_ eq sentinel)}, causeSame=${caught.exists(_.getCause eq cause)}")
+      assert(caught.exists(_ eq sentinel), "caller did not receive the original predicate failure")
+      assert(caught.exists(_.getCause eq cause), "caller did not receive the original cause")
+    } else assert(caught.isEmpty, s"unexpected caller failure: $caught")
     val elapsed = (System.nanoTime() - start).nanos
     assert(elapsed < 5.seconds, s"unexpected wait: $elapsed")
     if (scenario == "deadline") {
@@ -115,7 +145,7 @@ object AwaitConditionProbe {
       assert(polls > 0 && !ready, "deadline completion must not be confused with readiness")
     }
     if (scenario == "ready") assert(ready)
-    if (scenario == "polling") assert(polls >= 3 && !ready)
+    if (scenario == "polling" || scenario == "polling-finite") assert(polls >= 3 && !ready)
     assert(worker == null || !worker.isAlive, "polling worker remains alive")
     val until = System.nanoTime() + 2.seconds.toNanos
     def newTimers: Set[Thread] =
