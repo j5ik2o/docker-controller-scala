@@ -172,6 +172,7 @@ class NginxSpec extends AnyFreeSpec with DockerControllerSpecSupport {
   val dockerController = DockerComposeController(dockerClient)(
     dockerComposeWorkingDir,
     "docker-compose.yml.ftl",
+    Seq.empty,
     Map("nginxHostPort" -> hostPort.toString)
   )
 
