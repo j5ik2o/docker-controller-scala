@@ -1,7 +1,6 @@
 package com.github.j5ik2o.dockerController
 
 import freemarker.template.{ Configuration, TemplateExceptionHandler }
-import org.seasar.util.io.ResourceUtil
 
 import java.io.{ File, FileWriter }
 import java.util.Locale
@@ -22,7 +21,7 @@ object DockerComposeFileGen {
   cfg.setFallbackOnNullLoopVariable(false)
 
   def generate(ymlFtl: String, context: Map[String, AnyRef], outputFile: File): Unit = {
-    val ymlFtlFile: File = ResourceUtil.getResourceAsFile(ymlFtl)
+    val ymlFtlFile: File = ComposeResourceFile.resolve(ymlFtl)
     cfg.setDirectoryForTemplateLoading(ymlFtlFile.getParentFile)
     val template = cfg.getTemplate(ymlFtlFile.getName)
     val writer   = new FileWriter(outputFile)
