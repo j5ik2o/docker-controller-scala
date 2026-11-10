@@ -300,7 +300,8 @@ private[dockerController] class DockerControllerImpl(
 
     })
 
-    @volatile var terminate = false
+    @volatile var terminate        = false
+    var failure: Option[Throwable] = None
     val waiter = new Runnable {
       override def run(): Unit = {
         @tailrec
@@ -323,8 +324,8 @@ private[dockerController] class DockerControllerImpl(
           case _: InterruptedException =>
             logger.debug("interrupted")
           case ex: Throwable =>
+            failure = Some(ex)
             logger.debug("occurred error", ex)
-            throw ex
         }
       }
     }
@@ -346,6 +347,7 @@ private[dockerController] class DockerControllerImpl(
         thread.join()
       } finally timer.cancel()
     } else thread.join()
+    failure.foreach(ex => throw ex)
     logger.debug("awaitCompletion --- finish")
   }
 
