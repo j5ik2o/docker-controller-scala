@@ -6,7 +6,6 @@ import com.github.dockerjava.httpclient5.ApacheDockerHttpClient
 import org.apache.commons.io.IOUtils
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.{ BeforeAndAfter, BeforeAndAfterAll }
-import org.seasar.util.io.ResourceUtil
 import org.slf4j.{ Logger, LoggerFactory }
 
 import java.io.{ File, InputStream }
@@ -57,7 +56,7 @@ class DockerComposeControllerSpec extends AnyFreeSpec with BeforeAndAfter with B
   var dockerController: DockerController = _
 
   override protected def beforeAll(): Unit = {
-    val buildDir: File                = ResourceUtil.getBuildDir(getClass)
+    val buildDir: File                = new File(getClass.getProtectionDomain.getCodeSource.getLocation.toURI)
     val dockerComposeWorkingDir: File = new File(buildDir, "docker-compose")
     dockerController = DockerComposeController(dockerClient, isDockerClientAutoClose = true)(
       dockerComposeWorkingDir,

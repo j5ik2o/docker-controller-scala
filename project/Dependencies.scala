@@ -79,11 +79,6 @@ object Dependencies {
 
   }
 
-  object seasar {
-    val s2util = "org.seasar.util" % "s2util" % "0.0.1"
-
-  }
-
   object freemarker {
     val freemarker = "org.freemarker" % "freemarker" % "2.3.34"
 

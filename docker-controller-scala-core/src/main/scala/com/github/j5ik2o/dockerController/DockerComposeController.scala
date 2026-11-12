@@ -5,7 +5,6 @@ import com.github.dockerjava.api.command.CreateContainerCmd
 import com.github.dockerjava.api.model.HostConfig.newHostConfig
 import com.github.dockerjava.api.model.{ AccessMode, Bind, SELContext, Volume }
 import org.apache.commons.io.FileUtils
-import org.seasar.util.io.ResourceUtil
 
 import java.io.File
 import scala.concurrent.duration.{ DurationInt, FiniteDuration }
@@ -52,7 +51,7 @@ private[dockerController] class DockerComposeController(
       DockerComposeFileGen.generate(ymlResourceName, context + ("id" -> id), file)
       file
     } else {
-      val srcFile  = ResourceUtil.getResourceAsFile(ymlResourceName)
+      val srcFile  = ComposeResourceFile.resolve(ymlResourceName)
       val destFile = new File(dockerComposeWorkingDir, srcFile.getName)
       FileUtils.copyFile(srcFile, destFile)
       destFile
@@ -64,7 +63,7 @@ private[dockerController] class DockerComposeController(
         val file                = new File(dockerComposeWorkingDir, s"$base-$id.$ext")
         DockerComposeFileGen.generate(environmentResourceName, context, file)
       } else {
-        val srcFile  = ResourceUtil.getResourceAsFile(environmentResourceName)
+        val srcFile  = ComposeResourceFile.resolve(environmentResourceName)
         val destFile = new File(dockerComposeWorkingDir, srcFile.getName)
         FileUtils.copyFile(srcFile, destFile)
       }
