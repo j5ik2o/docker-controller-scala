@@ -172,6 +172,7 @@ class NginxSpec extends AnyFreeSpec with DockerControllerSpecSupport {
   val dockerController = DockerComposeController(dockerClient)(
     dockerComposeWorkingDir,
     "docker-compose.yml.ftl",
+    Seq.empty,
     Map("nginxHostPort" -> hostPort.toString)
   )
 
@@ -182,6 +183,37 @@ class NginxSpec extends AnyFreeSpec with DockerControllerSpecSupport {
 }     
 ```
 
+
+### Use legacy Compose with a newer daemon
+
+`DockerComposeController` uses `docker/compose:1.24.1`. If that Compose client
+reports that its API version is too old, inspect the daemon's supported range.
+
+```sh
+docker version --format '{{.Server.MinAPIVersion}} {{.Server.APIVersion}}'
+```
+
+Choose an API version supported by the daemon and validate the Compose operations
+your tests use. This legacy client does not gain support for every newer API
+feature when you set its version. `1.40` worked with a daemon whose minimum was
+`1.40`; it is not a universal default.
+
+For the `dockerController` created above, register the hook before
+`createContainer()`. Keep `COMPOSE_FILE`, `DOCKER_HOST`, and any other environment
+entries while replacing only `COMPOSE_API_VERSION`.
+
+```scala
+val composeApiVersion = "1.40" // Use a value validated for your daemon.
+
+dockerController.configureCreateContainerCmd { cmd =>
+	val env = Option(cmd.getEnv).toSeq.flatten
+		.filterNot(_.startsWith("COMPOSE_API_VERSION="))
+	cmd.withEnv((env :+ s"COMPOSE_API_VERSION=$composeApiVersion"): _*)
+}
+```
+
+Passing only the new entry to `withEnv` replaces the controller's environment.
+`COMPOSE_API_VERSION` applies to this legacy Compose client. Do not use this example as Compose V2 configuration.
 
 ## License
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fj5ik2o%2Fdocker-controller-scala.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fj5ik2o%2Fdocker-controller-scala?ref=badge_large)
