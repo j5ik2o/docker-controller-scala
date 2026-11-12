@@ -333,18 +333,19 @@ private[dockerController] class DockerControllerImpl(
     thread.start()
     if (duration.isFinite) {
       val timer = new Timer()
-      timer.schedule(
-        new TimerTask {
-          override def run(): Unit = {
-            terminate = true
-            thread.interrupt()
-          }
-        },
-        duration.toMillis
-      )
-      timer.cancel()
-    }
-    thread.join()
+      try {
+        timer.schedule(
+          new TimerTask {
+            override def run(): Unit = {
+              terminate = true
+              thread.interrupt()
+            }
+          },
+          duration.toMillis
+        )
+        thread.join()
+      } finally timer.cancel()
+    } else thread.join()
     logger.debug("awaitCompletion --- finish")
   }
 
